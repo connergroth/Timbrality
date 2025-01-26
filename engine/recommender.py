@@ -1,74 +1,68 @@
-"""This module features the ImplicitRecommender class that performs
-recommendation using the implicit library.
-"""
+from implicit.als import AlternatingLeastSquares
+from scipy.sparse import coo_matrix
+from data import fetch_user_artists, fetch_user_songs, fetch_user_albums
+import pandas as pd
+
+class APIRecommender:
+    def __init__(self, api_key: str):
+        self.api_key = api_key
+        self.model = AlternatingLeastSquares(factors=100, iterations=10, regularization=0.01)
 
 
-from pathlib import Path
-from typing import Tuple, List
 
-import implicit
-import scipy
+    def fetch_user_matrix(self, users: list, data_type: str):
+        all_user_data = []
+        for user in users:
+            try:
+                if data_type == "artists":
+                    user_data_df = fetch_user_artists(user)
+                elif data_type == "songs":
+                    user_data_df = fetch_user_songs(user)
+                elif data_type == "albums":
+                    user_data_df = fetch_user_albums(user)
+                else:
+                    raise ValueError("Invalid data_type. Choose 'artists', 'songs', or 'albums'.")
 
-from musiccollaborativefiltering.data import load_user_artists, ArtistRetriever
+                if not user_data_df.empty:
+                    user_data_df["user_id"] = user
+                    all_user_data.append(user_data_df)
+                else:
+                    print(f"No data found for user '{user}'.")
+            except Exception as e:
+                print(f"Error fetching data for user '{user}': {e}")
+
+        if not all_user_data:
+            print("Error: No valid data for any user.")
+            return None, None
+
+        combined_data = pd.concat(all_user_data, ignore_index=True)
+        print("Combined DataFrame:")
+        print(combined_data.head())
+
+        # Create mappings
+        user_map = {user: idx for idx, user in enumerate(combined_data["user_id"].unique())}
+        item_map = {item: idx for idx, item in enumerate(combined_data["name"].unique())}
+
+        # Map interactions
+        combined_data["user_idx"] = combined_data["user_id"].map(user_map)
+        combined_data["item_idx"] = combined_data["name"].map(item_map)
+
+        user_ids = combined_data["user_idx"]
+        item_ids = combined_data["item_idx"]
+        interactions = combined_data["playcount"]
+
+        coo = coo_matrix((interactions, (user_ids, item_ids)), shape=(len(user_map), len(item_map)))
+        return coo.tocsr(), combined_data
 
 
-class ImplicitRecommender:
-    """The ImplicitRecommender class computes recommendations for a given user
-    using the implicit library.
+    def train_model(self, user_matrix):
+        """Train the model with fetched data."""
+        self.model.fit(user_matrix)
 
-    Attributes:
-        - artist_retriever: an ArtistRetriever instance
-        - implicit_model: an implicit model
-    """
+    def recommend(self, user_id: int, user_matrix, user_data_df, n=5):
+        recommended_ids, scores = self.model.recommend(user_id, user_matrix, N=n)
 
-    def __init__(
-        self,
-        artist_retriever: ArtistRetriever,
-        implicit_model: implicit.recommender_base.RecommenderBase,
-    ):
-        self.artist_retriever = artist_retriever
-        self.implicit_model = implicit_model
+        recommendations = user_data_df.iloc[recommended_ids].copy()
+        recommendations["score"] = scores
+        return recommendations[["name", "score"]].to_dict(orient="records")
 
-    def fit(self, user_artists_matrix: scipy.sparse.csr_matrix) -> None:
-        """Fit the model to the user artists matrix."""
-        self.implicit_model.fit(user_artists_matrix)
-
-    def recommend(
-        self,
-        user_id: int,
-        user_artists_matrix: scipy.sparse.csr_matrix,
-        n: int = 10,
-    ) -> Tuple[List[str], List[float]]:
-        """Return the top n recommendations for the given user."""
-        artist_ids, scores = self.implicit_model.recommend(
-            user_id, user_artists_matrix[n], N=n
-        )
-        artists = [
-            self.artist_retriever.get_artist_name_from_id(artist_id)
-            for artist_id in artist_ids
-        ]
-        return artists, scores
-
-
-if __name__ == "__main__":
-
-    # load user artists matrix
-    user_artists = load_user_artists(Path("../lastfmdata/user_artists.dat"))
-
-    # instantiate artist retriever
-    artist_retriever = ArtistRetriever()
-    artist_retriever.load_artists(Path("../lastfmdata/artists.dat"))
-
-    # instantiate ALS using implicit
-    implict_model = implicit.als.AlternatingLeastSquares(
-        factors=50, iterations=10, regularization=0.01
-    )
-
-    # instantiate recommender, fit, and recommend
-    recommender = ImplicitRecommender(artist_retriever, implict_model)
-    recommender.fit(user_artists)
-    artists, scores = recommender.recommend(2, user_artists, n=5)
-
-    # print results
-    for artist, score in zip(artists, scores):
-        print(f"{artist}: {score}")

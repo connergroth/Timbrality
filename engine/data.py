@@ -1,57 +1,58 @@
-"""This module features functions and classes to manipulate data for the
-collaborative filtering algorithm.
-"""
-
-from pathlib import Path
-
-import scipy
+import requests
 import pandas as pd
 
+API_KEY = "e1e432a42418c811876ed33474eda642"
+API_URL = "http://ws.audioscrobbler.com/2.0/"
 
-def load_user_artists(user_artists_file: Path) -> scipy.sparse.csr_matrix:
-    """Load the user artists file and return a user-artists matrix in csr
-    fromat.
-    """
-    user_artists = pd.read_csv(user_artists_file, sep="\t")
-    user_artists.set_index(["userID", "artistID"], inplace=True)
-    coo = scipy.sparse.coo_matrix(
-        (
-            user_artists.weight.astype(float),
-            (
-                user_artists.index.get_level_values(0),
-                user_artists.index.get_level_values(1),
-            ),
-        )
-    )
-    return coo.tocsr()
+def make_request(params):
+    """Make an API request and handle errors."""
+    try:
+        response = requests.get(API_URL, params=params)
+        response.raise_for_status()
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        print(f"Request failed: {e}")
+        return {}
 
-
-class ArtistRetriever:
-    """The ArtistRetriever class gets the artist name from the artist ID."""
-
-    def __init__(self):
-        self._artists_df = None
-
-    def get_artist_name_from_id(self, artist_id: int) -> str:
-        """Return the artist name from the artist ID."""
-        return self._artists_df.loc[artist_id, "name"]
-
-    def load_artists(self, artists_file: Path) -> None:
-        """Load the artists file and stores it as a Pandas dataframe in a
-        private attribute.
-        """
-        artists_df = pd.read_csv(artists_file, sep="\t")
-        artists_df = artists_df.set_index("id")
-        self._artists_df = artists_df
+def fetch_user_artists(user: str):
+    params = {
+        "method": "user.getTopArtists",
+        "user": user,
+        "api_key": API_KEY,
+        "format": "json",
+        "limit": 100,
+    }
+    data = make_request(params)
+    artists = data.get("topartists", {}).get("artist", [])
+    return pd.DataFrame([{"name": artist["name"], "playcount": int(artist["playcount"])} for artist in artists])
 
 
-if __name__ == "__main__":
-    # user_artists_matrix = load_user_artists(
-    #     Path("../lastfmdata/user_artists.dat")
-    # )
-    # print(user_artists_matrix)
+def fetch_user_songs(user: str):
+    """Fetch top songs for a user using the Last.fm API."""
+    params = {
+        "method": "user.getTopTracks",
+        "user": user,
+        "api_key": API_KEY,
+        "format": "json",
+        "limit": 100,
+    }
+    data = make_request(params)
+    tracks = data.get("toptracks", {}).get("track", [])
+    if not tracks:
+        print(f"No songs found for user '{user}'.")
+        return pd.DataFrame()
+    return pd.DataFrame([{"name": track["name"], "playcount": int(track["playcount"])} for track in tracks])
 
-    artist_retriever = ArtistRetriever()
-    artist_retriever.load_artists(Path("../lastfmdata/artists.dat"))
-    artist = artist_retriever.get_artist_name_from_id(1)
-    print(artist)
+
+def fetch_user_albums(user: str):
+    # Implement similar logic for albums
+    pass
+
+def fetch_multiple_users_data(usernames: list):
+    user_data = []
+    for username in usernames:
+        user_data_df = fetch_user_songs(username)
+        if not user_data_df.empty:
+            user_data_df["user"] = username
+            user_data.append(user_data_df)
+    return pd.concat(user_data, ignore_index=True)
