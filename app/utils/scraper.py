@@ -4,7 +4,7 @@ import asyncio
 
 from bs4 import BeautifulSoup, Tag
 from typing import Optional, Final, Dict
-from ..models import (
+from ..models.models import (
     Album,
     Track,
     CriticReview,
@@ -403,3 +403,4 @@ async def get_user_profile(username: str) -> Optional[UserProfile]:
         raise HTTPException(
             status_code=503, detail=f"Error accessing user profile: {str(e)}"
         )
+
