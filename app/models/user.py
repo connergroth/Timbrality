@@ -9,5 +9,5 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True) # Unique user ID
     username = Column(String, unique=True, nullable=False) # Unique username
     email = Column(String, unique=True, nullable=False) # Unique email
-    password_has = Column(String, nullable=False) # Hashed password
+    password_hash = Column(String, nullable=False) # Hashed password
     created_at = Column(DateTime, server_default=func.now()) # Account created timestamp

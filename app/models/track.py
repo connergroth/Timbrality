@@ -14,6 +14,6 @@ class Track(Base):
     popularity = Column(Integer, nullable=True) # Popularity value
     aoty_score = Column(Integer, nullable=True) # AOTY User Score
     audio_features = Column(JSON, nullable=False) # JSON field for audio features (tempo, energy, etc.)
-
+    
 
     
