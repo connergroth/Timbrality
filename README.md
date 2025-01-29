@@ -2,13 +2,13 @@
 A powerful music recommendation engine that integrates Spotify, Last.fm, and Albumoftheyear.org to provide personalized recommendations for songs, albums, and artists.
 
 ## ✨ Features
-✔ Personalized Music Recommendations – Uses listening history, trending music, and collaborative filtering to suggest songs & albums.  
-✔ Spotify & Last.fm Integration – Fetches listening data from both platforms for hybrid recommendation models.  
-✔ Redis Caching – Stores frequently accessed data for faster responses.  
-✔ PostgreSQL Database – Persists user interactions, recommendations, and metadata.  
-✔ Music Compatibility Scores – Calculates similarity between users based on listening history.  
-✔ Track & Album Ratings – Integrates Albumoftheyear.org (AOTY) for critic/user scores to prioritize highly-rated music.  
-✔ Real-Time Updates – Fetches & processes data dynamically to reflect user preferences.  
+- Personalized Music Recommendations – Uses listening history, trending music, and collaborative filtering to suggest songs & albums.  
+- Spotify & Last.fm Integration – Fetches listening data from both platforms for hybrid recommendation models.  
+- Redis Caching – Stores frequently accessed data for faster responses.  
+- PostgreSQL Database – Persists user interactions, recommendations, and metadata.  
+- Music Compatibility Scores – Calculates similarity between users based on listening history.  
+- Track & Album Ratings – Integrates Albumoftheyear.org (AOTY) for critic/user scores to prioritize highly-rated music.  
+- Real-Time Updates – Fetches & processes data dynamically to reflect user preferences.  
 
 ##🛠 Roadmap & Future Improvements
 ✅ Implement hybrid recommendation models (Spotify + Last.fm + AOTY)  
@@ -37,86 +37,50 @@ Redis – Stores user recommendations, trending songs, and listening history sna
 Docker – Containerized environment for easier deployment.
 
 ## 📦 Installation
-1️⃣ Clone the Repository  
-bash  
-Copy  
-Edit  
+## 1️⃣ Clone the Repository  
 git clone https://github.com/yourusername/sonance.git  
 cd sonance  
-2️⃣ Set Up Virtual Environment  
-bash  
-Copy  
-Edit  
+## 2️⃣ Set Up Virtual Environment  
 python -m venv venv  
 source venv/bin/activate  # For macOS/Linux  
 venv\Scripts\activate      # For Windows  
-3️⃣ Install Dependencies  
-bash  
-Copy  
-Edit  
+## 3️⃣ Install Dependencies  
 pip install -r requirements.txt  
-4️⃣ Set Up Environment Variables  
+## 4️⃣ Set Up Environment Variables  
 Create a .env file with the following variables:  
 
-env
-Copy
-Edit
-DATABASE_URL=postgresql://postgres:yourpassword@localhost:5432/sonance
-REDIS_URL=your_redis_url
-REDIS_TOKEN=your_redis_token
-SPOTIPY_CLIENT_ID=your_spotify_client_id
-SPOTIPY_CLIENT_SECRET=your_spotify_client_secret
-SPOTIPY_REDIRECT_URI=http://localhost:8888/callback
-LASTFM_API_KEY=your_lastfm_api_key
-5️⃣ Start PostgreSQL & Redis (via Docker)
-bash
-Copy
-Edit
-docker-compose up -d
-6️⃣ Apply Migrations
-bash
-Copy
-Edit
-alembic upgrade head
-7️⃣ Run the Application
-bash
-Copy
-Edit
-uvicorn app.main:app --reload
-8️⃣ API Documentation (Swagger UI)
-Once running, visit:
-🔗 http://127.0.0.1:8000/docs
+DATABASE_URL=postgresql://postgres:yourpassword@localhost:5432/sonance  
+REDIS_URL=your_redis_url  
+REDIS_TOKEN=your_redis_token  
+SPOTIPY_CLIENT_ID=your_spotify_client_id  
+SPOTIPY_CLIENT_SECRET=your_spotify_client_secret  
+SPOTIPY_REDIRECT_URI=http://localhost:8888/callback  
+LASTFM_API_KEY=your_lastfm_api_key  
+## 5️⃣ Start PostgreSQL & Redis (via Docker)   
+docker-compose up -d  
+## 6️⃣ Apply Migrations   
+alembic upgrade head  
+## 7️⃣ Run the Application  
+uvicorn app.main:app --reload  
+## 8️⃣ API Documentation (Swagger UI)  
+Once running, visit:  
+🔗 http://127.0.0.1:8000/  
 
 # 🚀 Usage
-🎧 Fetch User Listening History
-bash
-Copy
-Edit
-curl -X GET "http://127.0.0.1:8000/listening-history?user_id=1"
+## 🎧 Fetch User Listening History     
+curl -X GET "http://127.0.0.1:8000/listening-history?user_id=1"  
 
 ## 🔥 Get Personalized Recommendations
-bash
-Copy
-Edit
-curl -X GET "http://127.0.0.1:8000/recommendations?user_id=1"
+curl -X GET "http://127.0.0.1:8000/recommendations?user_id=1"  
 
 ## 🎼 Search for a Song or Album
-bash
-Copy
-Edit
-curl -X GET "http://127.0.0.1:8000/search?q=Pink Floyd"
+curl -X GET "http://127.0.0.1:8000/search?q=Kendrick Lamar"
 
 ## 🧪 Running Tests
-Run Unit Tests
-bash
-Copy
-Edit
-pytest tests --cov=app
-Check Code Quality
-bash
-Copy
-Edit
-flake8 .
+## Run Unit Tests  
+ts --cov=app  
+## Check Code Quality
+flake8 .  
 
 
 ## 📜 License
@@ -125,5 +89,6 @@ Sonance is open-source under the MIT License.
 ## 👥 Author
 💡 Created by [Conner Groth](https://www.linkedin.com/in/conner-groth-978228260/)
 
-Want to contribute? Feel free to submit a PR!
+Want to contribute?  
+Feel free to submit a PR!
 
