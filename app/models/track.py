@@ -6,7 +6,7 @@ from sqlalchemy.dialects.postgresql import JSON
 
 class Track(Base):
     __tablename__ = "tracks"
-    id = Column(Integer, primary_key=True, index=True) # Unique track ID
+    id = Column(String, primary_key=True, index=True) # Unique track ID
     title = Column(String, nullable=False) # Track title
     artist = Column(String, nullable=False) # Artist name
     album = Column(String, nullable=True) # Album name
@@ -14,6 +14,7 @@ class Track(Base):
     popularity = Column(Integer, nullable=True) # Popularity value
     aoty_score = Column(Integer, nullable=True) # AOTY User Score
     audio_features = Column(JSON, nullable=False) # JSON field for audio features (tempo, energy, etc.)
-    
+    cover_url = Column(String, nullable=True) # URL to song/album cover image
+
 
     

@@ -15,7 +15,7 @@ from app.models.compatibility import Compatibility
 from app.models.album_compatibility import AlbumCompatability
 from app.models.artist_compatibility import ArtistCompatibility
 from app.models.track_compatibility import TrackCompatibility
-from app.models.listening_history import ListeningHistory
+from app.models.track_listening_history import TrackListeningHistory
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -43,7 +43,7 @@ def run_migrations_offline() -> None:
 
 def run_migrations_online() -> None:
     """Run migrations in 'online' mode."""
-    connectable = create_engine('postgresql://postgres:postgronner34@localhost:5432/Sonance')
+    connectable = create_engine('postgresql://postgres:postgronner34@localhost:5432/sonance_test')
 
     with connectable.connect() as connection:
         context.configure(

@@ -1,8 +1,13 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
+from dotenv import load_dotenv
+import os
+
+# Load environment variables
+load_dotenv()
 
 # Database connection URL
-DATABASE_URL = "postgresql://postgres:postgronner34@localhost:5432/Sonance"
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:postgronner34@localhost:5432/sonance_test")
 
 # Create the database engine with connection pooling
 engine = create_engine(

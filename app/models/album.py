@@ -11,4 +11,5 @@ class Album(Base):
     release_date = Column(DateTime, nullable=True) # Release date
     genre = Column(String, nullable=True) # Genre
     aoty_score = Column(Integer, nullable=True) # AOTY User Score
+    cover_url = Column(String, nullable=True) # URL to album cover image
 
