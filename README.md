@@ -2,13 +2,13 @@
 A powerful music recommendation engine that integrates Spotify, Last.fm, and Albumoftheyear.org to provide personalized recommendations for songs, albums, and artists.
 
 ## ✨ Features
-- Personalized Music Recommendations – Uses listening history, trending music, and collaborative filtering to suggest songs & albums.  
-- Spotify & Last.fm Integration – Fetches listening data from both platforms for hybrid recommendation models.  
-- Redis Caching – Stores frequently accessed data for faster responses.  
-- PostgreSQL Database – Persists user interactions, recommendations, and metadata.  
-- Music Compatibility Scores – Calculates similarity between users based on listening history.  
-- Track & Album Ratings – Integrates Albumoftheyear.org (AOTY) for critic/user scores to prioritize highly-rated music.  
-- Real-Time Updates – Fetches & processes data dynamically to reflect user preferences.  
+- ***Personalized Music Recommendations*** – Uses listening history, trending music, and collaborative filtering to suggest songs & albums.  
+- ***Spotify & Last.fm Integration*** – Fetches listening data from both platforms for hybrid recommendation models.  
+- ***Redis Caching*** – Stores frequently accessed data for faster responses.  
+- ***PostgreSQL Database*** – Persists user interactions, recommendations, and metadata.  
+- ***Music Compatibility Scores*** – Calculates similarity between users based on listening history.  
+- ***Track & Album Ratings*** – Integrates Albumoftheyear.org (AOTY) for critic/user scores to prioritize highly-rated music.  
+- ***Real-Time Updates*** – Fetches & processes data dynamically to reflect user preferences.  
 
 ## 🛠 Roadmap & Future Improvements
 ✅ Implement hybrid recommendation models (Spotify + Last.fm + AOTY)  
