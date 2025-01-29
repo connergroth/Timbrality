@@ -19,68 +19,22 @@ A powerful music recommendation engine that integrates Spotify, Last.fm, and Alb
 
 ## 🛠 Tech Stack
 ## Backend
-Python (FastAPI) – High-performance API backend.  
-PostgreSQL – Stores persistent data like user profiles, listening history, and recommendations.  
-Redis – Caches frequently accessed data for fast retrieval.  
-SQLAlchemy – ORM for database operations.  
-Alembic – Handles database migrations.  
+- Python (FastAPI) – High-performance API backend.  
+- PostgreSQL – Stores persistent data like user profiles, listening history, and recommendations.  
+- Redis – Caches frequently accessed data for fast retrieval.  
+- SQLAlchemy – ORM for database operations.  
+- Alembic – Handles database migrations.  
 ## Data Sources  
-Spotify API – Fetches user listening data & playlists.  
-Last.fm API – Retrieves listening history & trends.  
-Albumoftheyear.org – Scrapes album & track ratings for better recommendation scoring.  
-Machine Learning & Recommendation  
-Collaborative Filtering – Suggests music based on user interactions.  
-Content-Based Filtering – Recommends similar songs/albums using track metadata.  
-Hybrid Model – Combines both for highly accurate recommendations.  
+- Spotify API – Fetches user listening data & playlists.  
+- Last.fm API – Retrieves listening history & trends.  
+- Albumoftheyear.org – Scrapes album & track ratings for better recommendation scoring.  
+## Machine Learning & Recommendation  
+- Collaborative Filtering – Suggests music based on user interactions.  
+- Content-Based Filtering – Recommends similar songs/albums using track metadata.  
+- Hybrid Model – Combines both for highly accurate recommendations.  
 ## Caching & Performance
-Redis – Stores user recommendations, trending songs, and listening history snapshots.  
-Docker – Containerized environment for easier deployment.
-
-## 📦 Installation
-## 1️⃣ Clone the Repository  
-git clone https://github.com/yourusername/sonance.git  
-cd sonance  
-## 2️⃣ Set Up Virtual Environment  
-python -m venv venv  
-source venv/bin/activate  # For macOS/Linux  
-venv\Scripts\activate      # For Windows  
-## 3️⃣ Install Dependencies  
-pip install -r requirements.txt  
-## 4️⃣ Set Up Environment Variables  
-Create a .env file with the following variables:  
-
-DATABASE_URL=postgresql://postgres:yourpassword@localhost:5432/sonance  
-REDIS_URL=your_redis_url  
-REDIS_TOKEN=your_redis_token  
-SPOTIPY_CLIENT_ID=your_spotify_client_id  
-SPOTIPY_CLIENT_SECRET=your_spotify_client_secret  
-SPOTIPY_REDIRECT_URI=http://localhost:8888/callback  
-LASTFM_API_KEY=your_lastfm_api_key  
-## 5️⃣ Start PostgreSQL & Redis (via Docker)   
-docker-compose up -d  
-## 6️⃣ Apply Migrations   
-alembic upgrade head  
-## 7️⃣ Run the Application  
-uvicorn app.main:app --reload  
-## 8️⃣ API Documentation (Swagger UI)  
-Once running, visit:  
-🔗 http://127.0.0.1:8000/  
-
-# 🚀 Usage
-## 🎧 Fetch User Listening History     
-curl -X GET "http://127.0.0.1:8000/listening-history?user_id=1"  
-
-## 🔥 Get Personalized Recommendations
-curl -X GET "http://127.0.0.1:8000/recommendations?user_id=1"  
-
-## 🎼 Search for a Song or Album
-curl -X GET "http://127.0.0.1:8000/search?q=Kendrick Lamar"
-
-## 🧪 Running Tests
-## Run Unit Tests  
-ts --cov=app  
-## Check Code Quality
-flake8 .  
+- Redis – Stores user recommendations, trending songs, and listening history snapshots.  
+- Docker – Containerized environment for easier deployment.
 
 
 ## 📜 License
