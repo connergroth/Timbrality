@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+__init__.py
+
+# Virtual Environment
+.venv/
+venv/
+env/
+ENV/
+.env
+sonance-env/
+
+# Cache
+.cache
+
+# Docker 
+docker-compose.yaml
