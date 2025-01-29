@@ -123,6 +123,7 @@ flake8 .
 Sonance is open-source under the MIT License.
 
 ## 👥 Author
-💡 Created by Conner Groth
+💡 Created by [Conner Groth](https://www.linkedin.com/in/conner-groth-978228260/)
+
 Want to contribute? Feel free to submit a PR!
 
