@@ -10,7 +10,7 @@ A powerful music recommendation engine that integrates Spotify, Last.fm, and Alb
 - Track & Album Ratings – Integrates Albumoftheyear.org (AOTY) for critic/user scores to prioritize highly-rated music.  
 - Real-Time Updates – Fetches & processes data dynamically to reflect user preferences.  
 
-##🛠 Roadmap & Future Improvements
+## 🛠 Roadmap & Future Improvements
 ✅ Implement hybrid recommendation models (Spotify + Last.fm + AOTY)  
 ✅ Enhance caching strategy for better performance  
 🔜 Build a frontend using React or Next.js  
