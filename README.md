@@ -35,6 +35,7 @@ Hybrid Model – Combines both for highly accurate recommendations.
 Caching & Performance
 Redis – Stores user recommendations, trending songs, and listening history snapshots.
 Docker – Containerized environment for easier deployment.
+
 ## 📦 Installation
 1️⃣ Clone the Repository
 bash
@@ -86,22 +87,25 @@ uvicorn app.main:app --reload
 Once running, visit:
 🔗 http://127.0.0.1:8000/docs
 
-##🚀 Usage
+#🚀 Usage
 🎧 Fetch User Listening History
 bash
 Copy
 Edit
 curl -X GET "http://127.0.0.1:8000/listening-history?user_id=1"
+
 ##🔥 Get Personalized Recommendations
 bash
 Copy
 Edit
 curl -X GET "http://127.0.0.1:8000/recommendations?user_id=1"
+
 ##🎼 Search for a Song or Album
 bash
 Copy
 Edit
 curl -X GET "http://127.0.0.1:8000/search?q=Pink Floyd"
+
 ##🧪 Running Tests
 Run Unit Tests
 bash
