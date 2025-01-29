@@ -87,26 +87,26 @@ uvicorn app.main:app --reload
 Once running, visit:
 🔗 http://127.0.0.1:8000/docs
 
-#🚀 Usage
+# 🚀 Usage
 🎧 Fetch User Listening History
 bash
 Copy
 Edit
 curl -X GET "http://127.0.0.1:8000/listening-history?user_id=1"
 
-##🔥 Get Personalized Recommendations
+## 🔥 Get Personalized Recommendations
 bash
 Copy
 Edit
 curl -X GET "http://127.0.0.1:8000/recommendations?user_id=1"
 
-##🎼 Search for a Song or Album
+## 🎼 Search for a Song or Album
 bash
 Copy
 Edit
 curl -X GET "http://127.0.0.1:8000/search?q=Pink Floyd"
 
-##🧪 Running Tests
+## 🧪 Running Tests
 Run Unit Tests
 bash
 Copy
@@ -119,10 +119,10 @@ Edit
 flake8 .
 
 
-##📜 License
+## 📜 License
 Sonance is open-source under the MIT License.
 
-##👥 Author
+## 👥 Author
 💡 Created by Conner Groth
 Want to contribute? Feel free to submit a PR!
 
