@@ -1,7 +1,7 @@
-## Sonance 🎵
+# Sonance 🎵
 A powerful music recommendation engine that integrates Spotify, Last.fm, and Albumoftheyear.org to provide personalized recommendations for songs, albums, and artists.
 
-# ✨ Features
+## ✨ Features
 ✔ Personalized Music Recommendations – Uses listening history, trending music, and collaborative filtering to suggest songs & albums.
 ✔ Spotify & Last.fm Integration – Fetches listening data from both platforms for hybrid recommendation models.
 ✔ Redis Caching – Stores frequently accessed data for faster responses.
@@ -10,14 +10,14 @@ A powerful music recommendation engine that integrates Spotify, Last.fm, and Alb
 ✔ Track & Album Ratings – Integrates Albumoftheyear.org (AOTY) for critic/user scores to prioritize highly-rated music.
 ✔ Real-Time Updates – Fetches & processes data dynamically to reflect user preferences.
 
-#🛠 Roadmap & Future Improvements
+##🛠 Roadmap & Future Improvements
 ✅ Implement hybrid recommendation models (Spotify + Last.fm + AOTY)
 ✅ Enhance caching strategy for better performance
 🔜 Build a frontend using React or Next.js
 🔜 Integrate user preferences & manual ratings into recommendations
 🔜 Support music discovery based on user-generated playlists
 
-# 🛠 Tech Stack
+## 🛠 Tech Stack
 Backend
 Python (FastAPI) – High-performance API backend.
 PostgreSQL – Stores persistent data like user profiles, listening history, and recommendations.
@@ -35,7 +35,7 @@ Hybrid Model – Combines both for highly accurate recommendations.
 Caching & Performance
 Redis – Stores user recommendations, trending songs, and listening history snapshots.
 Docker – Containerized environment for easier deployment.
-# 📦 Installation
+## 📦 Installation
 1️⃣ Clone the Repository
 bash
 Copy
@@ -86,23 +86,23 @@ uvicorn app.main:app --reload
 Once running, visit:
 🔗 http://127.0.0.1:8000/docs
 
-#🚀 Usage
+##🚀 Usage
 🎧 Fetch User Listening History
 bash
 Copy
 Edit
 curl -X GET "http://127.0.0.1:8000/listening-history?user_id=1"
-#🔥 Get Personalized Recommendations
+##🔥 Get Personalized Recommendations
 bash
 Copy
 Edit
 curl -X GET "http://127.0.0.1:8000/recommendations?user_id=1"
-#🎼 Search for a Song or Album
+##🎼 Search for a Song or Album
 bash
 Copy
 Edit
 curl -X GET "http://127.0.0.1:8000/search?q=Pink Floyd"
-#🧪 Running Tests
+##🧪 Running Tests
 Run Unit Tests
 bash
 Copy
@@ -115,10 +115,10 @@ Edit
 flake8 .
 
 
-#📜 License
+##📜 License
 Sonance is open-source under the MIT License.
 
-#👥 Author
+##👥 Author
 💡 Created by Conner Groth
 Want to contribute? Feel free to submit a PR!
 
