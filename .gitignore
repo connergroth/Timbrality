@@ -15,3 +15,8 @@ sonance-env/
 
 # Docker 
 docker-compose.yaml
+
+# Pytest
+.pytest_cache/
+.tests/
+.coverage
