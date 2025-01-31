@@ -40,7 +40,7 @@ A powerful music recommendation engine that integrates Spotify, Last.fm, and Alb
 ## 📜 License
 Sonance is open-source under the MIT License.
 
-## 👥 Author
+## 👨‍💻 Author
 💡 Created by [Conner Groth](https://www.linkedin.com/in/conner-groth-978228260/)
 
 
