@@ -8,6 +8,6 @@ class Recommendation(Base):
     __tablename__ = "recommendations"
     id = Column(Integer, primary_key=True, index=True) # Unique recommendation ID
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False) # Links to a user
-    track_id = Column(Integer, ForeignKey("tracks.id"), nullable=False) # Links to a track
+    track_id = Column(String, ForeignKey("tracks.id"), nullable=False) # Links to a track
     album = Column(Integer, ForeignKey("albums.id"), nullable=False) # Links to an album
     recommendation_score = Column(Integer, nullable=False) # Recommendation score

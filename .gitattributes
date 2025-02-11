@@ -1,8 +1,25 @@
 # Treat all text files as text with LF endings
 * text=auto
 
-# Specify specific file types
+# Enforce LF (Unix-style) for all text files
+* text=auto
 *.py text eol=lf
 *.sh text eol=lf
+*.md text eol=lf
+*.json text eol=lf
+*.yml text eol=lf
+*.toml text eol=lf
+
+# Keep Windows-style (CRLF) for certain files if needed
 *.bat text eol=crlf
-*.txt text eol=lf
+*.ps1 text eol=crlf
+
+# Treat binary files as binary (no line-ending conversion)
+*.png binary
+*.jpg binary
+*.gif binary
+*.zip binary
+
+# Ignore mako templates
+alembic/templates/script.py.mako linguist-vendored
+

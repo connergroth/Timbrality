@@ -64,7 +64,6 @@ def insert_data_to_db(data, table_name):
                 user_id=row['user_id'],
                 track_id=row['track_id'],
                 play_count=row['play_count'],
-                timestamp=func.now()
             ))
     elif table_name == 'recommendations':
         for _, row in data.iterrows():

@@ -126,7 +126,6 @@ def upgrade() -> None:
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.Column('track_id', sa.String(), nullable=False),
     sa.Column('play_count', sa.Integer(), nullable=False),
-    sa.Column('timestamp', sa.DateTime(), server_default=sa.text('now()'), nullable=True),
     sa.ForeignKeyConstraint(['track_id'], ['tracks.id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id'),
