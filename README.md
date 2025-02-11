@@ -17,7 +17,7 @@ A powerful music recommendation engine that integrates Spotify, Last.fm, and Alb
 🔜 Integrate user preferences & manual ratings into recommendations  
 🔜 Support music discovery based on user-generated playlists  
 
-## 💻 Tech Stack
+# 💻 Tech Stack
 ## Backend
 - Python (FastAPI) – High-performance API backend.  
 - PostgreSQL – Stores persistent data like user profiles, listening history, and recommendations.  
