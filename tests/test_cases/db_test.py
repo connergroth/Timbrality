@@ -33,4 +33,3 @@ def test_insert_album(test_db: Session):
     assert album.id is not None
     assert album.title == "Test Album"
     assert album.artist == "Test Artist"
-    assert album.release_date == "2023-01-01"

@@ -104,7 +104,6 @@ def fetch_user_scrobbles(user: str, limit=500):
         "name": track["name"],
         "artist": track["artist"]["#text"],
         "track_id": track["url"],
-        "timestamp": track["date"]["uts"]
     } for track in tracks if "date" in track])
 
 def fetch_user_friends(user: str):
@@ -155,22 +154,47 @@ def fetch_track_tags(track_id: str):
     tags = data.get("toptags", {}).get("tag", [])
     return [tag["name"] for tag in tags]
 
-# New function for fetching and storing all relevant data
-async def fetch_and_store_lastfm_data(user: str):
+def ensure_user_exists(username: str):
+    """Ensure the user exists in the database before storing Last.fm data."""
+    db: Session = SessionLocal()
+    try:
+        user = db.query(User).filter_by(username=username).first()
+        if not user:
+            new_user = User(username=username)
+            db.add(new_user)
+            db.commit()
+            print(f"Created new user: {username}")
+    finally:
+        db.close()  # Ensure DB connection is closed
+
+async def fetch_and_store_lastfm_data(username: str):
+    """Fetch Last.fm user data and store it in the database."""
+    ensure_user_exists(username)  # Ensure the user is in the DB
+
     # Fetch all relevant data for the user
-    user_data = fetch_user_data(user)
+    user_data = fetch_user_data(username)  
 
-    # Cache the fetched data (useful for frequent data access)
-    await cache_user_data(user, user_data)
+    if not user_data or "top_songs" not in user_data:
+        print(f"No data returned for {username}")
+        return {"error": f"No data found for {username}"}
 
-    # Insert the data into the PostgreSQL database
-    insert_data_to_db(user_data['top_songs'], 'listening_histories')
-    insert_data_to_db(user_data['top_artists'], 'user_artists')
-    insert_data_to_db(user_data['top_albums'], 'user_albums')
+    # Convert fetched songs to a DataFrame
+    top_songs = user_data["top_songs"]
+    top_songs_df = pd.DataFrame(top_songs)
 
-    return {"message": "Last.fm data fetched and stored successfully"}
+    # Add username to each row for foreign key reference
+    top_songs_df["username"] = username  
 
-# New helper function to fetch multiple data types
+    # Cache user data for faster access
+    await cache_user_data(username, user_data)  
+
+    # Insert data into the database
+    insert_data_to_db(top_songs_df, "listening_histories")  
+    # insert_data_to_db(user_data['top_artists'], 'user_artists')  # Uncomment if needed
+    # insert_data_to_db(user_data['top_albums'], 'user_albums')  # Uncomment if needed
+
+    return {"message": f"Last.fm data fetched and stored successfully for {username}"}
+
 def fetch_user_data(user: str):
     """Fetch multiple user data from Last.fm."""
     top_songs = fetch_user_songs(user)

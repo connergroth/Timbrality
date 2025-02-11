@@ -28,7 +28,7 @@ def test_fetch_and_insert_real_lastfm_data(test_db: Session):
     test_db.commit()
 
     # Step 2: Fetch real data from Last.fm
-    username = "connergroth"  # Replace with your real Last.fm username
+    username = "connergroth" 
     top_songs = fetch_user_songs(username)
 
     # Debug: Print the fetched data
