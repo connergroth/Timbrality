@@ -89,7 +89,7 @@ def test_check_saved_albums():
 def test_fetch_track_data():
     """Test fetching track data."""
     print("\n Testing fetch_track_data()...")
-    track_info = spotify_service.fetch_track_data(track_id="3n3Ppam7vgaVa1iaRUc9Lp")
+    track_info = spotify_service.fetch_track_data(track_id="5JjnoGJyOxfSZUZtk2rRwZ")
     print(track_info)
 
 def test_fetch_recommended_tracks():
@@ -103,7 +103,6 @@ def test_fetch_recommended_tracks():
         print("No recommendations found.")
     else:
         print(recommended_tracks_df.head())
-
 
 def test_save_and_remove_tracks():
     """Test saving and removing tracks."""
@@ -134,7 +133,7 @@ def test_save_and_unfollow_artists():
 def test_fetch_multiple_track_features():
     """Test fetching multiple tracks' audio features."""
     print("\n Testing fetch_multiple_track_features()...")
-    track_ids = ["3n3Ppam7vgaVa1iaRUc9Lp", "7dS5EaCoMnN7DzlpT6aRn2"]
+    track_ids = ["5JjnoGJyOxfSZUZtk2rRwZ", "7dS5EaCoMnN7DzlpT6aRn2"]
     track_features_df = spotify_service.fetch_multiple_track_features(track_ids)
     print(track_features_df.head())
 
@@ -158,7 +157,7 @@ if __name__ == "__main__":
     # test_fetch_album_data()
     # test_fetch_user_saved_albums()
     # test_check_saved_albums()
-    # test_fetch_track_data()
+    test_fetch_track_data()
     # test_fetch_recommended_tracks()
     # test_save_and_remove_tracks()
     test_fetch_multiple_track_features()
