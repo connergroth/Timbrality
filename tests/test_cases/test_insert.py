@@ -1,5 +1,7 @@
+import os
 import sys
 import spotipy
+from dotenv import load_dotenv
 from spotipy.oauth2 import SpotifyOAuth
 from sqlalchemy import create_engine, text
 from sqlalchemy.dialects.postgresql import JSON
@@ -9,9 +11,11 @@ import json
 sys.stdout.reconfigure(encoding='utf-8')
 
 # 🔹 Define your Spotify API credentials
-SPOTIPY_CLIENT_ID = "1b612a3566354d0897ca6b473277cc10"
-SPOTIPY_CLIENT_SECRET = "6e1ec1021aac49ca84fe486f4c02fd83"
-SPOTIPY_REDIRECT_URI = "http://localhost:3000"
+load_dotenv()
+
+SPOTIPY_CLIENT_ID = os.getenv("SPOTIPY_CLIENT_ID")
+SPOTIPY_CLIENT_SECRET = os.getenv("SPOTIPY_CLIENT_SECRET")
+SPOTIPY_REDIRECT_URI = os.getenv("SPOTIPY_REDIRCECT_URI")
 
 # 🔹 Define your database connection string
 DATABASE_URL = "postgresql://postgres:postgronner34@localhost:5432/Sonance"
