@@ -1,64 +1,86 @@
-import pytest
-from sqlalchemy.orm import Session
-from app.models.database import Base, engine, SessionLocal
-from app.models.track_listening_history import TrackListeningHistory
-from app.models.user import User
-from app.utils.database_utils import insert_data_to_db
-from app.services.lastfm_service import fetch_user_songs  # Use the real function
+import sys
+import spotipy
+from spotipy.oauth2 import SpotifyOAuth
+from sqlalchemy import create_engine, text
+from sqlalchemy.dialects.postgresql import JSON
+import json
 
-@pytest.fixture(scope="function")
-def test_db():
-    """Fixture for setting up and tearing down the test database."""
-    Base.metadata.create_all(bind=engine)  # Create tables
-    db = SessionLocal()
-    yield db  # Provide the database session to the test
-    db.close()
-    Base.metadata.drop_all(bind=engine)  # Drop tables after the test
+# Fix Unicode issue in Windows Terminal
+sys.stdout.reconfigure(encoding='utf-8')
 
+# 🔹 Define your Spotify API credentials
+SPOTIPY_CLIENT_ID = "1b612a3566354d0897ca6b473277cc10"
+SPOTIPY_CLIENT_SECRET = "6e1ec1021aac49ca84fe486f4c02fd83"
+SPOTIPY_REDIRECT_URI = "http://localhost:3000"
 
-def test_fetch_and_insert_real_lastfm_data(test_db: Session):
-    """Test fetching real Last.fm data and inserting it into the database."""
-    import uuid
+# 🔹 Define your database connection string
+DATABASE_URL = "postgresql://postgres:postgronner34@localhost:5432/Sonance"
 
-    # Step 1: Insert a mock user with a unique username
-    unique_username = f"testuser_{uuid.uuid4().hex[:8]}"
-    unique_email = f"testuser@example.com_{uuid.uuid4().hex[:8]}"
-    mock_user = User(username=unique_username, email=unique_email, password_hash="hashedpassword")
-    test_db.add(mock_user)
-    test_db.commit()
+# 🔹 Create the engine
+engine = create_engine(DATABASE_URL)
 
-    # Step 2: Fetch real data from Last.fm
-    username = "connergroth" 
-    top_songs = fetch_user_songs(username)
+# 🔹 Authenticate and create Spotipy client
+sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
+    client_id=SPOTIPY_CLIENT_ID,
+    client_secret=SPOTIPY_CLIENT_SECRET,
+    redirect_uri=SPOTIPY_REDIRECT_URI,
+    scope="user-top-read user-library-read"  # Added user-library-read to fetch more details
+))
 
-    # Debug: Print the fetched data
-    import pandas as pd
-    print(top_songs)
+# 🔹 Fetch the user's top tracks
+def get_top_tracks(limit=20):
+    results = sp.current_user_top_tracks(limit=limit, time_range="medium_term")
+    return results["items"]
 
-    # Ensure data is returned from the API
-    assert len(top_songs) > 0, "No data returned from Last.fm API"
+# 🔹 Fetch and print top tracks
+top_tracks = get_top_tracks()
+for idx, track in enumerate(top_tracks):
+    print(f"{idx + 1}. {track['name']} - {track['artists'][0]['name']}")
 
-    # Convert the fetched data to a DataFrame
-    top_songs_df = pd.DataFrame(top_songs)
+# 🔹 Insert Spotify Data into PostgreSQL
+with engine.connect() as conn:
+    for track in top_tracks:
+        # Fetch additional metadata
+        track_image = track["album"]["images"][0]["url"] if track["album"]["images"] else None  # Album cover image
 
-    # Check if the DataFrame is empty
-    if not top_songs_df.empty:
-        # Rename columns to match the database schema
-        top_songs_df.rename(columns={"playcount": "play_count"}, inplace=True)
+        conn.execute(text("""
+            INSERT INTO artists (id, name, source)
+            VALUES (:id, :name, 'spotify')
+            ON CONFLICT (id) DO NOTHING
+        """), {
+            "id": track["artists"][0]["id"],
+            "name": track["artists"][0]["name"]
+        })
 
-        # Ensure the data is formatted correctly
-        assert "track_id" in top_songs_df.columns, "Expected column 'track_id' is missing"
-        assert "play_count" in top_songs_df.columns, "Expected column 'play_count' is missing"
+        # Check if album exists before inserting a track
+        album_id = track["album"]["id"]
 
-        # Add the user_id field for foreign key
-        top_songs_df["user_id"] = mock_user.id
+        conn.execute(text("""
+            INSERT INTO albums (id, title, artist_id, source)
+            VALUES (:id, :title, :artist_id, 'spotify')
+            ON CONFLICT (id) DO NOTHING
+        """), {
+            "id": album_id,
+            "title": track["album"]["name"],
+            "artist_id": track["artists"][0]["id"]
+        })
 
-        # Insert the fetched data into the database
-        insert_data_to_db(top_songs_df, "track_listening_histories")  # Adjust table name if needed
+        conn.execute(text("""
+            INSERT INTO tracks (id, title, artist_id, album_id, duration_ms, popularity, audio_features, preview_url, cover_url, source) 
+            VALUES (:id, :title, :artist_id, :album_id, :duration_ms, :popularity, :audio_features, :preview_url, :cover_url, 'spotify')
+            ON CONFLICT (id) DO NOTHING
+        """), {
+            "id": track["id"],
+            "title": track["name"],
+            "artist_id": track["artists"][0]["id"],
+            "album_id": track["album"]["id"],
+            "duration_ms": track["duration_ms"],
+            "popularity": track["popularity"],
+            "audio_features": json.dumps(track.get("audio_features", {})),  # Convert dict to JSON string
+            "preview_url": track.get("preview_url"),
+            "cover_url": track["album"]["images"][0]["url"] if track["album"]["images"] else None
+        })
 
-        # Verify data in the database
-        results = test_db.query(TrackListeningHistory).all()
-        assert len(results) > 0, "No rows were inserted into the track_listening_histories table"
-        print(f"Inserted {len(results)} rows into track_listening_histories")
-    else:
-        pytest.fail("Fetched data is empty; no rows to insert.")
+    conn.commit()
+
+print("✅ Spotify tracks inserted successfully!")

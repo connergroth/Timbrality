@@ -21,3 +21,5 @@ docker-compose.yaml
 .tests/
 .coverage
 
+# Alembic
+migrations/*.mako
