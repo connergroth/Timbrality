@@ -28,7 +28,7 @@ sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
     client_id=SPOTIPY_CLIENT_ID,
     client_secret=SPOTIPY_CLIENT_SECRET,
     redirect_uri=SPOTIPY_REDIRECT_URI,
-    scope="user-top-read user-library-read"  # Added user-library-read to fetch more details
+    scope="user-top-read user-library-read"  
 ))
 
 # 🔹 Fetch the user's top tracks

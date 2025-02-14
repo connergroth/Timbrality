@@ -1,5 +1,5 @@
-from .user import User
-from .track import Track
+from .users.user import User
+from .tracks.track import Track
 from .album import Album
 from .artist import Artist
 from .recommendation import Recommendation
