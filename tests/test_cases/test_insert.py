@@ -48,8 +48,8 @@ with engine.connect() as conn:
         track_image = track["album"]["images"][0]["url"] if track["album"]["images"] else None  # Album cover image
 
         conn.execute(text("""
-            INSERT INTO artists (id, name, source)
-            VALUES (:id, :name, 'spotify')
+            INSERT INTO artists (id, name)
+            VALUES (:id, :name)
             ON CONFLICT (id) DO NOTHING
         """), {
             "id": track["artists"][0]["id"],
@@ -60,8 +60,8 @@ with engine.connect() as conn:
         album_id = track["album"]["id"]
 
         conn.execute(text("""
-            INSERT INTO albums (id, title, artist_id, source)
-            VALUES (:id, :title, :artist_id, 'spotify')
+            INSERT INTO albums (id, title, artist_id)
+            VALUES (:id, :title, :artist_id)
             ON CONFLICT (id) DO NOTHING
         """), {
             "id": album_id,
@@ -70,8 +70,18 @@ with engine.connect() as conn:
         })
 
         conn.execute(text("""
-            INSERT INTO tracks (id, title, artist_id, album_id, duration_ms, popularity, audio_features, preview_url, cover_url, source) 
-            VALUES (:id, :title, :artist_id, :album_id, :duration_ms, :popularity, :audio_features, :preview_url, :cover_url, 'spotify')
+            INSERT INTO tracks (
+                id, title, artist_id, album_id, duration_ms, popularity, 
+                tempo, energy, valence, danceability, loudness, 
+                speechiness, acousticness, instrumentalness, 
+                preview_url, cover_url
+            ) 
+            VALUES (
+                :id, :title, :artist_id, :album_id, :duration_ms, :popularity, 
+                :tempo, :energy, :valence, :danceability, :loudness, 
+                :speechiness, :acousticness, :instrumentalness, 
+                :preview_url, :cover_url
+            )
             ON CONFLICT (id) DO NOTHING
         """), {
             "id": track["id"],
@@ -79,8 +89,18 @@ with engine.connect() as conn:
             "artist_id": track["artists"][0]["id"],
             "album_id": track["album"]["id"],
             "duration_ms": track["duration_ms"],
-            "popularity": track["popularity"],
-            "audio_features": json.dumps(track.get("audio_features", {})),  # Convert dict to JSON string
+            "popularity": track.get("popularity"),  # Use .get() to avoid errors if missing
+            
+            # ✅ Check if 'audio_features' exists before accessing it
+            "tempo": track.get("audio_features", {}).get("tempo"),
+            "energy": track.get("audio_features", {}).get("energy"),
+            "valence": track.get("audio_features", {}).get("valence"),
+            "danceability": track.get("audio_features", {}).get("danceability"),
+            "loudness": track.get("audio_features", {}).get("loudness"),
+            "speechiness": track.get("audio_features", {}).get("speechiness"),
+            "acousticness": track.get("audio_features", {}).get("acousticness"),
+            "instrumentalness": track.get("audio_features", {}).get("instrumentalness"),
+            
             "preview_url": track.get("preview_url"),
             "cover_url": track["album"]["images"][0]["url"] if track["album"]["images"] else None
         })

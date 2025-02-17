@@ -10,6 +10,7 @@ class Album(Base):
     tags = Column(JSON, nullable=True)  # Stores album-level tags like ["progressive rock", "experimental"]
     release_date = Column(Date, nullable=True)  # Release date (only Date, not DateTime)
     total_tracks = Column(Integer, nullable=True)  # Total number of tracks
-    aoty_score = Column(Float, nullable=True)  # AOTY User Score (supports decimals)
+    aoty_score = Column(Float, nullable=True)  # AOTY User Score 
+    aoty_rating_count = Column(Integer, nullable=True) # Number of ratings for the track
     play_count = Column(Integer, nullable=True, default=0)  # Play count
     cover_url = Column(String, nullable=True)  # URL to album cover image

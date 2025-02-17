@@ -1,11 +1,37 @@
 from logging.config import fileConfig
-
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
+from sqlalchemy import engine_from_config, pool
 from alembic import context
 
-# Import the Base metadata from your models
+# Import Base from database
 from app.models.database import Base  
+
+# Import all models
+from app.models.album import Album
+from app.models.artist import Artist
+from app.models.recommendation import Recommendation
+
+# Import compatibility models
+from app.models.compatibilities.album_compatibility import AlbumCompatibility
+from app.models.compatibilities.artist_compatibility import ArtistCompatibility
+from app.models.compatibilities.compatibility import Compatibility
+from app.models.compatibilities.track_compatibility import TrackCompatibility
+
+# Import playlist models
+from app.models.playlists.playlist import Playlist
+from app.models.playlists.playlist_track import PlaylistTrack
+
+# Import track models
+from app.models.tracks.track import Track
+from app.models.tracks.track_listening_history import TrackListeningHistory
+
+# Import user-related models
+from app.models.users.user import User
+from app.models.users.user_album import UserAlbum
+from app.models.users.user_artist import UserArtist
+from app.models.users.user_track import UserTrack
+
+# Set metadata for Alembic to detect models
+target_metadata = Base.metadata
 
 config = context.config
 

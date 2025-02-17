@@ -1,10 +1,15 @@
 import cloudscraper
 import urllib.parse
 import asyncio
+import time
+import random
+import sys 
+import os
 
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
 from bs4 import BeautifulSoup, Tag
 from typing import Optional, Final, Dict
-from ..models.models import (
+from app.models.aoty import (
     Album,
     Track,
     CriticReview,
@@ -32,31 +37,45 @@ def parse_number(text: str | int) -> int:
     return int(str(text).replace(",", ""))
 
 
-async def get_album_url(artist: str, album: str) -> Optional[tuple[str, str, str]]:
+async def get_album_url(artist: str, album: str, retries=3, delay=3):
     """
-    Search for an album.
+    Search AOTY for an album by artist and title.
+    - Retries the request up to `retries` times if no result is found.
+    - Sleeps for a random delay between requests to avoid rate limiting.
     """
     search_query = urllib.parse.quote(f"{artist} {album}")
     url = f"{BASE_URL}/search/albums/?q={search_query}"
 
-    try:
-        response_text = await asyncio.to_thread(
-            lambda: scraper.get(url, headers=HEADERS).text
-        )
+    for attempt in range(1, retries + 1):
+        try:
+            # Randomized sleep between 2-5 seconds to avoid detection
+            sleep_time = random.uniform(2, 5)
+            print(f"Sleeping for {sleep_time:.2f} seconds before request...")
+            time.sleep(sleep_time)
 
-        soup = BeautifulSoup(response_text, "html.parser")
+            response_text = await asyncio.to_thread(lambda: scraper.get(url, headers=HEADERS).text)
+            soup = BeautifulSoup(response_text, "html.parser")
 
-        if album_block := soup.select_one(".albumBlock"):
-            if album_link := album_block.select_one(".image a"):
-                return (
-                    f"{BASE_URL}{album_link['href']}",
-                    album_block.select_one(".artistTitle").text.strip(),
-                    album_block.select_one(".albumTitle").text.strip(),
-                )
-    except Exception as e:
-        raise HTTPException(
-            status_code=503, detail=f"Error accessing album site: {str(e)}"
-        )
+            album_block = soup.select_one(".albumBlock")
+
+            if album_block:
+                album_link = album_block.select_one(".image a")
+                if album_link:
+                    return (
+                        f"{BASE_URL}{album_link['href']}",
+                        album_block.select_one(".artistTitle").text.strip(),
+                        album_block.select_one(".albumTitle").text.strip(),
+                    )
+
+            print(f"Attempt {attempt}: AOTY Search Failed for {artist} - {album}")
+
+        except Exception as e:
+            print(f"Attempt {attempt}: Error fetching album from AOTY: {e}")
+
+        # Wait before retrying
+        if attempt < retries:
+            print(f"Retrying in {delay} seconds...")
+            time.sleep(delay)
 
     return None
 
@@ -404,3 +423,32 @@ async def get_user_profile(username: str) -> Optional[UserProfile]:
             status_code=503, detail=f"Error accessing user profile: {str(e)}"
         )
 
+async def scrape_new_albums():
+    """Scrape trending & new release albums from AOTY."""
+    new_albums = []
+    for url in [
+        "https://www.albumoftheyear.org/ratings/trending/",
+        "https://www.albumoftheyear.org/releases/",
+    ]:
+        response_text = await asyncio.to_thread(lambda: scraper.get(url, headers=HEADERS).text)
+        soup = BeautifulSoup(response_text, "html.parser")
+
+        for album_block in soup.select(".albumBlock"):
+            try:
+                album_link = album_block.select_one(".image a")["href"]
+                album_url = f"{BASE_URL}{album_link}"
+                artist = album_block.select_one(".artistTitle").text.strip()
+                title = album_block.select_one(".albumTitle").text.strip()
+
+                new_albums.append((album_url, artist, title))
+            except Exception:
+                continue
+
+    return new_albums
+
+def parse_genres(soup: BeautifulSoup) -> list[str]:
+    """Extract genres from the album page."""
+    genres = []
+    for genre in soup.select(".genreList a"):
+        genres.append(genre.text.strip())
+    return genres
