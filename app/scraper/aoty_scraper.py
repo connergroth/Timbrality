@@ -1,10 +1,16 @@
 import cloudscraper
 import urllib.parse
 import asyncio
+import sys
+import os
+import re
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
+from app.utils.matching import find_best_match
 
 from bs4 import BeautifulSoup, Tag
 from typing import Optional, Final, Dict
-from ..models.models import (
+from app.models.aoty import (
     Album,
     Track,
     CriticReview,
@@ -61,29 +67,44 @@ async def get_album_url(artist: str, album: str) -> Optional[tuple[str, str, str
     return None
 
 
-def parse_tracks(soup: BeautifulSoup) -> list[Track]:
-    """Extract track information from the album page."""
+def parse_tracks(soup: BeautifulSoup, album_title: str) -> list[Track]:
+    """Extract track information from the album page while avoiding album-title misclassification."""
     tracks = []
+
+    def clean_title(title: str) -> str:
+        """Remove featured artists and extra spaces."""
+        title = title.lower().strip()  # Convert to lowercase
+        title = re.sub(r"\(feat.*?\)", "", title)  # Remove '(feat. Artist)'
+        title = re.sub(r"\(ft.*?\)", "", title)  # Remove '(ft. Artist)'
+        return title.strip()
+
     for row in soup.select(".trackListTable tr"):
-        number = int(row.select_one(".trackNumber").text)
-        title = row.select_one(".trackTitle a").text
-        length = row.select_one(".length").text if row.select_one(".length") else ""
+        number = row.select_one(".trackNumber")
+        title_element = row.select_one(".trackTitle a")
+
+        if not number or not title_element:  # Ensure it's a valid track row
+            continue  
+
+        raw_title = title_element.text.strip()
+        title = clean_title(raw_title)
+
+        # Ensure we are NOT including the album title as a track
+        if title.lower() == album_title.lower():
+            print(f"Skipping album title from track list: {title}")
+            continue  # Skip album title being treated as a track
+
+        length = row.select_one(".length").text.strip() if row.select_one(".length") else ""
         rating = None
 
         if rating_elem := row.select_one(".trackRating span"):
             rating = int(rating_elem.text)
 
-        featured_artists = []
-        if featured_elem := row.select_one(".featuredArtists"):
-            featured_artists = [a.text for a in featured_elem.select("a")]
-
         tracks.append(
             Track(
-                number=number,
-                title=title,
+                number=int(number.text),
+                title=title,  # Store cleaned title
                 length=length,
                 rating=rating,
-                featured_artists=featured_artists,
             )
         )
 
@@ -185,7 +206,7 @@ async def scrape_album(url: str, artist: str, title: str) -> Album:
             except ValueError:
                 pass
 
-        tracks_task = asyncio.create_task(asyncio.to_thread(parse_tracks, soup))
+        tracks_task = asyncio.create_task(asyncio.to_thread(parse_tracks, soup, album_title))
         critic_reviews_task = asyncio.create_task(
             asyncio.to_thread(parse_critic_reviews, soup)
         )
@@ -194,13 +215,22 @@ async def scrape_album(url: str, artist: str, title: str) -> Album:
         )
         buy_links_task = asyncio.create_task(asyncio.to_thread(parse_buy_links, soup))
 
-        # wait for all parsing tasks to complete
+        # Wait for all parsing tasks to complete
         tracks, critic_reviews, popular_reviews, buy_links = await asyncio.gather(
             tracks_task,
             critic_reviews_task,
             popular_reviews_task,
             buy_links_task,
         )
+
+        # Apply fuzzy matching to find the best track match
+        aoty_track_title = find_best_match(title, [t.title for t in tracks])
+        matched_track = next((t for t in tracks if t.title == aoty_track_title), None)
+
+        if matched_track:
+            print(f"Matched Track: {title} -> {matched_track.title} | AOTY Rating: {matched_track.rating}")
+        else:
+            print(f"No rating found for track: {title}")
 
         return Album(
             title=title,
@@ -404,3 +434,32 @@ async def get_user_profile(username: str) -> Optional[UserProfile]:
             status_code=503, detail=f"Error accessing user profile: {str(e)}"
         )
 
+async def scrape_new_albums():
+    """Scrape trending & new release albums from AOTY."""
+    new_albums = []
+    for url in [
+        "https://www.albumoftheyear.org/ratings/trending/",
+        "https://www.albumoftheyear.org/releases/",
+    ]:
+        response_text = await asyncio.to_thread(lambda: scraper.get(url, headers=HEADERS).text)
+        soup = BeautifulSoup(response_text, "html.parser")
+
+        for album_block in soup.select(".albumBlock"):
+            try:
+                album_link = album_block.select_one(".image a")["href"]
+                album_url = f"{BASE_URL}{album_link}"
+                artist = album_block.select_one(".artistTitle").text.strip()
+                title = album_block.select_one(".albumTitle").text.strip()
+
+                new_albums.append((album_url, artist, title))
+            except Exception:
+                continue
+
+    return new_albums
+
+def parse_genres(soup: BeautifulSoup) -> list[str]:
+    """Extract genres from the album page."""
+    genres = []
+    for genre in soup.select(".genreList a"):
+        genres.append(genre.text.strip())
+    return genres

@@ -1,3 +1,7 @@
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy.sql import func
+from app.models.database import Base
+
 class PlaylistTrack(Base):
     __tablename__ = "playlist_tracks"
 

@@ -26,6 +26,7 @@ sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
                 client_secret=SPOTIPY_CLIENT_SECRET,
                 redirect_uri=SPOTIPY_REDIRECT_URI,
                 scope="user-library-read user-library-modify user-top-read user-follow-read"
+))
 
 def insert_top_artists:
     df = get_top_tracks()
@@ -37,3 +38,4 @@ def insert_top_artists:
         VALUES (:artist_id, :artist_name, 'spotify')
         ON CONFLICT (id) DO NOTHING
     """), artist_records)
+

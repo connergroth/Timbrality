@@ -12,7 +12,6 @@ class Artist(Base):
     aoty_score = Column(Float, nullable=True)  # AOTY User Score 
     play_count = Column(Integer, nullable=True, default=0)  # Play count
     image_url = Column(String, nullable=True)  # Artist profile picture
-    source = Column(String, nullable=False)  # 'spotify' or 'lastfm'
 
     __table_args__ = (
         CheckConstraint("source IN ('spotify', 'lastfm')", name="check_artist_source"),

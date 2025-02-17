@@ -89,7 +89,7 @@ def test_check_saved_albums():
 def test_fetch_track_data():
     """Test fetching track data."""
     print("\n Testing fetch_track_data()...")
-    track_info = spotify_service.fetch_track_data(track_id="5JjnoGJyOxfSZUZtk2rRwZ")
+    track_info = spotify_service.fetch_track_data(track_id="0j2T0R9dR9qdJYsB7ciXhf")
     print(track_info)
 
 def test_fetch_recommended_tracks():
