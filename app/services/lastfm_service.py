@@ -1,9 +1,12 @@
 import requests
+import sys
 import os
 import pandas as pd
 from dotenv import load_dotenv
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
 from app.cache.redis import cache_user_profile
-from app.utils.database_utils import insert_data_to_db
+# from app.utils.database_utils import insert_data_to_db
 
 # Load environment variables
 load_dotenv()

@@ -13,7 +13,7 @@ class Track(Base):
     duration_ms = Column(Integer, nullable=True)
     popularity = Column(Integer, nullable=True)
     aoty_score = Column(Float, nullable=True)
+    aoty_rating_count = Column(Integer, nullable=True) # Number of ratings for the track
     play_count = Column(Integer, nullable=True, default=0)
-
     cover_url = Column(String, nullable=True)
 

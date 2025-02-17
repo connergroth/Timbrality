@@ -10,6 +10,7 @@ class Artist(Base):
     popularity = Column(Integer, nullable=True)  # Popularity score
     followers = Column(Integer, nullable=True)  # Artist's follower count
     aoty_score = Column(Float, nullable=True)  # AOTY User Score 
+    aoty_rating_count = Column(Integer, nullable=True) # Number of ratings for the track
     play_count = Column(Integer, nullable=True, default=0)  # Play count
     image_url = Column(String, nullable=True)  # Artist profile picture
 

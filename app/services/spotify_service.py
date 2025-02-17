@@ -1,4 +1,3 @@
-# services/spotify_service.py
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth, SpotifyClientCredentials
 import requests
