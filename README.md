@@ -1,4 +1,6 @@
 # Sonance 🎵
+## [In-Progress]  
+
 A powerful music recommendation engine that integrates Spotify, Last.fm, and Albumoftheyear.org data to provide personalized recommendations for songs, albums, and artists.
 
 ## ✨ Features
