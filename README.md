@@ -38,11 +38,3 @@ A powerful music recommendation engine that integrates Spotify, Last.fm, and Alb
 - Redis – Stores user recommendations, trending songs, and listening history snapshots.  
 - Docker – Containerized environment for easier deployment.
 
-
-## 📜 License
-Sonance is open-source under the MIT License.
-
-## 👨‍💻 Author
-💡 Created by [Conner Groth](https://www.linkedin.com/in/conner-groth-978228260/)
-
-
