@@ -1,0 +1,3 @@
+[submodule "backend/aoty-api"]
+	path = backend/aoty-api
+	url = https://github.com/connergroth/AOTY-API.git

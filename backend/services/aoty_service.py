@@ -1,12 +1,10 @@
 import httpx
-from typing import Optional, Dict, List, Any
-from app.models.aoty import Album, UserProfile
-from app.cache.redis import get_cached_album, cache_album_data
-
-AOTY_API_BASE_URL = "http://your-aoty-api-url.com"  
+from typing import Optional, Dict, Any, List
+from app.config import AOTY_API_URL
 
 class AOTYService:
-    def __init__(self):
+    def __init__(self, base_url=AOTY_API_URL):
+        self.base_url = base_url
         self.client = httpx.AsyncClient(timeout=30.0)
     
     async def close(self):
