@@ -1,32 +1,30 @@
 # Web Framework & API Handling
 fastapi==0.115.6
 uvicorn==0.34.0
-httpx==0.26.0  # For making HTTP requests in FastAPI
-pydantic==2.10.4  # Data validation and serialization
-slowapi==0.1.9  # Rate limiting for FastAPI
+httpx==0.26.0  
+pydantic==2.10.4  
+slowapi==0.1.9  
 
 # Database & ORM
-sqlalchemy  # ORM for PostgreSQL
-psycopg2-binary  # PostgreSQL database driver for Python
+sqlalchemy  
+psycopg2-binary  
 
 # Caching & Redis (Upstash)
-redis  # Caching frequently used queries
+redis  
 
 # Data Handling
-pandas  # Working with PostgreSQL query results
-numpy  # Useful for numerical computations in ML
+pandas  
+numpy  
 
 # Machine Learning (Collaborative Filtering / Recommendation Model)
-scikit-learn  # ML models and similarity calculations
-scipy  # Used in recommendation systems (e.g., distance calculations)
-torch  # If using PyTorch-based models
-tensorflow  # If using TensorFlow models
-surprise  # If using collaborative filtering (SVD, ALS, etc.)
+scikit-learn  
+scipy  
+surprise  
 
 # Web Scraping (AOTY Data)
-beautifulsoup4==4.12.3  # HTML parsing
-cloudscraper==1.2.71  # Bypassing Cloudflare protection
-selenium  # If scraping dynamically loaded content
+beautifulsoup4==4.12.3  
+cloudscraper==1.2.71  
+selenium  
 
 # Environment Variables
-python-dotenv==1.0.1  # Manage API keys and env variables
+python-dotenv==1.0.1  
