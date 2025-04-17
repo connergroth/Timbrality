@@ -28,7 +28,7 @@ class SpotifyService:
                 client_secret=SPOTIPY_CLIENT_SECRET
             ))
 
-    ### USER DATA
+    ### USER DATA ###
 
     ## Fetch User's Liked Tracks
     def fetch_user_saved_tracks(self, user_id, limit=50):
@@ -147,7 +147,7 @@ class SpotifyService:
         saved_status = self.sp.current_user_saved_tracks_contains(track_ids)
         return dict(zip(track_ids, saved_status))  # Returns {track_id: True/False}
 
-    ### ARTIST
+    ### ARTIST ###
     
     ## Fetch Artist Info
     def fetch_artist_info(self, artist_name):
@@ -195,7 +195,7 @@ class SpotifyService:
             "followers": artist["followers"]["total"]
         } for artist in related])
 
-    ### ALBUM
+    ### ALBUM ###
 
     ## Fetch Album Data
     def fetch_album_data(self, artist_id):
@@ -241,7 +241,7 @@ class SpotifyService:
         saved_status = self.sp.current_user_saved_albums_contains(album_ids)
         return dict(zip(album_ids, saved_status))  # Returns {album_id: True/False}
 
-    ### TRACK
+    ### TRACK ###
 
     ## Save Tracks to User Library
     def save_tracks(self, track_ids):

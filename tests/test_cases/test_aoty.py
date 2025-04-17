@@ -6,7 +6,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../"
 from app.scraper.aoty_scraper import get_album_url, scrape_album
 from app.utils.matching import find_best_match, clean_title
 import asyncpg
-import time
+import time 
 import random
 
 async def fetch_tracks():
@@ -86,3 +86,4 @@ async def test_fetch_aoty_scores():
 # Run the test
 if __name__ == "__main__":
     asyncio.run(test_fetch_aoty_scores())  
+ 
