@@ -72,5 +72,5 @@ It integrates listening data from **Spotify** and **Last.fm**, and enriches reco
 > Sonance is currently in development. The backend ingestion pipeline and AOTY integration are in progress.  
 > Next steps include ML model training, hybrid rec logic, and frontend implementation.
 
----
+
 
