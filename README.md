@@ -1,4 +1,8 @@
-# Sonance 🎵  
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/215f9adb-6c23-447a-ba7a-e07051a9f413" alt="Sonance" width="375"/>
+</p>
+
+# Sonance 🎼 
 ## [In-Progress]
 
 **Sonance** is a machine learning–powered music recommendation engine that generates personalized suggestions for songs, albums, and artists.  
