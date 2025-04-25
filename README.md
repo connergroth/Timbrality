@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/215f9adb-6c23-447a-ba7a-e07051a9f413" alt="Sonance" width="355"/>
+  <img src="https://github.com/user-attachments/assets/3d92d30b-fe45-4065-8d1e-96d9a084790b" alt="Sonance" width="355"/>
 </p>
 
 # Sonance 🎼 
