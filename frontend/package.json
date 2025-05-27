@@ -7,11 +7,9 @@
     "dev": "npx vite",
     "build": "npx vite build",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "preview": "npx vite preview",
-    "generate-og": "tsx scripts/generate-og-image.tsx"
+    "preview": "npx vite preview"
   },
   "dependencies": {
-    "@vercel/og": "^0.6.8",
     "lucide-react": "^0.441.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
@@ -29,7 +27,6 @@
     "eslint-plugin-react-refresh": "^0.4.1",
     "postcss": "latest",
     "tailwindcss": "3.4.17",
-    "tsx": "^4.19.4",
     "typescript": "^5.5.4",
     "vite": "^5.2.0"
   }
