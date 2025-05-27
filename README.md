@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/2b402fa6-89c5-4788-986f-24cf0faa40f0" alt="Tensoe" width="355"/>
+  <img src="https://github.com/user-attachments/assets/140f11f8-bb67-4846-ad66-ffd92101616e" alt="Tensoe" width="355"/>
 </p>
 
 # Tensoe 🎼
