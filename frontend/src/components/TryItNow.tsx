@@ -24,7 +24,7 @@ export function TryItNow() {
           </div>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <button className="flex items-center gap-3 px-8 py-4 bg-gray-800 hover:bg-gray-700 rounded-full font-semibold transition-all duration-300 transform hover:scale-105">
-            <img src="/logos/aoty.png" alt="AOTY" className="w-6 h-6" />
+              <img src="/logos/aoty.png" alt="AOTY" className="w-7 h-7" />
               Enter AOTY Username
             </button>
             <button className="flex items-center gap-3 px-8 py-4 border border-gray-600 hover:border-gray-400 rounded-full font-semibold transition-all duration-300 transform hover:scale-105">
