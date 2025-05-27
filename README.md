@@ -1,10 +1,11 @@
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/c3f96b28-09f7-4c70-b14b-219e073780c1" alt="Sonance" width="355"/>
+  <img src="https://github.com/user-attachments/assets/2b402fa6-89c5-4788-986f-24cf0faa40f0" alt="Tensoe" width="355"/>
 </p>
 
 # Tensoe 🎼
 
-**Tensoe** (/ˈtɛn.soʊ/) — a blend of tensor and tone, uniting machine learning and music to shape sound that resonates.
+> 
+> **Tensoe** (/ˈtɛn.soʊ/) — a blend of tensor and tone, uniting machine learning and music to shape sound that resonates. 
 
 Tensoe is a machine learning–powered music recommendation engine that generates personalized suggestions for songs, albums, and artists.  
 It integrates listening data from **Spotify** and **Last.fm**, and enriches recommendations using **user ratings, tags, and review metadata from albumoftheyear.org (AOTY)** via a custom FastAPI-powered scraper.
