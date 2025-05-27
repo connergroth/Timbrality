@@ -4,7 +4,7 @@ import { useScrollAnimation } from '../hooks/useScrollAnimation';
 export function TryItNow() {
   const sectionRef = useScrollAnimation();
   
-  return <section ref={sectionRef} className="py-20 px-6 min-h-[50vh]">
+  return <section ref={sectionRef} className="pt-16 pb-8 px-6">
       <div className="max-w-4xl mx-auto text-center">
         <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gray-100 scroll-fade-up">
           Ready to discover your next favorite song?
