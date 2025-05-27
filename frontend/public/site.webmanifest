@@ -1,0 +1,43 @@
+{
+  "name": "Tensoe",
+  "short_name": "Tensoe",
+  "description": "AI-Powered Music Discovery Platform",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#00C6FF",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/logos/tensoe.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logos/tensoe.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["music", "entertainment", "utilities"],
+  "screenshots": [
+    {
+      "src": "/og-image.png",
+      "sizes": "1200x630",
+      "type": "image/png",
+      "platform": "wide",
+      "label": "Tensoe Music Discovery Platform"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Discover Music",
+      "short_name": "Discover",
+      "description": "Find new music recommendations",
+      "url": "/discover",
+      "icons": [{ "src": "/logos/tensoe.png", "sizes": "192x192" }]
+    }
+  ]
+} 
