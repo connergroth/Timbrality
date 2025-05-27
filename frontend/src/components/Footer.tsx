@@ -5,7 +5,7 @@ export function Footer() {
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-8">
           <p className="text-lg font-medium text-gray-300 mb-6">
-          Revolutionizing music discovery through artificial intelligence.
+          Crafted for deep listening. Powered by intelligent sound.
           </p>
           <div className="flex justify-center items-center gap-8">
             <a href="https://github.com/connergroth/Tensoe" className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors duration-300">
