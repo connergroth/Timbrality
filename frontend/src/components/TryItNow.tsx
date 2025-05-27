@@ -10,7 +10,7 @@ export function TryItNow() {
           Ready to discover your next favorite song?
         </h2>
         <p className="text-lg text-gray-300 mb-12 max-w-2xl mx-auto scroll-fade-up scroll-delay-100">
-          Choose how you want to get personalized recommendations
+          Connect your favorite platform to get started.
         </p>
         <div className="flex flex-col gap-6">
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center scroll-fade-up scroll-delay-200">
