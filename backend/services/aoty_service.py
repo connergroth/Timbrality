@@ -1,6 +1,19 @@
 import httpx
 from typing import Optional, Dict, Any, List
 from app.config import AOTY_API_URL
+from backend.aoty_api.app.scraper.aoty_scraper import get_album_url
+from backend.utils.matching import find_best_match, clean_title
+
+# Simple in-memory cache
+_album_cache = {}
+
+async def get_cached_album(cache_key: str) -> Optional[Dict[str, Any]]:
+    """Get album data from cache if available."""
+    return _album_cache.get(cache_key)
+
+async def cache_album_data(cache_key: str, data: Dict[str, Any]) -> None:
+    """Store album data in cache."""
+    _album_cache[cache_key] = data
 
 class AOTYService:
     def __init__(self, base_url=AOTY_API_URL):
@@ -23,7 +36,7 @@ class AOTYService:
         # Fetch from API if not in cache
         try:
             response = await self.client.get(
-                f"{AOTY_API_BASE_URL}/album/",
+                f"{AOTY_API_URL}/album/",
                 params={"artist": artist, "album": album}
             )
             response.raise_for_status()
@@ -44,7 +57,7 @@ class AOTYService:
         """Fetch similar albums from AOTY API."""
         try:
             response = await self.client.get(
-                f"{AOTY_API_BASE_URL}/album/similar/",
+                f"{AOTY_API_URL}/album/similar/",
                 params={"artist": artist, "album": album, "limit": limit}
             )
             response.raise_for_status()

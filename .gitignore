@@ -23,3 +23,6 @@ docker-compose.yaml
 
 # Alembic
 migrations/*.mako
+
+# Dependencies
+node_modules/

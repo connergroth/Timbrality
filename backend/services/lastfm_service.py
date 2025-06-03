@@ -1,12 +1,12 @@
 import requests
-import sys
 import os
 import pandas as pd
 from dotenv import load_dotenv
-
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
-from app.cache.redis import cache_user_profile
-# from app.utils.database_utils import insert_data_to_db
+from backend.cache.redis import cache_user_profile
+from backend.models.user import User
+from backend.utils.database_utils import insert_data_to_db
+from sqlalchemy.orm import Session
+from backend.database import SessionLocal
 
 # Load environment variables
 load_dotenv()
@@ -169,6 +169,10 @@ def ensure_user_exists(username: str):
             print(f"Created new user: {username}")
     finally:
         db.close()  # Ensure DB connection is closed
+
+async def cache_user_data(username: str, user_data: dict):
+    """Cache user data in Redis for faster access."""
+    return await cache_user_profile(username, user_data)
 
 async def fetch_and_store_lastfm_data(username: str):
     """Fetch Last.fm user data and store it in the database."""

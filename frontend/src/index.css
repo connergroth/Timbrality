@@ -1,0 +1,121 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 11 20 38;
+    --foreground: 255 255 255;
+
+    --card: 26 35 50;
+    --card-foreground: 255 255 255;
+
+    --popover: 26 35 50;
+    --popover-foreground: 255 255 255;
+
+    --primary: 96 165 250;
+    --primary-foreground: 11 20 38;
+
+    --secondary: 26 35 50;
+    --secondary-foreground: 255 255 255;
+
+    --muted: 26 35 50;
+    --muted-foreground: 147 197 253;
+
+    --accent: 96 165 250;
+    --accent-foreground: 11 20 38;
+
+    --destructive: 239 68 68;
+    --destructive-foreground: 255 255 255;
+
+    --border: 26 35 50;
+    --input: 26 35 50;
+    --ring: 96 165 250;
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 11 20 38;
+    --sidebar-foreground: 255 255 255;
+    --sidebar-primary: 96 165 250;
+    --sidebar-primary-foreground: 11 20 38;
+    --sidebar-accent: 26 35 50;
+    --sidebar-accent-foreground: 255 255 255;
+    --sidebar-border: 26 35 50;
+    --sidebar-ring: 96 165 250;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-tensoe-navy text-white font-sans;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer components {
+  .gradient-text {
+    @apply bg-gradient-to-r from-tensoe-blue to-tensoe-blue-light bg-clip-text text-transparent;
+    padding: 0.1em 0;
+    line-height: 1.2;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .shader-bg {
+    background: linear-gradient(
+      135deg,
+      #0B1426 0%,
+      #1A2332 50%,
+      #0B1426 100%
+    );
+    position: relative;
+    overflow: hidden;
+  }
+
+  .shader-bg::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(
+      circle at 20% 50%,
+      rgba(96, 165, 250, 0.1) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 80% 20%,
+      rgba(147, 197, 253, 0.1) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 40% 80%,
+      rgba(96, 165, 250, 0.05) 0%,
+      transparent 50%
+    );
+    animation: pulse-slow 4s ease-in-out infinite;
+  }
+
+  .btn-primary {
+    @apply bg-tensoe-blue hover:bg-tensoe-blue-light text-tensoe-navy font-semibold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-tensoe-blue/20;
+  }
+
+  .btn-secondary {
+    @apply border-2 border-tensoe-blue text-tensoe-blue hover:bg-tensoe-blue hover:text-tensoe-navy font-semibold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105;
+  }
+
+  .feature-card {
+    @apply bg-tensoe-navy-light/50 backdrop-blur-sm border border-tensoe-blue/20 rounded-xl p-6 transition-all duration-300 hover:border-tensoe-blue/40 hover:shadow-lg hover:shadow-tensoe-blue/10 hover:transform hover:scale-105;
+  }
+}
