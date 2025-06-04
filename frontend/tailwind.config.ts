@@ -15,16 +15,83 @@ export default {
 		"./src/pages/**/*.{js,ts,jsx,tsx}",
 		"./**/*.{html,js,ts,jsx,tsx}",
 	],
-	// Disable purging entirely for now to fix production builds
-	...(process.env.NODE_ENV === 'production' ? {
-		content: ["./src/**/*.{js,jsx,ts,tsx}", "./index.html", "./**/*.{js,jsx,ts,tsx}"],
-		purge: false,
-	} : {}),
 	safelist: [
-		// Include ALL classes to prevent any purging issues
+		// Custom component classes defined in CSS
+		"btn-primary",
+		"btn-secondary", 
+		"feature-card",
+		"gradient-text",
+		"shader-bg",
+		
+		// Custom animation classes
+		"animate-fade-in",
+		"animate-wave", 
+		"animate-pulse-slow",
+		"animate-float",
+		
+		// Custom tensoe brand colors
+		"bg-tensoe-navy",
+		"bg-tensoe-navy-light",
+		"bg-tensoe-blue",
+		"bg-tensoe-blue-light",
+		"text-tensoe-navy",
+		"text-tensoe-navy-light", 
+		"text-tensoe-blue",
+		"text-tensoe-blue-light",
+		"border-tensoe-blue",
+		"border-tensoe-navy",
+		
+		// Icon and text colors that might be dynamic
+		"text-black",
+		"text-white",
+		"text-gray-300",
+		"text-gray-400",
+		"text-gray-100",
+		
+		// Background colors commonly used
+		"bg-black",
+		"bg-white", 
+		"bg-gray-300",
+		"bg-gray-400",
+		"bg-gray-100",
+		"bg-gray-800",
+		"bg-gray-900",
+		
+		// Common utility classes
+		"opacity-10",
+		"opacity-20",
+		"opacity-60",
+		"w-1",
+		"w-2",
+		"h-16",
+		"h-20",
+		"rounded-full",
+		
+		// Hover states
+		"hover:bg-gray-400",
+		"hover:text-white",
+		"hover:border-gray-500",
+		
+		// Animation delay patterns
 		{
-			pattern: /.*/,
+			pattern: /animate-.*/,
 		},
+		{
+			pattern: /bg-tensoe-.*/,
+		},
+		{
+			pattern: /text-tensoe-.*/,
+		},
+		{
+			pattern: /border-tensoe-.*/,
+		},
+		// All possible animation delays and durations
+		{
+			pattern: /delay-.*/,
+		},
+		{
+			pattern: /duration-.*/,
+		}
 	],
 	prefix: "",
 	theme: {
@@ -121,6 +188,16 @@ export default {
 				'float': {
 					'0%, 100%': { transform: 'translateY(0px)' },
 					'50%': { transform: 'translateY(-10px)' }
+				},
+				'fade-in': {
+					from: {
+						opacity: '0',
+						transform: 'translateY(20px)'
+					},
+					to: {
+						opacity: '1',
+						transform: 'translateY(0)'
+					}
 				}
 			},
 			animation: {
@@ -128,7 +205,8 @@ export default {
 				'accordion-up': 'accordion-up 0.2s ease-out',
 				'wave': 'wave 2s ease-in-out infinite',
 				'pulse-slow': 'pulse-slow 3s ease-in-out infinite',
-				'float': 'float 6s ease-in-out infinite'
+				'float': 'float 6s ease-in-out infinite',
+				'fade-in': 'fade-in 1s ease-out forwards'
 			}
 		}
 	},
