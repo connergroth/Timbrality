@@ -202,3 +202,102 @@
   }
 }
 
+/* 
+  FORCE INCLUSION OF ALL CRITICAL CLASSES
+  This section ensures all our classes are included in production builds
+  by explicitly referencing them in CSS - Tailwind will never purge these
+*/
+@layer utilities {
+  /* Force include custom tensoe colors */
+  .bg-tensoe-navy { @apply bg-[#0B1426]; }
+  .bg-tensoe-navy-light { @apply bg-[#1A2332]; }
+  .bg-tensoe-blue { @apply bg-[#60A5FA]; }
+  .bg-tensoe-blue-light { @apply bg-[#93C5FD]; }
+  .bg-tensoe-white { @apply bg-[#FFFFFF]; }
+  
+  .text-tensoe-navy { @apply text-[#0B1426]; }
+  .text-tensoe-navy-light { @apply text-[#1A2332]; }
+  .text-tensoe-blue { @apply text-[#60A5FA]; }
+  .text-tensoe-blue-light { @apply text-[#93C5FD]; }
+  .text-tensoe-white { @apply text-[#FFFFFF]; }
+  
+  .border-tensoe-navy { @apply border-[#0B1426]; }
+  .border-tensoe-navy-light { @apply border-[#1A2332]; }
+  .border-tensoe-blue { @apply border-[#60A5FA]; }
+  .border-tensoe-blue-light { @apply border-[#93C5FD]; }
+  .border-tensoe-white { @apply border-[#FFFFFF]; }
+
+  /* Force include critical utility classes */
+  .text-black { @apply text-black; }
+  .text-white { @apply text-white; }
+  .bg-black { @apply bg-black; }
+  .bg-white { @apply bg-white; }
+  .bg-transparent { @apply bg-transparent; }
+  
+  /* Force include common gray colors */
+  .text-gray-100 { @apply text-gray-100; }
+  .text-gray-200 { @apply text-gray-200; }
+  .text-gray-300 { @apply text-gray-300; }
+  .text-gray-400 { @apply text-gray-400; }
+  .text-gray-500 { @apply text-gray-500; }
+  .text-gray-600 { @apply text-gray-600; }
+  .text-gray-700 { @apply text-gray-700; }
+  .text-gray-800 { @apply text-gray-800; }
+  .text-gray-900 { @apply text-gray-900; }
+  
+  .bg-gray-100 { @apply bg-gray-100; }
+  .bg-gray-200 { @apply bg-gray-200; }
+  .bg-gray-300 { @apply bg-gray-300; }
+  .bg-gray-400 { @apply bg-gray-400; }
+  .bg-gray-500 { @apply bg-gray-500; }
+  .bg-gray-600 { @apply bg-gray-600; }
+  .bg-gray-700 { @apply bg-gray-700; }
+  .bg-gray-800 { @apply bg-gray-800; }
+  .bg-gray-900 { @apply bg-gray-900; }
+  
+  /* Force include opacity classes */
+  .opacity-0 { @apply opacity-0; }
+  .opacity-10 { @apply opacity-10; }
+  .opacity-20 { @apply opacity-20; }
+  .opacity-30 { @apply opacity-30; }
+  .opacity-40 { @apply opacity-40; }
+  .opacity-50 { @apply opacity-50; }
+  .opacity-60 { @apply opacity-60; }
+  .opacity-70 { @apply opacity-70; }
+  .opacity-80 { @apply opacity-80; }
+  .opacity-90 { @apply opacity-90; }
+  .opacity-100 { @apply opacity-100; }
+  
+  /* Force include size classes */
+  .w-1 { @apply w-1; }
+  .w-2 { @apply w-2; }
+  .w-4 { @apply w-4; }
+  .w-8 { @apply w-8; }
+  .w-16 { @apply w-16; }
+  .w-32 { @apply w-32; }
+  
+  .h-1 { @apply h-1; }
+  .h-2 { @apply h-2; }
+  .h-4 { @apply h-4; }
+  .h-8 { @apply h-8; }
+  .h-16 { @apply h-16; }
+  .h-32 { @apply h-32; }
+  
+  /* Force include border radius */
+  .rounded-full { @apply rounded-full; }
+  .rounded-lg { @apply rounded-lg; }
+  .rounded-md { @apply rounded-md; }
+  .rounded-sm { @apply rounded-sm; }
+  
+  /* Force include animations */
+  .animate-pulse { @apply animate-pulse; }
+  .animate-spin { @apply animate-spin; }
+  
+  /* Force include hover states */
+  .hover\:scale-105:hover { @apply hover:scale-105; }
+  .hover\:opacity-100:hover { @apply hover:opacity-100; }
+  .hover\:bg-gray-400:hover { @apply hover:bg-gray-400; }
+  .hover\:text-white:hover { @apply hover:text-white; }
+  .hover\:border-gray-500:hover { @apply hover:border-gray-500; }
+}
+
