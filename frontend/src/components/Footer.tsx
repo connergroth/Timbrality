@@ -1,35 +1,47 @@
-import React from 'react';
-import { GithubIcon, BookOpenIcon, ShieldIcon } from 'lucide-react';
-export function Footer() {
-  return <footer className="py-12 px-6 bg-gray-900 border-t border-gray-800">
-      <div className="max-w-6xl mx-auto">
+import { Github } from 'lucide-react';
+
+const Footer = () => {
+  const currentYear = new Date().getFullYear();
+  return (
+    <footer className="bg-tensoe-navy border-t border-tensoe-blue/20 py-12">
+      <div className="container mx-auto px-6">
         <div className="text-center mb-8">
-          <p className="text-lg font-medium text-gray-300 mb-6">
-          Crafted for deep listening. Powered by intelligent sound.
-          </p>
-          <div className="flex justify-center items-center gap-8">
-            <a href="https://github.com/connergroth/Tensoe" className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors duration-300">
-              <GithubIcon className="w-5 h-5" />
-              GitHub
+          <h3 className="text-2xl font-bold gradient-text mb-4">
+            Crafted for deep listening. Powered by intelligent sound.
+          </h3>
+        </div>
+
+        <div className="flex flex-col md:flex-row justify-between items-center mb-8">
+          <div className="flex items-center space-x-8 mb-4 md:mb-0">
+            <a href="https://github.com/connergroth/tensoe" target="_blank" rel="noopener noreferrer" className="text-tensoe-blue-light hover:text-tensoe-blue transition-colors flex items-center space-x-2">
+              <Github size={20} />
+              <span>GitHub</span>
             </a>
-            <a href="#" className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors duration-300">
-              <ShieldIcon className="w-5 h-5" />
+            <a href="/privacy" className="text-tensoe-blue-light hover:text-tensoe-blue transition-colors">
               Privacy
             </a>
-            <a href="#" className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors duration-300">
-              <BookOpenIcon className="w-5 h-5" />
+            <a href="https://connergroth.com/blog/tensoe" className="text-tensoe-blue-light hover:text-tensoe-blue transition-colors">
               Blog
             </a>
           </div>
         </div>
-        <div className="text-center pt-8 border-t border-gray-800">
-          <p className="text-gray-500 text-sm">
-            © {new Date().getFullYear()} Tensoe. All rights reserved.
-          </p>
-          <p className="text-gray-500 text-sm">
-            Tensoe (/ˈtɛn.soʊ/) — a blend of tensor and tone, uniting machine learning and music to shape sound that resonates.
-          </p>
+
+        <div className="border-t border-tensoe-blue/20 pt-8">
+          <div className="flex flex-col md:flex-row justify-between items-center text-sm text-gray-400">
+            <div className="text-center md:text-left">
+              <p>&copy; {currentYear} Tensoe. All rights reserved.</p>
+              <p className="mt-1">
+                By <a href="https://connergroth.com" target="_blank" rel="noopener noreferrer" className="text-tensoe-blue-light hover:text-tensoe-blue transition-colors">Conner Groth</a>
+              </p>
+            </div>
+            <p className="mt-2 md:mt-0 max-w-md text-center md:text-right">
+              Tensoe (/ˈtɛn.soʊ/) — a fusion of tensor and tone, using machine learning to shape resonant sound.
+            </p>
+          </div>
         </div>
       </div>
-    </footer>;
-}
+    </footer>
+  );
+};
+
+export default Footer;

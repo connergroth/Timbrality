@@ -1,43 +1,70 @@
-from fastapi import APIRouter, HTTPException, Query, Request
-from app.utils.scraper import get_user_profile
-from app.utils.redis import get_cache, set_cache, USER_TTL
+from fastapi import APIRouter, HTTPException, Query, Request, Depends
+from sqlalchemy.orm import Session
+from app.services.aoty_service import AOTYService
+from app.cache.redis import get_cached_user_profile, cache_user_profile
 from app.models.aoty import UserProfile
 from app.utils.metrics import metrics
+from app.models.database import SessionLocal
 
-@app.get(
-    "/user/",
+router = APIRouter()
+
+# Dependency to get the database session
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+@router.get(
+    "/aoty-profile/",
     response_model=UserProfile,
-    summary="Get User Profile",
-    description="Retrieve a user's profile information.",
-    response_description="User profile information",
+    summary="Get AOTY User Profile",
+    description="Retrieve a user's profile information from Album of the Year.",
     responses={
         404: {"description": "User not found"},
         503: {"description": "Error accessing user profile"},
     },
 )
-@limiter.limit("30/minute")
-async def get_user(
+async def get_aoty_user(
     request: Request,
-    username: str = Query(
-        ..., description="Username on albumoftheyear.org", example="evrynoiseatonce"
-    ),
+    username: str = Query(..., description="Username on albumoftheyear.org", example="evrynoiseatonce"),
+    db: Session = Depends(get_db)
 ):
-    start_time = time()
+    # Check cache first
+    cached_profile = await get_cached_user_profile(username)
+    if cached_profile:
+        metrics.record_request(cache_hit=True)
+        return UserProfile(**cached_profile)
+
+    # Create AOTY service
+    aoty_service = AOTYService()
+    
     try:
-        cache_key = f"user:{username}"
-        if cached_result := await get_cache(cache_key):
-            metrics.record_request(cache_hit=True)
-            return UserProfile(**cached_result)
-
+        # Call the API endpoint instead of the scraper
+        response = await aoty_service.client.get(
+            f"{aoty_service.base_url}/user/",
+            params={"username": username}
+        )
+        response.raise_for_status()
+        
+        # Process the API response
+        user_profile = response.json()
+        
+        # Cache the result
+        await cache_user_profile(username, user_profile)
+        
         metrics.record_request(cache_hit=False)
-        user_profile = await get_user_profile(username)
-
-        await set_cache(cache_key, user_profile.dict(), USER_TTL)
-        metrics.record_response_time(time() - start_time)
-        return user_profile
-
-    except HTTPException:
-        raise
+        return UserProfile(**user_profile)
+    
+    except httpx.HTTPStatusError as e:
+        if e.response.status_code == 404:
+            raise HTTPException(status_code=404, detail=f"User '{username}' not found")
+        raise HTTPException(status_code=e.response.status_code, detail=str(e))
+    
     except Exception as e:
         metrics.record_error()
         raise HTTPException(status_code=503, detail=str(e))
+    
+    finally:
+        await aoty_service.close()

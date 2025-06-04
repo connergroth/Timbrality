@@ -1,17 +1,24 @@
-import sys
 import os
+import sys
 import asyncio
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
-
-from app.scraper.aoty_scraper import get_album_url, scrape_album
-from app.utils.matching import find_best_match, clean_title
-import asyncpg
-import time 
+import time
 import random
+from dotenv import load_dotenv
+import asyncpg
+
+# Add project root to Python path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
+
+from backend.aoty_api.app.scraper.aoty_scraper import get_album_url, scrape_album
+from backend.utils.matching import find_best_match, clean_title
+
+# Load environment variables
+load_dotenv()
+DB_URL = os.getenv("DATABASE_URL", "postgresql://postgres:postgronner34@localhost:5432/Sonance")
 
 async def fetch_tracks():
     """Fetch track details from the database."""
-    conn = await asyncpg.connect("postgresql://postgres:postgronner34@localhost:5432/Sonance")
+    conn = await asyncpg.connect(DB_URL)
 
     query = """
     SELECT t.id, t.title, a.name AS artist, al.title AS album
@@ -32,16 +39,16 @@ async def test_fetch_aoty_scores():
     for track in tracks:
         artist, album, title = track["artist"], track["album"], track["title"]
         
-        # ✅ Normalize album title formatting
+        # Normalize album title formatting
         cleaned_title = clean_title(title)
         cleaned_album = clean_title(album, is_album=True)
 
-        # ✅ Sleep before each request to avoid rate limiting
+        # Sleep before each request to avoid rate limiting
         sleep_time = random.uniform(2, 5)
         print(f"Sleeping for {sleep_time:.2f} seconds before searching AOTY...")
         time.sleep(sleep_time)
 
-        # Fetch AOTY album URL (Deluxe versions first)
+        # Fetch AOTY album URL
         album_data = await get_album_url(artist, cleaned_album)
         if not album_data:
             print(f"Album not found on AOTY: {artist} - {album}. Trying fuzzy matching.")
@@ -62,7 +69,7 @@ async def test_fetch_aoty_scores():
         album_url, fetched_artist, fetched_album = album_data
         print(f"Found AOTY URL: {album_url} for {artist} - {album} (Matched: {fetched_album})")
 
-        # ✅ Sleep before scraping album details
+        # Sleep before scraping album details
         sleep_time = random.uniform(2, 5)
         print(f"Sleeping for {sleep_time:.2f} seconds before scraping album...")
         time.sleep(sleep_time)
@@ -70,7 +77,7 @@ async def test_fetch_aoty_scores():
         # Scrape the album details
         album_obj = await scrape_album(album_url, fetched_artist, fetched_album)
         
-        # ✅ Find the best track match after cleaning
+        # Find the best track match after cleaning
         aoty_track_titles = [clean_title(aoty_track.title) for aoty_track in album_obj.tracks]
         best_match = find_best_match(cleaned_title, aoty_track_titles)
 
