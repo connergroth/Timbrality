@@ -51,7 +51,9 @@
   }
 
   body {
-    @apply bg-tensoe-navy text-white font-sans;
+    background-color: #0B1426;
+    color: white;
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
     margin: 0;
     padding: 0;
   }
@@ -63,12 +65,13 @@
 
 @layer components {
   .gradient-text {
-    @apply bg-gradient-to-r from-tensoe-blue to-tensoe-blue-light bg-clip-text text-transparent;
+    background: linear-gradient(to right, #60A5FA, #93C5FD);
+    background-clip: text;
+    color: transparent;
     padding: 0.1em 0;
     line-height: 1.2;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    background-clip: text;
   }
 
   .shader-bg {
@@ -108,14 +111,50 @@
   }
 
   .btn-primary {
-    @apply bg-tensoe-blue hover:bg-tensoe-blue-light text-tensoe-navy font-semibold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-tensoe-blue/20;
+    background-color: #60A5FA;
+    color: #0B1426;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+    transform: scale(1);
+  }
+
+  .btn-primary:hover {
+    background-color: #93C5FD;
+    transform: scale(1.05);
+    box-shadow: 0 10px 15px -3px rgba(96, 165, 250, 0.2), 0 4px 6px -2px rgba(96, 165, 250, 0.2);
   }
 
   .btn-secondary {
-    @apply border-2 border-tensoe-blue text-tensoe-blue hover:bg-tensoe-blue hover:text-tensoe-navy font-semibold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105;
+    border: 2px solid #60A5FA;
+    color: #60A5FA;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+    transform: scale(1);
+    background-color: transparent;
+  }
+
+  .btn-secondary:hover {
+    background-color: #60A5FA;
+    color: #0B1426;
+    transform: scale(1.05);
   }
 
   .feature-card {
-    @apply bg-tensoe-navy-light/50 backdrop-blur-sm border border-tensoe-blue/20 rounded-xl p-6 transition-all duration-300 hover:border-tensoe-blue/40 hover:shadow-lg hover:shadow-tensoe-blue/10 hover:transform hover:scale-105;
+    background-color: rgba(26, 35, 50, 0.5);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(96, 165, 250, 0.2);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+  }
+
+  .feature-card:hover {
+    border-color: rgba(96, 165, 250, 0.4);
+    box-shadow: 0 10px 15px -3px rgba(96, 165, 250, 0.1), 0 4px 6px -2px rgba(96, 165, 250, 0.1);
+    transform: scale(1.05);
   }
 }
