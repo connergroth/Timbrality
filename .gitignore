@@ -27,6 +27,10 @@ migrations/*.mako
 # Dependencies
 node_modules/
 package-lock.json
+bun.lockb
 
 # Distribution
 dist/
+
+# Vite
+.vite/
