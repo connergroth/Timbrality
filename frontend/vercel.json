@@ -1,11 +1,12 @@
 {
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
-  "installCommand": "npm install --include=dev",
+  "installCommand": "npm cache clean --force && npm ci --include=dev",
   "framework": null,
   "build": {
     "env": {
-      "NODE_ENV": "production"
+      "NODE_ENV": "production",
+      "SKIP_ENV_VALIDATION": "1"
     }
   }
 } 
