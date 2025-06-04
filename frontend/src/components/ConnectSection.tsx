@@ -31,7 +31,7 @@ const ConnectSection = () => {
     <section id="connect" className="py-20 bg-tensoe-navy-light/30 relative">
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 gradient-text leading-relaxed px-4 py-2">
+          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white leading-relaxed px-4 py-2">
             Ready to discover your next favorite song?
           </h2>
           <p className="text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed">

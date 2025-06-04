@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -8,6 +7,15 @@ export default {
 		"./components/**/*.{ts,tsx}",
 		"./app/**/*.{ts,tsx}",
 		"./src/**/*.{ts,tsx}",
+	],
+	safelist: [
+		// Ensure custom tensoe colors are always generated
+		{
+			pattern: /^(bg|text|border|ring|from|to|via)-tensoe-(navy|navy-light|blue|blue-light|white)$/,
+		},
+		{
+			pattern: /^(bg|text|border|ring|from|to|via)-tensoe-(navy|navy-light|blue|blue-light|white)\/(10|20|30|40|50|60|70|80|90)$/,
+		}
 	],
 	prefix: "",
 	theme: {

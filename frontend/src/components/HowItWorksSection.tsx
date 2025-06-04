@@ -30,7 +30,7 @@ const HowItWorksSection = () => {
 
       <div className="container mx-auto px-6 relative z-10">
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 gradient-text">
+          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">
             How It Works
           </h2>
           <p className="text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed">
