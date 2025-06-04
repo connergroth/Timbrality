@@ -15,14 +15,7 @@ export default {
 		"./src/pages/**/*.{js,ts,jsx,tsx}",
 		"./**/*.{html,js,ts,jsx,tsx}",
 	],
-	// Disable purging in production to ensure identical dev/prod styles
-	purge: false,
-	// Include ALL classes to prevent any differences between dev and prod
 	safelist: [
-		// Ensure ALL classes are preserved
-		{
-			pattern: /.*/,
-		},
 		// Custom component classes defined in CSS
 		"btn-primary",
 		"btn-secondary", 
@@ -36,111 +29,69 @@ export default {
 		"animate-pulse-slow",
 		"animate-float",
 		
-		// ALL tensoe brand colors variations
+		// Custom tensoe brand colors
 		"bg-tensoe-navy",
 		"bg-tensoe-navy-light",
 		"bg-tensoe-blue",
 		"bg-tensoe-blue-light",
-		"bg-tensoe-white",
 		"text-tensoe-navy",
 		"text-tensoe-navy-light", 
 		"text-tensoe-blue",
 		"text-tensoe-blue-light",
-		"text-tensoe-white",
 		"border-tensoe-blue",
 		"border-tensoe-navy",
-		"border-tensoe-navy-light",
-		"border-tensoe-blue-light",
-		"border-tensoe-white",
 		
-		// ALL color variations to prevent any purging
+		// Icon and text colors that might be dynamic
 		"text-black",
 		"text-white",
-		"text-gray-100",
-		"text-gray-200",
 		"text-gray-300",
 		"text-gray-400",
-		"text-gray-500",
-		"text-gray-600",
-		"text-gray-700",
-		"text-gray-800",
-		"text-gray-900",
+		"text-gray-100",
+		
+		// Background colors commonly used
 		"bg-black",
 		"bg-white", 
-		"bg-gray-100",
-		"bg-gray-200",
 		"bg-gray-300",
 		"bg-gray-400",
-		"bg-gray-500",
-		"bg-gray-600",
-		"bg-gray-700",
+		"bg-gray-100",
 		"bg-gray-800",
 		"bg-gray-900",
-		"bg-transparent",
 		
-		// ALL size variations
-		"w-1", "w-2", "w-3", "w-4", "w-5", "w-6", "w-7", "w-8", "w-9", "w-10",
-		"w-11", "w-12", "w-14", "w-16", "w-20", "w-24", "w-32", "w-36", "w-64", "w-72",
-		"h-1", "h-2", "h-3", "h-4", "h-5", "h-6", "h-7", "h-8", "h-9", "h-10",
-		"h-11", "h-12", "h-14", "h-16", "h-20", "h-24", "h-32", "h-36", "h-64", "h-72",
+		// Common utility classes
+		"opacity-10",
+		"opacity-20",
+		"opacity-60",
+		"w-1",
+		"w-2",
+		"h-16",
+		"h-20",
+		"rounded-full",
 		
-		// ALL opacity variations
-		"opacity-0", "opacity-10", "opacity-20", "opacity-30", "opacity-40", "opacity-50",
-		"opacity-60", "opacity-70", "opacity-80", "opacity-90", "opacity-100",
+		// Hover states
+		"hover:bg-gray-400",
+		"hover:text-white",
+		"hover:border-gray-500",
 		
-		// ALL border radius variations
-		"rounded-none", "rounded-sm", "rounded", "rounded-md", "rounded-lg", "rounded-xl", "rounded-2xl", "rounded-3xl", "rounded-full",
-		
-		// ALL hover states
-		"hover:bg-gray-100", "hover:bg-gray-200", "hover:bg-gray-300", "hover:bg-gray-400", "hover:bg-gray-500",
-		"hover:text-white", "hover:text-black", "hover:text-gray-100", "hover:text-gray-300", "hover:text-gray-400",
-		"hover:border-gray-400", "hover:border-gray-500", "hover:border-gray-600",
-		"hover:scale-105", "hover:transform", "hover:opacity-100",
-		
-		// ALL animation and transition classes
+		// Animation delay patterns
 		{
-			pattern: /^animate-.*/,
+			pattern: /animate-.*/,
 		},
 		{
-			pattern: /^transition-.*/,
+			pattern: /bg-tensoe-.*/,
 		},
 		{
-			pattern: /^duration-.*/,
+			pattern: /text-tensoe-.*/,
 		},
 		{
-			pattern: /^delay-.*/,
+			pattern: /border-tensoe-.*/,
+		},
+		// All possible animation delays and durations
+		{
+			pattern: /delay-.*/,
 		},
 		{
-			pattern: /^ease-.*/,
-		},
-		// ALL color pattern variations
-		{
-			pattern: /^bg-tensoe-.*/,
-		},
-		{
-			pattern: /^text-tensoe-.*/,
-		},
-		{
-			pattern: /^border-tensoe-.*/,
-		},
-		{
-			pattern: /^bg-.*/,
-		},
-		{
-			pattern: /^text-.*/,
-		},
-		{
-			pattern: /^border-.*/,
-		},
-		{
-			pattern: /^hover:.*/,
-		},
-		{
-			pattern: /^focus:.*/,
-		},
-		{
-			pattern: /^active:.*/,
-		},
+			pattern: /duration-.*/,
+		}
 	],
 	prefix: "",
 	theme: {

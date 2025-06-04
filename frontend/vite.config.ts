@@ -19,17 +19,4 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  css: {
-    // Ensure consistent CSS processing between dev and prod
-    devSourcemap: true,
-    postcss: {
-      plugins: []
-    }
-  },
-  build: {
-    // Ensure CSS is processed the same way in production
-    cssCodeSplit: false,
-    minify: 'esbuild',
-    sourcemap: true
-  },
 }));
