@@ -1,11 +1,8 @@
 {
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
-  "installCommand": "npm install",
+  "installCommand": "npm ci",
   "framework": null,
-  "env": {
-    "NODE_ENV": "production"
-  },
   "build": {
     "env": {
       "NODE_ENV": "production"
