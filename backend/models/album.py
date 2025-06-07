@@ -1,16 +1,34 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Float, Date, JSON
-from app.models.database import Base
+from sqlalchemy import Column, Integer, String, Boolean, Date, DateTime, func
+from sqlalchemy.dialects.postgresql import JSON, ARRAY
+from .database import Base
 
 class Album(Base):
     __tablename__ = "albums"
 
-    id = Column(String, primary_key=True, index=False)  # Unique album ID
-    title = Column(String, nullable=False)  # Album title
-    artist_id = Column(String, ForeignKey("artists.id", ondelete="CASCADE"), nullable=False)  # Artist reference
-    tags = Column(JSON, nullable=True)  # Stores album-level tags like ["progressive rock", "experimental"]
-    release_date = Column(Date, nullable=True)  # Release date (only Date, not DateTime)
-    total_tracks = Column(Integer, nullable=True)  # Total number of tracks
-    aoty_score = Column(Float, nullable=True)  # AOTY User Score 
-    aoty_rating_count = Column(Integer, nullable=True) # Number of ratings for the track
-    play_count = Column(Integer, nullable=True, default=0)  # Play count
-    cover_url = Column(String, nullable=True)  # URL to album cover image
+    # Core identification
+    id = Column(String, primary_key=True, index=True)
+    title = Column(String, nullable=False)
+    artist = Column(String, nullable=False)  # Keep as string for compatibility
+    
+    # Legacy single genre (for backward compatibility)
+    genre = Column(String, nullable=True)
+    
+    # Enhanced multi-genre support
+    genres = Column(ARRAY(String), nullable=True, default=[])    # Multiple genres from AOTY
+    
+    # Album metadata
+    release_date = Column(Date, nullable=True)
+    duration_ms = Column(Integer, nullable=True)        # Total album duration
+    total_tracks = Column(Integer, nullable=True)
+    explicit = Column(Boolean, default=False)           # Has explicit content
+    
+    # Scoring
+    aoty_score = Column(Integer, nullable=True)  # Keep as integer for compatibility
+    
+    # URLs and metadata
+    spotify_url = Column(String, nullable=True)
+    cover_url = Column(String, nullable=True)
+    
+    # Timestamps
+    created_at = Column(DateTime, default=func.now())
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
