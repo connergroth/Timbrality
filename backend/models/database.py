@@ -1,21 +1,14 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
-from dotenv import load_dotenv
-import os
+from ..config.settings import get_settings
 
-# Load environment variables
-load_dotenv()
+# Get settings
+settings = get_settings()
 
-# Database connection URL
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:postgronner34@localhost:5432/sonance_test")
-
-# Create the database engine with connection pooling
+# Create the database engine with configuration from settings
 engine = create_engine(
-    DATABASE_URL,
-    pool_size=10,         # Number of connections in the pool
-    max_overflow=20,      # Connections beyond pool_size that can be created
-    pool_timeout=30,      # Timeout in seconds for connections
-    pool_recycle=1800     # Recycle connections every 30 minutes
+    settings.database.database_url,
+    **settings.get_database_config()
 )
 
 # Create a session factory
@@ -24,4 +17,14 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 # Base class for all models
 class Base(DeclarativeBase):
     pass
+
+
+# Dependency for getting database sessions
+def get_db():
+    """Database session dependency for FastAPI"""
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
     

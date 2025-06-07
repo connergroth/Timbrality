@@ -1,0 +1,69 @@
+graph TB
+    subgraph "Tensoe Backend API"
+        subgraph "API Layer"
+            A[FastAPI Application]
+            B[Rate Limiting]
+            C[CORS Middleware]
+        end
+        
+        subgraph "Routes"
+            D[Album Routes]
+            E[User Routes]
+            F[Metrics Routes]
+        end
+        
+        subgraph "Services"
+            G[AOTY Scraper Service]
+            H[Browser Management]
+        end
+        
+        subgraph "Models"
+            I[Album Models]
+            J[User Models]
+            K[Search Models]
+        end
+        
+        subgraph "Utilities"
+            L[Cache System]
+            M[Metrics Collector]
+        end
+        
+        subgraph "Storage"
+            N[Redis Cache]
+            O[In-Memory Cache]
+            P[PostgreSQL DB]
+        end
+        
+        subgraph "External"
+            Q[albumoftheyear.org]
+        end
+    end
+    
+    A --> B
+    B --> C
+    C --> D
+    C --> E
+    C --> F
+    
+    D --> G
+    E --> G
+    F --> M
+    
+    G --> H
+    G --> I
+    G --> J
+    G --> K
+    
+    G --> L
+    L --> N
+    L --> O
+    
+    D --> P
+    E --> P
+    
+    H --> Q
+    
+    style A fill:#60A5FA
+    style G fill:#93C5FD
+    style L fill:#FBBF24
+    style M fill:#34D399 

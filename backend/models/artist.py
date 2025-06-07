@@ -1,19 +1,28 @@
-from sqlalchemy import Column, Integer, String, JSON, Float, CheckConstraint
-from app.models.database import Base
+from sqlalchemy import Column, Integer, String, DateTime, func
+from sqlalchemy.dialects.postgresql import ARRAY
+from .database import Base
 
 class Artist(Base):
     __tablename__ = "artists"
 
-    id = Column(String, primary_key=True, index=True)  # Unique artist ID
-    name = Column(String, nullable=False)  # Artist name
-    tags = Column(JSON, nullable=True)  # Stores both genres & descriptive tags
-    popularity = Column(Integer, nullable=True)  # Popularity score
-    followers = Column(Integer, nullable=True)  # Artist's follower count
-    aoty_score = Column(Float, nullable=True)  # AOTY User Score 
-    aoty_rating_count = Column(Integer, nullable=True) # Number of ratings for the track
-    play_count = Column(Integer, nullable=True, default=0)  # Play count
-    image_url = Column(String, nullable=True)  # Artist profile picture
-
-    __table_args__ = (
-        CheckConstraint("source IN ('spotify', 'lastfm')", name="check_artist_source"),
-    )
+    # Core identification
+    id = Column(String, primary_key=True, index=True)
+    name = Column(String, nullable=False)
+    
+    # Legacy single genre (for backward compatibility)
+    genre = Column(String, nullable=True)
+    
+    # Enhanced multi-genre support
+    genres = Column(ARRAY(String), nullable=True, default=[])    # Multiple genres from Last.fm/AOTY
+    
+    # Artist metrics
+    popularity = Column(Integer, nullable=True)         # Spotify popularity score
+    aoty_score = Column(Integer, nullable=True)         # AOTY score (keep as integer)
+    
+    # URLs and metadata
+    image_url = Column(String, nullable=True)           # Artist profile picture
+    spotify_url = Column(String, nullable=True)         # Spotify artist URL
+    
+    # Timestamps
+    created_at = Column(DateTime, default=func.now())
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())

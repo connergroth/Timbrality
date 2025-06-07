@@ -1,11 +1,29 @@
-from fastapi import APIRouter, HTTPException, Depends, Query
+from fastapi import APIRouter, HTTPException, Depends, Query, Request
 from sqlalchemy.orm import Session
+from time import time
+from typing import List
+
 from app.models.database import SessionLocal
-from app.services.aoty_service import AOTYService
-from app.middleware.aoty_middleware import enrich_album_with_aoty
-from app.tasks.aoty_tasks import fetch_and_store_similar_albums
+from app.models.aoty_models import Album, SearchResult
+from app.services.aoty_scraper_service import (
+    get_album_url,
+    scrape_album,
+    search_albums,
+    get_similar_albums
+)
+from app.utils.cache import (
+    get_cache,
+    set_cache,
+    ALBUM_TTL,
+    SIMILAR_TTL,
+    SEARCH_TTL,
+)
+from app.utils.metrics import metrics
+from slowapi import Limiter
+from slowapi.util import get_remote_address
 
 router = APIRouter()
+limiter = Limiter(key_func=get_remote_address)
 
 # Dependency to get the database session
 def get_db():
@@ -15,31 +33,167 @@ def get_db():
     finally:
         db.close()
 
+
+@router.get(
+    "/",
+    response_model=Album,
+    summary="Get Album Details",
+    description="Retrieve detailed information about an album.",
+    response_description="Detailed album information including tracks, reviews, and more.",
+    responses={
+        404: {"description": "Album not found"},
+        503: {"description": "Error accessing album site"},
+    },
+)
+@limiter.limit("30/minute")
+async def get_album_endpoint(
+    request: Request,
+    artist: str = Query(..., description="Name of the artist", example="Radiohead"),
+    album: str = Query(..., description="Name of the album", example="OK Computer"),
+    refresh: bool = Query(False, description="Force refresh the cache"),
+):
+    start_time = time()
+    try:
+        cache_key = f"album:{artist}:{album}"
+        
+        # Check cache unless refresh is requested
+        if not refresh and (cached_result := await get_cache(cache_key)):
+            metrics.record_request(cache_hit=True, endpoint="album")
+            return Album(**cached_result)
+
+        metrics.record_request(cache_hit=False, endpoint="album")
+        result = await get_album_url(artist, album)
+        if not result:
+            raise HTTPException(status_code=404, detail="Album not found")
+
+        url, artist_name, title = result
+        album_data = await scrape_album(url, artist_name, title)
+
+        await set_cache(cache_key, album_data.dict(), ALBUM_TTL)
+        metrics.record_response_time(time() - start_time)
+        return album_data
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        metrics.record_error()
+        raise HTTPException(status_code=503, detail=str(e))
+
+
+@router.get(
+    "/similar/",
+    response_model=List[Album],
+    summary="Get Similar Albums",
+    description="Find albums similar to a specified album.",
+    response_description="List of albums similar to the specified album",
+    responses={
+        404: {"description": "Album not found"},
+        503: {"description": "Error accessing album site"},
+    },
+)
+@limiter.limit("30/minute")
+async def get_similar_albums_endpoint(
+    request: Request,
+    artist: str = Query(..., description="Name of the artist", example="Radiohead"),
+    album: str = Query(..., description="Name of the album", example="OK Computer"),
+    refresh: bool = Query(False, description="Force refresh the cache"),
+    limit: int = Query(5, description="Maximum number of similar albums to return", ge=1, le=10),
+):
+    start_time = time()
+    try:
+        cache_key = f"similar:{artist}:{album}:{limit}"
+        
+        # Check cache unless refresh is requested
+        if not refresh and (cached_result := await get_cache(cache_key)):
+            metrics.record_request(cache_hit=True, endpoint="similar")
+            return [Album(**album_data) for album_data in cached_result]
+
+        metrics.record_request(cache_hit=False, endpoint="similar")
+        result = await get_album_url(artist, album)
+        if not result:
+            raise HTTPException(status_code=404, detail="Album not found")
+
+        url, _, _ = result
+        similar_albums = await get_similar_albums(url, limit)
+
+        # Cache the list of albums as dictionaries
+        await set_cache(
+            cache_key, 
+            [album.dict() for album in similar_albums], 
+            SIMILAR_TTL
+        )
+        
+        metrics.record_response_time(time() - start_time)
+        return similar_albums
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        metrics.record_error()
+        raise HTTPException(status_code=503, detail=str(e))
+
+
+@router.get(
+    "/search/",
+    response_model=List[SearchResult],
+    summary="Search Albums",
+    description="Search for albums matching the query.",
+    response_description="List of albums matching the search query",
+    responses={
+        503: {"description": "Error accessing album site"},
+    },
+)
+@limiter.limit("30/minute")
+async def search_albums_endpoint(
+    request: Request,
+    query: str = Query(..., description="Search query", example="Radiohead OK Computer"),
+    limit: int = Query(10, description="Maximum number of results to return", ge=1, le=20),
+):
+    start_time = time()
+    try:
+        cache_key = f"search:{query}:{limit}"
+        
+        # Check cache first
+        if cached_result := await get_cache(cache_key):
+            metrics.record_request(cache_hit=True, endpoint="search")
+            return [SearchResult(**result) for result in cached_result]
+
+        metrics.record_request(cache_hit=False, endpoint="search")
+        results = await search_albums(query, limit)
+
+        # Cache the search results
+        await set_cache(
+            cache_key,
+            [result.dict() for result in results],
+            SEARCH_TTL
+        )
+        
+        metrics.record_response_time(time() - start_time)
+        return results
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        metrics.record_error()
+        raise HTTPException(status_code=503, detail=str(e))
+
+
+# Legacy endpoints for backward compatibility
 @router.get("/enrich/{album_id}")
 async def enrich_album(album_id: str, db: Session = Depends(get_db)):
-    """Enrich an album with AOTY metadata."""
-    success = await enrich_album_with_aoty(db, album_id)
-    
-    if not success:
-        raise HTTPException(status_code=404, detail="Album not found or enrichment failed")
-    
-    return {"message": "Album enriched successfully with AOTY data"}
+    """Legacy endpoint - Enrich an album with AOTY metadata."""
+    # This could be updated to use the new AOTY functionality
+    # For now, return a placeholder response
+    return {"message": "Album enrichment functionality has been updated. Use the new /album/ endpoint instead."}
+
 
 @router.get("/similar/{album_id}")
-async def get_similar_albums(
+async def get_similar_albums_legacy(
     album_id: str, 
     limit: int = Query(5, gt=0, le=10),
     db: Session = Depends(get_db)
 ):
-    """Get similar albums for a given album."""
-    success = await fetch_and_store_similar_albums(db, album_id, limit)
-    
-    if not success:
-        raise HTTPException(status_code=404, detail="Album not found or similar albums fetch failed")
-    
-    # Get album to return updated data with similar albums
-    db_album = db.query(Album).filter(Album.id == album_id).first()
-    if not db_album or not db_album.tags or "similar_albums" not in db_album.tags:
-        raise HTTPException(status_code=404, detail="Similar albums data not found")
-    
-    return {"similar_albums": db_album.tags["similar_albums"]}
+    """Legacy endpoint - Get similar albums for a given album."""
+    # This could be updated to use the new AOTY functionality
+    # For now, return a placeholder response
+    return {"message": "Similar albums functionality has been updated. Use the new /album/similar/ endpoint instead."}
