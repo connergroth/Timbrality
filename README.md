@@ -69,6 +69,7 @@ It integrates listening data from **Spotify** and **Last.fm**, and enriches reco
 
 ### 🤖 Machine Learning & Recommendation
 
+- **Hybrid PyTorch Model:** [Tensoe-Recommender](https://github.com/connergroth/tensoe-recommender)
 - **Collaborative Filtering (NMF)** – Learns user-item relationships from listening data
 - **Content-Based Filtering (TF-IDF + cosine similarity)** – Recommends similar tracks using tag vectors
 - **Hybrid Model** – Blends both approaches for highly personalized recommendations
