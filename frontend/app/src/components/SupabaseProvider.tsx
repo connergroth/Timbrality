@@ -11,6 +11,7 @@ type SupabaseContextType = {
   signIn: (email: string, password: string) => Promise<void>
   signUp: (email: string, password: string) => Promise<void>
   signOut: () => Promise<void>
+  signInWithOAuth: (provider: string, options?: any) => Promise<void>
 }
 
 const SupabaseContext = createContext<SupabaseContextType | undefined>(undefined)
@@ -64,6 +65,14 @@ export function SupabaseProvider({ children }: { children: React.ReactNode }) {
     if (error) throw error
   }
 
+  const signInWithOAuth = async (provider: string, options?: any) => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: provider as any,
+      ...options
+    })
+    if (error) throw error
+  }
+
   const value = {
     user,
     session,
@@ -71,6 +80,7 @@ export function SupabaseProvider({ children }: { children: React.ReactNode }) {
     signIn,
     signUp,
     signOut,
+    signInWithOAuth,
   }
 
   return (

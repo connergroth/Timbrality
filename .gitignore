@@ -31,5 +31,6 @@ bun.lockb
 # Distribution
 dist/
 
-# Vite
-.vite/
+# Next.js
+.next/
+.next/cache/
