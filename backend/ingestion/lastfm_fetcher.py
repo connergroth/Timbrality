@@ -4,7 +4,12 @@ Last.fm Fetcher - Enrich tracks with tags and moods from Last.fm API
 import os
 import logging
 from typing import List, Dict, Optional
-import pylast
+try:
+    import pylast
+    PYLAST_AVAILABLE = True
+except ImportError:
+    PYLAST_AVAILABLE = False
+    pylast = None
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -15,8 +20,11 @@ logger = logging.getLogger(__name__)
 LASTFM_API_KEY = os.getenv('LASTFM_API_KEY')
 LASTFM_API_SECRET = os.getenv('LASTFM_API_SECRET')
 
-def get_lastfm_network() -> pylast.LastFMNetwork:
+def get_lastfm_network():
     """Initialize and return Last.fm network client"""
+    if not PYLAST_AVAILABLE:
+        raise ImportError("pylast module not available. Install with: pip install pylast")
+    
     if not LASTFM_API_KEY or not LASTFM_API_SECRET:
         raise ValueError("Last.fm credentials not found. Please set LASTFM_API_KEY and LASTFM_API_SECRET environment variables.")
     
@@ -38,6 +46,10 @@ def enrich_with_tags(track_name: str, artist_name: str, max_tags: int = 10) -> L
     Returns:
         List of tag strings
     """
+    if not PYLAST_AVAILABLE:
+        logger.warning("pylast not available - returning empty tags list")
+        return []
+    
     try:
         network = get_lastfm_network()
         
@@ -86,6 +98,10 @@ def get_artist_tags(artist_name: str, max_tags: int = 15) -> List[str]:
     Returns:
         List of tag strings
     """
+    if not PYLAST_AVAILABLE:
+        logger.warning("pylast not available - returning empty tags list")
+        return []
+    
     try:
         network = get_lastfm_network()
         

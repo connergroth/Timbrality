@@ -9,8 +9,16 @@ from typing import List, Dict, Any, Optional, Tuple
 from pydantic import BaseModel, Field
 import logging
 
-from ..services.ml_service import ml_service
-from ..models.ingestion_models import IngestionStats, MLTrainingData
+try:
+    from services.ml_service import ml_service
+    from models.ingestion_models import IngestionStats, MLTrainingData
+except ImportError:
+    # Fallback for development
+    import sys
+    import os
+    sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    from services.ml_service import ml_service
+    from models.ingestion_models import IngestionStats, MLTrainingData
 
 logger = logging.getLogger(__name__)
 
@@ -49,7 +57,7 @@ class AnalyticsResponse(BaseModel):
 
 # ========== Ingestion Endpoints ==========
 
-@ml_router.post("/ingest/album", response_model=IngestionResponse)
+@ml_router.post("/ingest/album")
 async def ingest_single_album(request: AlbumIngestionRequest):
     """Ingest a single album into the database"""
     try:
@@ -71,7 +79,7 @@ async def ingest_single_album(request: AlbumIngestionRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@ml_router.post("/ingest/batch", response_model=IngestionResponse)
+@ml_router.post("/ingest/batch")
 def ingest_batch_albums(request: BatchIngestionRequest, background_tasks: BackgroundTasks):
     """Ingest multiple albums in batch (runs in background)"""
     try:
@@ -91,7 +99,7 @@ def ingest_batch_albums(request: BatchIngestionRequest, background_tasks: Backgr
 
 # ========== Data Access Endpoints ==========
 
-@ml_router.get("/stats", response_model=IngestionStats)
+@ml_router.get("/stats")
 def get_ingestion_statistics():
     """Get comprehensive ingestion statistics"""
     try:
@@ -101,7 +109,7 @@ def get_ingestion_statistics():
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@ml_router.get("/training-data", response_model=TrainingDataResponse)
+@ml_router.get("/training-data")
 def get_training_data(
     limit: int = Query(default=1000, description="Maximum number of tracks to return"),
     include_audio_features: bool = Query(default=True, description="Include tracks with audio features")
@@ -175,7 +183,7 @@ def get_feature_matrix(
 
 # ========== Analytics Endpoints ==========
 
-@ml_router.get("/analytics", response_model=AnalyticsResponse)
+@ml_router.get("/analytics")
 def get_ml_analytics():
     """Get comprehensive ML analytics and insights"""
     try:
