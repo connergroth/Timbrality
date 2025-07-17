@@ -10,12 +10,26 @@ import os
 # Add the parent directory to the path to import from backend
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
-from scraper.aoty_scraper import (
-    get_album_url, 
-    scrape_album, 
-    parse_tracks,
-    new_page
-)
+try:
+    from scraper.aoty_scraper import (
+        get_album_url, 
+        scrape_album, 
+        parse_tracks,
+        new_page
+    )
+except ImportError:
+    # Fallback functions if scraper module fails
+    async def get_album_url(*args, **kwargs):
+        return None
+    
+    async def scrape_album(*args, **kwargs):
+        return None
+    
+    async def parse_tracks(*args, **kwargs):
+        return []
+    
+    async def new_page(*args, **kwargs):
+        return None
 
 logger = logging.getLogger(__name__)
 

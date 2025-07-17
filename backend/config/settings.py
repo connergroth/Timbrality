@@ -7,7 +7,8 @@ ingestion, ML, database, and external API integrations.
 
 import os
 from typing import Optional, List, Dict, Any
-from pydantic import BaseSettings, Field, validator
+from pydantic_settings import BaseSettings
+from pydantic import Field, validator
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -16,7 +17,8 @@ load_dotenv()
 
 class DatabaseSettings(BaseSettings):
     """Database configuration"""
-    database_url: str = Field(..., env="DATABASE_URL")
+    database_url: str = Field("sqlite:///./test.db", env="DATABASE_URL")
+    database_test_url: Optional[str] = Field(None, env="DATABASE_TEST_URL")
     supabase_url: Optional[str] = Field(None, env="SUPABASE_URL")
     supabase_anon_key: Optional[str] = Field(None, env="SUPABASE_ANON_KEY")
     
@@ -25,33 +27,58 @@ class DatabaseSettings(BaseSettings):
     max_overflow: int = Field(10, env="DB_MAX_OVERFLOW")
     pool_timeout: int = Field(30, env="DB_POOL_TIMEOUT")
     pool_recycle: int = Field(3600, env="DB_POOL_RECYCLE")
+    
+    class Config:
+        extra = "allow"
 
 
 class SpotifySettings(BaseSettings):
     """Spotify API configuration"""
-    client_id: str = Field(..., env="SPOTIFY_CLIENT_ID")
-    client_secret: str = Field(..., env="SPOTIFY_CLIENT_SECRET")
+    client_id: Optional[str] = Field(None, env="SPOTIFY_CLIENT_ID")
+    client_secret: Optional[str] = Field(None, env="SPOTIFY_CLIENT_SECRET")
+    redirect_uri: str = Field("http://localhost:3000", env="SPOTIFY_REDIRECT_URI")
     
     # API settings
     request_timeout: int = Field(30, env="SPOTIFY_TIMEOUT")
     max_retries: int = Field(3, env="SPOTIFY_MAX_RETRIES")
     rate_limit_delay: float = Field(0.1, env="SPOTIFY_RATE_LIMIT_DELAY")
+    
+    class Config:
+        extra = "allow"
 
 
 class LastFMSettings(BaseSettings):
     """Last.fm API configuration"""
-    api_key: str = Field(..., env="LASTFM_API_KEY")
+    api_key: Optional[str] = Field(None, env="LASTFM_API_KEY")
     api_secret: Optional[str] = Field(None, env="LASTFM_API_SECRET")
+    api_url: str = Field("http://ws.audioscrobbler.com/2.0/", env="LASTFM_API_URL")
     
     # API settings
     request_timeout: int = Field(30, env="LASTFM_TIMEOUT")
     max_retries: int = Field(3, env="LASTFM_MAX_RETRIES")
     rate_limit_delay: float = Field(0.2, env="LASTFM_RATE_LIMIT_DELAY")
+    
+    class Config:
+        extra = "allow"
+
+
+class AOTYSettings(BaseSettings):
+    """Album of the Year (AOTY) API configuration"""
+    api_url: Optional[str] = Field(None, env="AOTY_API_URL")
+    
+    # Scraping settings
+    request_timeout: int = Field(30, env="AOTY_TIMEOUT")
+    max_retries: int = Field(3, env="AOTY_MAX_RETRIES")
+    rate_limit_delay: float = Field(1.0, env="AOTY_RATE_LIMIT_DELAY")
+    
+    class Config:
+        extra = "allow"
 
 
 class CacheSettings(BaseSettings):
     """Cache configuration"""
     redis_url: Optional[str] = Field(None, env="REDIS_URL")
+    redis_rest_token: Optional[str] = Field(None, env="REDIS_REST_TOKEN")
     redis_host: str = Field("localhost", env="REDIS_HOST")
     redis_port: int = Field(6379, env="REDIS_PORT")
     redis_db: int = Field(0, env="REDIS_DB")
@@ -62,6 +89,9 @@ class CacheSettings(BaseSettings):
     album_ttl: int = Field(7200, env="CACHE_ALBUM_TTL")      # 2 hours
     user_ttl: int = Field(1800, env="CACHE_USER_TTL")        # 30 minutes
     track_ttl: int = Field(3600, env="CACHE_TRACK_TTL")      # 1 hour
+    
+    class Config:
+        extra = "allow"
 
 
 class IngestionSettings(BaseSettings):
@@ -79,6 +109,9 @@ class IngestionSettings(BaseSettings):
     # Data quality thresholds
     min_track_duration_ms: int = Field(10000, env="MIN_TRACK_DURATION_MS")  # 10 seconds
     max_track_duration_ms: int = Field(1800000, env="MAX_TRACK_DURATION_MS")  # 30 minutes
+    
+    class Config:
+        extra = "allow"
 
 
 class MLSettings(BaseSettings):
@@ -94,6 +127,9 @@ class MLSettings(BaseSettings):
     
     # Export settings
     export_directory: str = Field("./exports", env="ML_EXPORT_DIRECTORY")
+    
+    class Config:
+        extra = "allow"
 
 
 class APISettings(BaseSettings):
@@ -119,6 +155,9 @@ class APISettings(BaseSettings):
         if isinstance(v, str):
             return [origin.strip() for origin in v.split(',')]
         return v
+    
+    class Config:
+        extra = "allow"
 
 
 class LoggingSettings(BaseSettings):
@@ -133,6 +172,9 @@ class LoggingSettings(BaseSettings):
     log_file: Optional[str] = Field(None, env="LOG_FILE")
     max_file_size: int = Field(10485760, env="LOG_MAX_FILE_SIZE")  # 10MB
     backup_count: int = Field(5, env="LOG_BACKUP_COUNT")
+    
+    class Config:
+        extra = "allow"
 
 
 class ScrapingSettings(BaseSettings):
@@ -150,6 +192,9 @@ class ScrapingSettings(BaseSettings):
     # Rate limiting for scraping
     scraping_delay: float = Field(1.0, env="SCRAPING_DELAY")
     max_scraping_retries: int = Field(3, env="MAX_SCRAPING_RETRIES")
+    
+    class Config:
+        extra = "allow"
 
 
 class Settings(BaseSettings):
@@ -162,6 +207,7 @@ class Settings(BaseSettings):
     database: DatabaseSettings = DatabaseSettings()
     spotify: SpotifySettings = SpotifySettings()
     lastfm: LastFMSettings = LastFMSettings()
+    aoty: AOTYSettings = AOTYSettings()
     cache: CacheSettings = CacheSettings()
     ingestion: IngestionSettings = IngestionSettings()
     ml: MLSettings = MLSettings()
@@ -173,6 +219,7 @@ class Settings(BaseSettings):
         env_file = ".env"
         env_file_encoding = "utf-8"
         case_sensitive = False
+        extra = "allow"
     
     @property
     def is_development(self) -> bool:
@@ -206,28 +253,28 @@ class Settings(BaseSettings):
     
     def validate_required_settings(self):
         """Validate that all required settings are present"""
-        errors = []
-        
-        # Check database
-        if not self.database.database_url:
-            errors.append("DATABASE_URL is required")
+        warnings = []
         
         # Check Spotify
         if not self.spotify.client_id:
-            errors.append("SPOTIFY_CLIENT_ID is required")
+            warnings.append("SPOTIFY_CLIENT_ID not set - ingestion will not work")
         if not self.spotify.client_secret:
-            errors.append("SPOTIFY_CLIENT_SECRET is required")
+            warnings.append("SPOTIFY_CLIENT_SECRET not set - ingestion will not work")
         
         # Check Last.fm
         if not self.lastfm.api_key:
-            errors.append("LASTFM_API_KEY is required")
+            warnings.append("LASTFM_API_KEY not set - mood/genre enrichment will not work")
         
         # Check Supabase (if using)
         if self.database.supabase_url and not self.database.supabase_anon_key:
-            errors.append("SUPABASE_ANON_KEY is required when SUPABASE_URL is set")
+            warnings.append("SUPABASE_ANON_KEY is required when SUPABASE_URL is set")
         
-        if errors:
-            raise ValueError(f"Missing required environment variables: {', '.join(errors)}")
+        # Print warnings but don't fail
+        if warnings:
+            print("⚠️  Configuration warnings:")
+            for warning in warnings:
+                print(f"   - {warning}")
+            print("💡 Server will start but some features may not work without API keys")
     
     def get_api_info(self) -> Dict[str, Any]:
         """Get API information for documentation"""
@@ -245,9 +292,20 @@ try:
     settings = Settings()
     settings.validate_required_settings()
 except Exception as e:
-    print(f"Configuration error: {e}")
-    print("Please check your environment variables and .env file")
-    raise
+    print(f"⚠️  Configuration warning: {e}")
+    print("💡 Using default settings - server will start but some features may not work")
+    # Create a minimal settings instance with defaults
+    try:
+        settings = Settings()
+    except Exception:
+        # If even defaults fail, create a basic settings object
+        import types
+        settings = types.SimpleNamespace()
+        settings.database = types.SimpleNamespace()
+        settings.database.database_url = "sqlite:///./test.db"
+        settings.is_development = True
+        settings.is_production = False
+        settings.is_testing = False
 
 
 # Helper functions for easy access

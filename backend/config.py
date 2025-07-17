@@ -18,7 +18,9 @@ REDIS_TOKEN = os.getenv('UPSTASH_REDIS_REST_TOKEN')
 # AOTY Scraper configuration
 BASE_URL = "https://www.albumoftheyear.org"
 PLAYWRIGHT_HEADLESS = True
-PLAYWRIGHT_TIMEOUT = 30000  # milliseconds
+PLAYWRIGHT_TIMEOUT = 30000  # milliseconds 
+PLAYWRIGHT_NAVIGATION_TIMEOUT = 20000  # milliseconds for page navigation (reduced)
+SCRAPER_DELAY = 1.5  # seconds to wait between requests (reduced)
 
 # Browser headers to use for requests
 HEADERS = {

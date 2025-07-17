@@ -1,17 +1,20 @@
-
-import Header from '../components/Header';
-import HeroSection from '../components/HeroSection';
-import HowItWorksSection from '../components/HowItWorksSection';
-import ConnectSection from '../components/ConnectSection';
-import Footer from '../components/Footer';
+import { Navbar } from "@/components/Navbar";
+import { Hero } from "@/components/Hero";
+import { HowItWorks } from "@/components/HowItWorks";
+import { WhyTimbre } from "@/components/WhyTimbre";
+import { MusicalDNA } from "@/components/MusicalDNA";
+import { TastePreview } from "@/components/TastePreview";
+import { Footer } from "@/components/Footer";
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-tensoe-navy">
-      <Header />
-      <HeroSection />
-      <HowItWorksSection />
-      <ConnectSection />
+    <div className="min-h-screen">
+      <Navbar />
+      <Hero />
+      <HowItWorks />
+      <WhyTimbre />
+      <MusicalDNA />
+      <TastePreview />
       <Footer />
     </div>
   );

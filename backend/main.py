@@ -11,6 +11,7 @@ from routes.album_routes import router as album_router
 from routes.user_routes import router as user_router
 from routes.metrics_routes import router as metrics_router
 from routes.ml_routes import ml_router
+from routes.scraper_routes import router as scraper_router
 from utils.metrics import metrics
 
 
@@ -80,6 +81,7 @@ app.include_router(album_router, prefix="/album", tags=["Albums"])
 app.include_router(user_router, prefix="/user", tags=["Users"])
 app.include_router(metrics_router, prefix="/metrics", tags=["Metrics"])
 app.include_router(ml_router, tags=["Machine Learning"])
+app.include_router(scraper_router, prefix="/scraper", tags=["AOTY Scraper"])
 
 
 @app.get("/", summary="API Health Check")

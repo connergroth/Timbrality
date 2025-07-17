@@ -1,46 +1,125 @@
-import React from 'react';
-import { BrainIcon, UsersIcon, StarIcon } from 'lucide-react';
-import { useScrollAnimation } from '../hooks/useScrollAnimation';
+import { Music, Search, Heart, Info, ChevronDown, ChevronUp, Github, Brain, Target } from "lucide-react";
+import { useState } from "react";
 
-export function HowItWorks() {
-  const sectionRef = useScrollAnimation();
-  const features = [{
-    icon: <BrainIcon className="w-8 h-8" />,
-    title: 'Content-Based Analysis',
-    description: 'Our AI analyzes audio features, genres, and musical patterns to understand what makes each song unique.'
-  }, {
-    icon: <UsersIcon className="w-8 h-8" />,
-    title: 'Collaborative Filtering',
-    description: 'Learn from millions of listening patterns to discover music loved by people with similar tastes.'
-  }, {
-    icon: <StarIcon className="w-8 h-8" />,
-    title: 'Personal Ratings',
-    description: 'Your feedback continuously improves recommendations, creating a truly personalized experience.'
-  }];
+export const HowItWorks = () => {
+  const [isAlgorithmOpen, setIsAlgorithmOpen] = useState(false);
+  
+  const steps = [
+    {
+      icon: Music,
+      title: "Connect your profile",
+      description: "Your Spotify or Last.fm history becomes the foundation of your personalized recommendations."
+    },
+    {
+      icon: Search,
+      title: "Understand your sonic fingerprint", 
+      description: "Our hybrid model listens for timbre, mood, and listening patterns — not just genre or charts."
+    },
+    {
+      icon: Heart,
+      title: "Receive curated recommendations",
+      description: "Discover music that feels like you — textured, personal, and uniquely matched to your listening style."
+    }
+  ];
 
-  return <section ref={sectionRef} id="how-it-works" className="py-20 px-6 bg-gray-800/50 min-h-[50vh]">
-      <div className="max-w-6xl mx-auto">
+  return (
+    <section id="how-it-works" className="py-20 bg-muted/20 scroll-mt-24">
+      <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-100 scroll-fade-up">
-            How It Works
+          <h2 className="font-playfair text-4xl md:text-5xl font-bold text-foreground mb-4">
+            How it works
           </h2>
-          <p className="text-lg text-gray-300 max-w-2xl mx-auto scroll-fade-up scroll-delay-100">
-            Our hybrid recommendation engine combines collaborative filtering (NMF), content-based filtering (TF-IDF & audio features), and metadata from Last.fm, Spotify, and Albumoftheyear.org to create a hybrid recommendation model that truly resonates with you.
+          <p className="text-xl text-muted-foreground font-playfair">
+            Three simple steps to unlock your musical DNA
           </p>
         </div>
+
         <div className="grid md:grid-cols-3 gap-8">
-          {features.map((feature, index) => <div key={index} className="text-center p-6 rounded-xl bg-gray-900/50 backdrop-blur-sm border border-gray-700/50 hover:border-blue-500/50 transition-all duration-300 scroll-fade-up" style={{ transitionDelay: `${(index + 2) * 100}ms` }}>
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-[#00C6FF] to-[#0099FF] mb-6">
-                {feature.icon}
+          {steps.map((step, index) => (
+            <div key={index} className="text-center space-y-6">
+              <div className="w-16 h-16 mx-auto bg-primary/10 rounded-full flex items-center justify-center">
+                <step.icon className="w-8 h-8 text-primary" />
               </div>
-              <h3 className="text-xl font-semibold mb-4 text-gray-100">
-                {feature.title}
+              <h3 className="font-playfair text-xl font-semibold text-foreground">
+                {step.title}
               </h3>
-              <p className="text-gray-300 leading-relaxed">
-                {feature.description}
+              <p className="text-muted-foreground leading-relaxed">
+                {step.description}
               </p>
-            </div>)}
+            </div>
+          ))}
+        </div>
+
+        {/* Behind the Algorithm Section */}
+        <div className="mt-16 text-center">
+          <button
+            onClick={() => setIsAlgorithmOpen(!isAlgorithmOpen)}
+            className="inline-flex items-center space-x-2 text-sm font-playfair text-muted-foreground hover:text-foreground transition-colors group"
+          >
+            <Info className="w-4 h-4" />
+            <span>Behind the Algorithm</span>
+            {isAlgorithmOpen ? (
+              <ChevronUp className="w-4 h-4 transition-transform" />
+            ) : (
+              <ChevronDown className="w-4 h-4 transition-transform" />
+            )}
+          </button>
+
+          {isAlgorithmOpen && (
+            <div className="mt-8 max-w-4xl mx-auto bg-card border border-border rounded-2xl p-8 text-left">
+              <h3 className="font-playfair text-2xl font-semibold text-foreground mb-6">
+                How Timbre Generates Recommendations
+              </h3>
+              
+              <p className="text-muted-foreground mb-6 leading-relaxed">
+                Your recommendations are powered by Timbral, a hybrid ML engine that blends:
+              </p>
+
+              <div className="space-y-4 mb-6">
+                <div className="flex items-start space-x-3">
+                  <div className="w-6 h-6 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <Brain className="w-3 h-3 text-primary" />
+                  </div>
+                  <div>
+                    <span className="font-medium text-foreground">Collaborative filtering (NMF)</span>
+                    <span className="text-muted-foreground"> based on your listening history</span>
+                  </div>
+                </div>
+
+                <div className="flex items-start space-x-3">
+                  <div className="w-6 h-6 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <Search className="w-3 h-3 text-primary" />
+                  </div>
+                  <div>
+                    <span className="font-medium text-foreground">Content similarity</span>
+                    <span className="text-muted-foreground"> using mood, genre, and Sentence-BERT embeddings</span>
+                  </div>
+                </div>
+
+                <div className="flex items-start space-x-3">
+                  <div className="w-6 h-6 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <Target className="w-3 h-3 text-primary" />
+                  </div>
+                  <div>
+                    <span className="font-medium text-foreground">Smart scoring</span>
+                    <span className="text-muted-foreground"> that combines both systems and ranks tracks by musical fit</span>
+                  </div>
+                </div>
+              </div>
+
+              <p className="text-muted-foreground mb-6 leading-relaxed">
+                We also factor in metadata from Spotify, Last.fm, and AlbumOfTheYear to reflect both popularity and niche appeal.
+              </p>
+
+              <div className="flex items-center justify-between pt-4 border-t border-border">
+                <button className="text-sm font-playfair text-primary hover:text-primary/80 transition-colors">
+                  Want more technical details? See the model architecture
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
-    </section>;
-}
+    </section>
+  );
+};

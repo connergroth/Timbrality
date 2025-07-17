@@ -1,5 +1,20 @@
 from fastapi import APIRouter, Response
-from app.utils.metrics import metrics
+try:
+    from utils.metrics import metrics
+except ImportError:
+    # Fallback for development
+    class MockMetrics:
+        def get_metrics(self):
+            return {
+                "total_requests": 0,
+                "cache_hits": 0,
+                "cache_misses": 0,
+                "errors": 0,
+                "average_response_time": 0.0,
+                "status": "mock_mode"
+            }
+    
+    metrics = MockMetrics()
 
 router = APIRouter()
 

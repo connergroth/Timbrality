@@ -8,7 +8,12 @@ import json
 from supabase import create_client, Client
 from dotenv import load_dotenv
 from .normalizer import TrackData, to_dict, validate_track_data
-from ..models.ingestion_models import EnhancedTrack, MLTrainingData
+try:
+    from models.ingestion_models import EnhancedTrack, MLTrainingData
+except ImportError:
+    # Models may not be available in some contexts
+    EnhancedTrack = None
+    MLTrainingData = None
 
 load_dotenv()
 

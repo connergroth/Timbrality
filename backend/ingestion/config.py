@@ -4,7 +4,46 @@ Configuration for Tensoe Ingestion Pipeline
 Now using centralized settings from config.settings
 """
 import os
-from ..config.settings import get_settings
+try:
+    from config.settings import get_settings
+except ImportError:
+    # Fallback to environment variables
+    import os
+    from dotenv import load_dotenv
+    load_dotenv()
+    
+    class FallbackSettings:
+        def __init__(self):
+            self.spotify = type('obj', (object,), {
+                'client_id': os.getenv('SPOTIFY_CLIENT_ID'),
+                'client_secret': os.getenv('SPOTIFY_CLIENT_SECRET'),
+                'request_timeout': 30
+            })()
+            self.lastfm = type('obj', (object,), {
+                'api_key': os.getenv('LASTFM_API_KEY'),
+                'api_secret': os.getenv('LASTFM_API_SECRET')
+            })()
+            self.database = type('obj', (object,), {
+                'supabase_url': os.getenv('SUPABASE_URL'),
+                'supabase_anon_key': os.getenv('SUPABASE_ANON_KEY')
+            })()
+            self.ingestion = type('obj', (object,), {
+                'batch_size': 50,
+                'max_concurrent': 10,
+                'retry_attempts': 3,
+                'retry_delay': 1.0,
+                'max_genres_per_track': 10,
+                'max_moods_per_track': 15
+            })()
+            self.logging = type('obj', (object,), {
+                'level': 'INFO',
+                'format': '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+            })()
+        
+        def get_redis_url(self):
+            return os.getenv('REDIS_URL', 'redis://localhost:6379/0')
+    
+    get_settings = lambda: FallbackSettings()
 
 # Get centralized settings
 settings = get_settings()
