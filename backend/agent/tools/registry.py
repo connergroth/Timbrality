@@ -1,4 +1,4 @@
-from typing import Dict, Optional
+from typing import Dict, Optional, Type
 from .base import BaseTool
 from .track_search import TrackSearchTool
 from .similarity import SimilarityTool
@@ -8,6 +8,10 @@ from .fallback_search import FallbackSearchTool
 from .explainability import ExplainabilityTool
 from .memory_embedder import MemoryEmbedderTool
 from .hybrid_recommender import HybridRecommenderTool
+from .spotify_search import SpotifySearchTool
+from .spotify_playlist import SpotifyPlaylistTool
+from .song_recommendation import SongRecommendationTool
+from .vibe_discovery import VibeDiscoveryTool
 
 
 class ToolRegistry:
@@ -15,35 +19,42 @@ class ToolRegistry:
     
     def __init__(self):
         self.tools: Dict[str, BaseTool] = {}
-        self._register_default_tools()
-    
-    def _register_default_tools(self):
-        """Register all default tools."""
-        tools = [
-            TrackSearchTool(),
-            SimilarityTool(),
-            PlaylistAnalyzerTool(),
-            WebFeelTool(),
-            FallbackSearchTool(),
-            ExplainabilityTool(),
-            MemoryEmbedderTool(),
-            HybridRecommenderTool()
-        ]
-        
-        for tool in tools:
-            self.register_tool(tool.name, tool)
-    
-    def register_tool(self, name: str, tool: BaseTool):
-        """Register a new tool."""
-        self.tools[name] = tool
+        self.tool_classes: Dict[str, Type[BaseTool]] = {
+            "track_search": TrackSearchTool,
+            "similarity": SimilarityTool,
+            "playlist_analyzer": PlaylistAnalyzerTool,
+            "web_feel": WebFeelTool,
+            "fallback_search": FallbackSearchTool,
+            "explainability": ExplainabilityTool,
+            "memory_embedder": MemoryEmbedderTool,
+            "hybrid_recommender": HybridRecommenderTool,
+            "spotify_search": SpotifySearchTool,
+            "spotify_playlist": SpotifyPlaylistTool,
+            "song_recommendation": SongRecommendationTool,
+            "vibe_discovery": VibeDiscoveryTool
+        }
     
     def get_tool(self, name: str) -> Optional[BaseTool]:
-        """Get a tool by name."""
+        """Get a tool by name, creating it if not already instantiated."""
+        if name not in self.tools:
+            if name in self.tool_classes:
+                self.tools[name] = self.tool_classes[name]()
+            else:
+                return None
         return self.tools.get(name)
     
     def list_tools(self) -> Dict[str, str]:
         """List all available tools with descriptions."""
-        return {name: tool.description for name, tool in self.tools.items()}
+        tool_descriptions = {}
+        for name, tool_class in self.tool_classes.items():
+            # Create a temporary instance to get the description
+            temp_tool = tool_class()
+            tool_descriptions[name] = temp_tool.description
+        return tool_descriptions
+    
+    def register_tool(self, name: str, tool: BaseTool):
+        """Register a new tool."""
+        self.tools[name] = tool
     
     def remove_tool(self, name: str) -> bool:
         """Remove a tool from registry."""

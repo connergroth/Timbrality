@@ -6,9 +6,9 @@ from playwright.async_api import async_playwright, TimeoutError as PlaywrightTim
 from fastapi import HTTPException
 
 try:
-    # Try relative imports first (for FastAPI app)
-    from ..config import BASE_URL, PLAYWRIGHT_HEADLESS, PLAYWRIGHT_TIMEOUT, PLAYWRIGHT_NAVIGATION_TIMEOUT, SCRAPER_DELAY
-    from ..models.aoty_models import (
+    # Use absolute imports
+    from config import BASE_URL, PLAYWRIGHT_HEADLESS, PLAYWRIGHT_TIMEOUT, PLAYWRIGHT_NAVIGATION_TIMEOUT, SCRAPER_DELAY
+    from models.aoty_models import (
         Album, 
         Track, 
         CriticReview, 
@@ -17,12 +17,11 @@ try:
         UserProfile, 
         BuyLink, 
         SearchResult,
-        AlbumMetadata,
-        UserStats
+        AlbumMetadata
     )
-    from ..utils.search_cleaner import clean_search_query
+    from utils.search_cleaner import clean_search_query
     try:
-        from .aoty_http_fallback import http_search_albums, http_find_album_url
+        from scraper.aoty_http_fallback import http_search_albums, http_find_album_url
     except ImportError:
         # HTTP fallback not available, will use mock functions
         def http_search_albums(query, limit=10):

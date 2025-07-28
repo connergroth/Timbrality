@@ -1,8 +1,10 @@
 import os
 from dotenv import load_dotenv
 
-# Load environment variables
-load_dotenv()
+# Load environment variables from multiple possible locations
+load_dotenv()  # Load from .env in current directory
+load_dotenv('.env.local')  # Load from .env.local in current directory
+load_dotenv('../.env')  # Load from root .env
 
 # Database configuration
 SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', 'postgresql://postgres:postgronner34@localhost:5432/Sonance')

@@ -17,8 +17,16 @@ class WebFeelTool(BaseTool):
     async def execute(self, intent_result, context) -> ToolResult:
         """Execute web mood extraction based on intent results."""
         try:
-            entities = intent_result.entities
-            mood_query = entities.get("mood", entities.get("search_query", ""))
+            # Handle different intent formats
+            if hasattr(intent_result, 'entities'):
+                entities = intent_result.entities
+                mood_query = entities.get("mood", entities.get("search_query", ""))
+            elif hasattr(intent_result, 'raw_text'):
+                mood_query = intent_result.raw_text
+            elif isinstance(intent_result, dict):
+                mood_query = intent_result.get("mood", intent_result.get("query", ""))
+            else:
+                mood_query = str(intent_result)
             
             if not mood_query:
                 return self._create_error_result("No mood query provided")

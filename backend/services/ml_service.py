@@ -8,15 +8,12 @@ providing a unified interface for ML operations.
 import logging
 import asyncio
 from typing import List, Dict, Any, Optional, Tuple
-from sqlalchemy.orm import Session
-from sqlalchemy import func, desc, and_
 import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 import json
 
 try:
-    from models.database import SessionLocal, engine
     from models.ingestion_models import (
         EnhancedTrack, 
         EnhancedAlbum, 
@@ -26,13 +23,19 @@ try:
         get_ml_training_data
     )
     from ingestion.ingest_runner import run_ingestion, run_batch_ingestion
-    from ingestion.insert_to_supabase import get_training_dataset, export_to_csv
+    from ingestion.insert_to_supabase import (
+        get_supabase_client, 
+        get_training_dataset, 
+        export_to_csv,
+        get_track_count,
+        get_tracks_by_genre,
+        get_tracks_by_artist
+    )
 except ImportError:
     # Fallback for development
     import sys
     import os
     sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    from models.database import SessionLocal, engine
     from models.ingestion_models import (
         EnhancedTrack, 
         EnhancedAlbum, 
@@ -43,7 +46,14 @@ except ImportError:
     )
     try:
         from ingestion.ingest_runner import run_ingestion, run_batch_ingestion
-        from ingestion.insert_to_supabase import get_training_dataset, export_to_csv
+        from ingestion.insert_to_supabase import (
+            get_supabase_client, 
+            get_training_dataset, 
+            export_to_csv,
+            get_track_count,
+            get_tracks_by_genre,
+            get_tracks_by_artist
+        )
     except ImportError:
         # Fallback functions if ingestion modules fail
         def run_ingestion(*args, **kwargs):
@@ -57,19 +67,27 @@ except ImportError:
         
         def export_to_csv(*args, **kwargs):
             return False
+            
+        def get_supabase_client():
+            return None
+            
+        def get_track_count():
+            return 0
+            
+        def get_tracks_by_genre(*args, **kwargs):
+            return []
+            
+        def get_tracks_by_artist(*args, **kwargs):
+            return []
 
 logger = logging.getLogger(__name__)
 
 
 class MLService:
-    """Comprehensive ML service for Tensoe backend"""
+    """Comprehensive ML service for Timbre backend"""
     
     def __init__(self):
-        self.db = SessionLocal()
-    
-    def __del__(self):
-        if hasattr(self, 'db'):
-            self.db.close()
+        self.supabase = get_supabase_client()
     
     # ========== Data Ingestion Integration ==========
     
@@ -99,83 +117,80 @@ class MLService:
     def get_ingestion_stats(self) -> IngestionStats:
         """Get comprehensive ingestion statistics"""
         try:
-            # Count totals
-            total_tracks = self.db.query(EnhancedTrack).count()
-            total_albums = self.db.query(EnhancedAlbum).count()
-            total_artists = self.db.query(EnhancedArtist).count()
+            if not self.supabase:
+                return IngestionStats()
+                
+            # Get total track count
+            total_tracks = get_track_count()
             
-            # Count tracks with specific features
-            tracks_with_genres = self.db.query(EnhancedTrack).filter(
-                func.array_length(EnhancedTrack.genres, 1) > 0
-            ).count()
+            # Get tracks for analysis
+            tracks_data = get_training_dataset(limit=10000)  # Sample for stats
             
-            tracks_with_moods = self.db.query(EnhancedTrack).filter(
-                func.array_length(EnhancedTrack.moods, 1) > 0
-            ).count()
-            
-            tracks_with_aoty_scores = self.db.query(EnhancedTrack).filter(
-                EnhancedTrack.aoty_score.isnot(None)
-            ).count()
-            
-            tracks_with_audio_features = self.db.query(EnhancedTrack).filter(
-                EnhancedTrack.audio_features != {}
-            ).count()
+            # Calculate statistics
+            tracks_with_genres = sum(1 for track in tracks_data if track.get('genres') and len(track['genres']) > 0)
+            tracks_with_moods = sum(1 for track in tracks_data if track.get('moods') and len(track['moods']) > 0)
+            tracks_with_aoty_scores = sum(1 for track in tracks_data if track.get('aoty_score') is not None)
+            tracks_with_audio_features = sum(1 for track in tracks_data if track.get('audio_features') and len(track.get('audio_features', {})) > 0)
             
             # Calculate averages
-            avg_genres = self.db.query(func.avg(func.array_length(EnhancedTrack.genres, 1))).scalar() or 0.0
-            avg_moods = self.db.query(func.avg(func.array_length(EnhancedTrack.moods, 1))).scalar() or 0.0
+            genre_counts = [len(track.get('genres', [])) for track in tracks_data]
+            mood_counts = [len(track.get('moods', [])) for track in tracks_data]
+            avg_genres = np.mean(genre_counts) if genre_counts else 0.0
+            avg_moods = np.mean(mood_counts) if mood_counts else 0.0
             
             # Get latest ingestion timestamp
-            latest_track = self.db.query(EnhancedTrack).order_by(desc(EnhancedTrack.created_at)).first()
-            latest_ingestion = latest_track.created_at.isoformat() if latest_track else None
+            latest_ingestion = None
+            if tracks_data:
+                latest_track = max(tracks_data, key=lambda x: x.get('created_at', ''), default=None)
+                if latest_track and latest_track.get('created_at'):
+                    latest_ingestion = latest_track['created_at']
             
             return IngestionStats(
                 total_tracks=total_tracks,
-                total_albums=total_albums,
-                total_artists=total_artists,
-                tracks_with_genres=tracks_with_genres,
-                tracks_with_moods=tracks_with_moods,
-                tracks_with_aoty_scores=tracks_with_aoty_scores,
-                tracks_with_audio_features=tracks_with_audio_features,
-                average_genres_per_track=float(avg_genres),
-                average_moods_per_track=float(avg_moods),
-                latest_ingestion=latest_ingestion
+                total_albums=0,  # Albums not tracked separately in Supabase
+                total_artists=0,  # Artists not tracked separately in Supabase
+                successful_inserts=tracks_with_genres,  # Use as proxy
+                failed_inserts=0,
+                processing_time=0.0,
+                last_updated=datetime.now()
             )
             
         except Exception as e:
             logger.error(f"Error getting ingestion stats: {e}")
             return IngestionStats()
     
-    def get_tracks_for_training(self, limit: int = 10000, min_features: int = 3) -> List[EnhancedTrack]:
+    def get_tracks_for_training(self, limit: int = 10000, min_features: int = 3) -> List[Dict]:
         """Get tracks suitable for ML training with quality filters"""
         try:
-            tracks = self.db.query(EnhancedTrack).filter(
-                and_(
-                    EnhancedTrack.popularity.isnot(None),
-                    func.array_length(EnhancedTrack.genres, 1) >= min_features,
-                    EnhancedTrack.duration_ms.isnot(None)
-                )
-            ).limit(limit).all()
+            # Get tracks from Supabase
+            all_tracks = get_training_dataset(limit=limit)
             
-            logger.info(f"Retrieved {len(tracks)} tracks for ML training")
-            return tracks
+            # Filter tracks based on quality criteria
+            filtered_tracks = []
+            for track in all_tracks:
+                if (track.get('popularity') is not None and
+                    track.get('genres') and len(track['genres']) >= min_features and
+                    track.get('duration_ms') is not None):
+                    filtered_tracks.append(track)
+            
+            logger.info(f"Retrieved {len(filtered_tracks)} tracks for ML training")
+            return filtered_tracks
             
         except Exception as e:
             logger.error(f"Error retrieving tracks for training: {e}")
             return []
     
-    def get_ml_training_data(self, limit: int = 10000, include_audio_features: bool = True) -> List[MLTrainingData]:
+    def get_ml_training_data(self, limit: int = 10000, include_audio_features: bool = True) -> List[Dict]:
         """Get properly formatted ML training data"""
         try:
             tracks = self.get_tracks_for_training(limit)
             
             if include_audio_features:
                 # Filter tracks that have audio features
-                tracks = [t for t in tracks if t.audio_features and len(t.audio_features) > 0]
+                tracks = [t for t in tracks if t.get('audio_features') and len(t.get('audio_features', {})) > 0]
             
-            ml_data = get_ml_training_data(tracks)
-            logger.info(f"Prepared {len(ml_data)} tracks for ML training")
-            return ml_data
+            logger.info(f"Prepared {len(tracks)} tracks for ML training")
+            return tracks
             
         except Exception as e:
             logger.error(f"Error preparing ML training data: {e}")
@@ -186,14 +201,12 @@ class MLService:
     def get_genre_distribution(self, limit: int = 20) -> Dict[str, int]:
         """Get distribution of genres across tracks"""
         try:
-            # This is a simplified version - in production you'd use more complex SQL
-            tracks = self.db.query(EnhancedTrack).filter(
-                func.array_length(EnhancedTrack.genres, 1) > 0
-            ).all()
+            # Get tracks from Supabase
+            tracks = get_training_dataset(limit=10000)  # Sample for genre analysis
             
             genre_counts = {}
             for track in tracks:
-                for genre in track.genres or []:
+                for genre in track.get('genres', []):
                     genre_counts[genre] = genre_counts.get(genre, 0) + 1
             
             # Sort by count and limit
@@ -207,13 +220,12 @@ class MLService:
     def get_mood_distribution(self, limit: int = 20) -> Dict[str, int]:
         """Get distribution of moods across tracks"""
         try:
-            tracks = self.db.query(EnhancedTrack).filter(
-                func.array_length(EnhancedTrack.moods, 1) > 0
-            ).all()
+            # Get tracks from Supabase
+            tracks = get_training_dataset(limit=10000)  # Sample for mood analysis
             
             mood_counts = {}
             for track in tracks:
-                for mood in track.moods or []:
+                for mood in track.get('moods', []):
                     mood_counts[mood] = mood_counts.get(mood, 0) + 1
             
             # Sort by count and limit
@@ -227,11 +239,10 @@ class MLService:
     def get_popularity_insights(self) -> Dict[str, Any]:
         """Get insights about track popularity"""
         try:
-            tracks = self.db.query(EnhancedTrack).filter(
-                EnhancedTrack.popularity.isnot(None)
-            ).all()
+            # Get tracks from Supabase
+            tracks = get_training_dataset(limit=10000)  # Sample for popularity analysis
             
-            popularities = [t.popularity for t in tracks if t.popularity is not None]
+            popularities = [t.get('popularity') for t in tracks if t.get('popularity') is not None]
             
             if not popularities:
                 return {}
@@ -256,11 +267,11 @@ class MLService:
     
     # ========== Model Preparation ==========
     
-    def prepare_feature_matrix(self, tracks: List[MLTrainingData]) -> Tuple[pd.DataFrame, pd.Series]:
+    def prepare_feature_matrix(self, tracks: List[Dict]) -> Tuple[pd.DataFrame, pd.Series]:
         """Prepare feature matrix and target vector for ML training"""
         try:
             # Convert to DataFrame
-            df = pd.DataFrame([track.dict() for track in tracks])
+            df = pd.DataFrame(tracks)
             
             # Extract numerical features
             numerical_features = [
@@ -284,12 +295,12 @@ class MLService:
             # One-hot encode genres (top genres only)
             top_genres = self.get_top_genres(limit=20)
             for genre in top_genres:
-                df[f'genre_{genre}'] = df['genres'].apply(lambda x: 1 if genre in x else 0)
+                df[f'genre_{genre}'] = df['genres'].apply(lambda x: 1 if isinstance(x, list) and genre in x else 0)
             
             # One-hot encode moods (top moods only)
             top_moods = self.get_top_moods(limit=15)
             for mood in top_moods:
-                df[f'mood_{mood}'] = df['moods'].apply(lambda x: 1 if mood in x else 0)
+                df[f'mood_{mood}'] = df['moods'].apply(lambda x: 1 if isinstance(x, list) and mood in x else 0)
             
             # Binary features
             df['is_explicit'] = df['explicit'].astype(int)
@@ -375,26 +386,33 @@ class MLService:
     def get_track_embeddings_data(self, track_ids: List[str]) -> List[Dict[str, Any]]:
         """Get track data formatted for embedding generation"""
         try:
-            tracks = self.db.query(EnhancedTrack).filter(
-                EnhancedTrack.id.in_(track_ids)
-            ).all()
+            if not self.supabase:
+                return []
+                
+            # Get tracks by IDs from Supabase
+            result = self.supabase.table('tracks').select('*').in_('id', track_ids).execute()
             
             embeddings_data = []
-            for track in tracks:
-                data = {
-                    'track_id': track.id,
-                    'title': track.title,
-                    'artist': track.artist,
-                    'album': track.album,
-                    'genres': track.genres or [],
-                    'moods': track.moods or [],
-                    'audio_features': track.audio_features or {},
-                    'popularity': track.popularity,
-                    'duration_ms': track.duration_ms,
-                    'explicit': track.explicit,
-                    'aoty_score': track.aoty_score
-                }
-                embeddings_data.append(data)
+            if result.data:
+                for track in result.data:
+                    # Parse JSON strings back to lists
+                    genres = json.loads(track.get('genres', '[]')) if track.get('genres') else []
+                    moods = json.loads(track.get('moods', '[]')) if track.get('moods') else []
+                    
+                    data = {
+                        'track_id': track.get('id'),
+                        'title': track.get('title'),
+                        'artist': track.get('artist'),
+                        'album': track.get('album'),
+                        'genres': genres,
+                        'moods': moods,
+                        'audio_features': track.get('audio_features', {}),
+                        'popularity': track.get('popularity'),
+                        'duration_ms': track.get('duration_ms'),
+                        'explicit': track.get('explicit'),
+                        'aoty_score': track.get('aoty_score')
+                    }
+                    embeddings_data.append(data)
             
             return embeddings_data
             
@@ -402,35 +420,39 @@ class MLService:
             logger.error(f"Error getting track embeddings data: {e}")
             return []
     
-    def find_similar_tracks_by_features(self, track_id: str, limit: int = 10) -> List[EnhancedTrack]:
+    def find_similar_tracks_by_features(self, track_id: str, limit: int = 10) -> List[Dict]:
         """Find similar tracks based on features (simple implementation)"""
         try:
-            target_track = self.db.query(EnhancedTrack).filter(
-                EnhancedTrack.id == track_id
-            ).first()
-            
-            if not target_track:
+            if not self.supabase:
                 return []
+                
+            # Get target track
+            target_result = self.supabase.table('tracks').select('*').eq('id', track_id).execute()
             
-            # Simple similarity based on shared genres and similar popularity
-            similar_tracks = self.db.query(EnhancedTrack).filter(
-                and_(
-                    EnhancedTrack.id != track_id,
-                    func.array_length(EnhancedTrack.genres, 1) > 0
-                )
-            ).all()
+            if not target_result.data:
+                return []
+                
+            target_track = target_result.data[0]
+            target_genres = set(json.loads(target_track.get('genres', '[]')))
+            
+            # Get all tracks for comparison
+            all_tracks = get_training_dataset(limit=5000)  # Limit for performance
             
             # Filter by shared genres
             candidates = []
-            target_genres = set(target_track.genres or [])
             
-            for track in similar_tracks:
-                track_genres = set(track.genres or [])
+            for track in all_tracks:
+                if track.get('id') == track_id:
+                    continue
+                    
+                track_genres = set(track.get('genres', []))
                 shared_genres = len(target_genres.intersection(track_genres))
                 
                 if shared_genres > 0:
                     # Simple similarity score
-                    popularity_diff = abs((target_track.popularity or 50) - (track.popularity or 50))
+                    target_popularity = target_track.get('popularity', 50)
+                    track_popularity = track.get('popularity', 50)
+                    popularity_diff = abs(target_popularity - track_popularity)
                     similarity_score = shared_genres * 10 - popularity_diff * 0.1
                     candidates.append((track, similarity_score))
             
@@ -448,7 +470,7 @@ ml_service = MLService()
 
 
 # Helper functions for easy access
-def get_training_data(limit: int = 10000) -> List[MLTrainingData]:
+def get_training_data(limit: int = 10000) -> List[Dict]:
     """Get ML training data"""
     return ml_service.get_ml_training_data(limit)
 

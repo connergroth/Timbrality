@@ -1,9 +1,7 @@
-from fastapi import APIRouter, HTTPException, Query, Request, Depends
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, HTTPException, Query, Request
 from time import time
 
 try:
-    from models.database import SessionLocal
     from models.aoty_models import UserProfile
     from services.aoty_scraper_service import get_user_profile
     from utils.cache import (
@@ -14,7 +12,6 @@ try:
     from utils.metrics import metrics
 except ImportError:
     # Fallback for development
-    from models.database import SessionLocal
     
     class UserProfile:
         def __init__(self, **kwargs):
@@ -46,12 +43,6 @@ router = APIRouter()
 limiter = Limiter(key_func=get_remote_address)
 
 # Dependency to get the database session
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 
 @router.get(
@@ -107,8 +98,7 @@ async def get_user_endpoint(
 )
 async def get_aoty_user_legacy(
     request: Request,
-    username: str = Query(..., description="Username on albumoftheyear.org", example="evrynoiseatonce"),
-    db: Session = Depends(get_db)
+    username: str = Query(..., description="Username on albumoftheyear.org", example="evrynoiseatonce")
 ):
     """Legacy endpoint - redirects to the new user profile endpoint"""
     return await get_user_endpoint(request, username)

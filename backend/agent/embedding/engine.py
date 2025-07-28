@@ -1,17 +1,25 @@
 from typing import List, Dict, Any, Optional
-import numpy as np
-from sentence_transformers import SentenceTransformer
 import json
 from datetime import datetime
 import asyncio
 from dataclasses import dataclass
+
+try:
+    import numpy as np
+    from sentence_transformers import SentenceTransformer
+    ML_AVAILABLE = True
+except ImportError:
+    # Fallback when ML dependencies are not available
+    ML_AVAILABLE = False
+    np = None
+    SentenceTransformer = None
 
 from utils.cache import cache_manager
 
 
 @dataclass
 class EmbeddingResult:
-    vector: np.ndarray
+    vector: Any  # np.ndarray when available, list when fallback
     confidence: float
     metadata: Dict[str, Any]
 
@@ -23,26 +31,41 @@ class EmbeddingEngine:
     """
     
     def __init__(self, model_name: str = "all-MiniLM-L6-v2"):
-        self.model = SentenceTransformer(model_name)
-        self.dimension = self.model.get_sentence_embedding_dimension()
+        if not ML_AVAILABLE:
+            print("Warning: ML dependencies not available. Using fallback embedding engine.")
+            self.model = None
+            self.dimension = 384  # Default dimension for all-MiniLM-L6-v2
+        else:
+            try:
+                self.model = SentenceTransformer(model_name)
+                self.dimension = self.model.get_sentence_embedding_dimension()
+            except Exception as e:
+                print(f"Warning: Could not load ML model ({str(e)}). Using fallback embedding engine.")
+                self.model = None
+                self.dimension = 384  # Default dimension for all-MiniLM-L6-v2
         
     async def embed_user_input(self, text: str) -> EmbeddingResult:
         """Convert user natural language input to embedding vector."""
         # Clean and preprocess text
         processed_text = self._preprocess_text(text)
         
-        # Generate embedding
-        vector = await asyncio.to_thread(
-            self.model.encode, processed_text, normalize_embeddings=True
-        )
+        if not ML_AVAILABLE or self.model is None:
+            # Fallback: create a simple hash-based vector
+            vector = self._create_fallback_vector(processed_text)
+        else:
+            # Generate embedding using ML model
+            vector = await asyncio.to_thread(
+                self.model.encode, processed_text, normalize_embeddings=True
+            )
         
         return EmbeddingResult(
             vector=vector,
-            confidence=1.0,  # High confidence for direct text
+            confidence=1.0 if ML_AVAILABLE else 0.1,  # Lower confidence for fallback
             metadata={
                 "original_text": text,
                 "processed_text": processed_text,
-                "timestamp": datetime.now().isoformat()
+                "timestamp": datetime.now().isoformat(),
+                "fallback_mode": not ML_AVAILABLE
             }
         )
     
@@ -59,9 +82,12 @@ class EmbeddingEngine:
         track_text = self._track_to_text(track_data)
         
         # Generate embedding
-        vector = await asyncio.to_thread(
-            self.model.encode, track_text, normalize_embeddings=True
-        )
+        if not ML_AVAILABLE or self.model is None:
+            vector = self._create_fallback_vector(track_text)
+        else:
+            vector = await asyncio.to_thread(
+                self.model.encode, track_text, normalize_embeddings=True
+            )
         
         result = EmbeddingResult(
             vector=vector,
@@ -107,15 +133,21 @@ class EmbeddingEngine:
     
     async def compute_similarity(
         self, 
-        embedding1: np.ndarray, 
-        embedding2: np.ndarray
+        embedding1: Any, 
+        embedding2: Any
     ) -> float:
         """Compute cosine similarity between two embeddings."""
-        return float(np.dot(embedding1, embedding2))
+        if not ML_AVAILABLE:
+            # Fallback: simple dot product for lists
+            if isinstance(embedding1, list) and isinstance(embedding2, list):
+                return float(sum(a * b for a, b in zip(embedding1, embedding2)))
+            return 0.0
+        else:
+            return float(np.dot(embedding1, embedding2))
     
     async def find_similar_tracks(
         self, 
-        query_embedding: np.ndarray, 
+        query_embedding: Any, 
         track_embeddings: List[Dict[str, Any]], 
         top_k: int = 10
     ) -> List[Dict[str, Any]]:
@@ -124,7 +156,9 @@ class EmbeddingEngine:
         
         for track_data in track_embeddings:
             if "embedding" in track_data:
-                track_embedding = np.array(track_data["embedding"])
+                track_embedding = track_data["embedding"]
+                if ML_AVAILABLE and not isinstance(track_embedding, list):
+                    track_embedding = np.array(track_embedding)
                 similarity = await self.compute_similarity(query_embedding, track_embedding)
                 
                 similarities.append({
@@ -157,22 +191,39 @@ class EmbeddingEngine:
         
         # Update user profile with weighted average
         if track_embeddings:
-            new_preference_vector = np.mean(track_embeddings, axis=0)
+            if ML_AVAILABLE:
+                new_preference_vector = np.mean(track_embeddings, axis=0)
+            else:
+                # Fallback: compute mean manually for lists
+                dim = len(track_embeddings[0]) if track_embeddings else self.dimension
+                new_preference_vector = [
+                    sum(emb[i] for emb in track_embeddings) / len(track_embeddings)
+                    for i in range(dim)
+                ]
             
             # Blend with existing profile (decay factor for temporal adaptation)
             decay_factor = 0.9
             if user_profile.get("preference_vector"):
-                existing_vector = np.array(user_profile["preference_vector"])
-                blended_vector = (
-                    decay_factor * existing_vector + 
-                    (1 - decay_factor) * new_preference_vector
-                )
+                existing_vector = user_profile["preference_vector"]
+                if ML_AVAILABLE and not isinstance(existing_vector, list):
+                    existing_vector = np.array(existing_vector)
+                    blended_vector = (
+                        decay_factor * existing_vector + 
+                        (1 - decay_factor) * new_preference_vector
+                    )
+                else:
+                    # Fallback: manual blending for lists
+                    blended_vector = [
+                        decay_factor * existing_vector[i] + (1 - decay_factor) * new_preference_vector[i]
+                        for i in range(len(existing_vector))
+                    ]
             else:
                 blended_vector = new_preference_vector
             
             # Update user profile
+            vector_list = blended_vector.tolist() if hasattr(blended_vector, 'tolist') else blended_vector
             await self._update_user_profile(user_id, {
-                "preference_vector": blended_vector.tolist(),
+                "preference_vector": vector_list,
                 "last_updated": datetime.now().isoformat(),
                 "interaction_count": user_profile.get("interaction_count", 0) + 1
             })
@@ -259,3 +310,25 @@ class EmbeddingEngine:
         # This would integrate with the memory store
         # For now, just pass
         pass
+    
+    def _create_fallback_vector(self, text: str) -> List[float]:
+        """Create a simple fallback vector when ML dependencies are not available."""
+        # Create a simple hash-based vector
+        import hashlib
+        
+        # Create hash from text
+        text_hash = hashlib.md5(text.encode()).hexdigest()
+        
+        # Convert hash to numbers and normalize to create a vector
+        vector = []
+        for i in range(0, len(text_hash), 2):
+            # Take pairs of hex digits and convert to float
+            hex_pair = text_hash[i:i+2]
+            float_val = int(hex_pair, 16) / 255.0  # Normalize to 0-1
+            vector.append(float_val)
+        
+        # Pad or truncate to desired dimension
+        while len(vector) < self.dimension:
+            vector.extend(vector[:self.dimension - len(vector)])
+        
+        return vector[:self.dimension]

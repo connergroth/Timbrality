@@ -5,11 +5,12 @@ from typing import Dict, Any, List, Optional
 import json
 import uuid
 from datetime import datetime
+from dataclasses import asdict, is_dataclass
 
 from agent.core import TimbreAgent, AgentContext
 from agent.embedding.engine import EmbeddingEngine
 from agent.memory.store import MemoryStore
-from agent.nlp.processor import NaturalLanguageProcessor
+from agent.llm.service import LLMService
 from agent.tools.registry import ToolRegistry
 from utils.metrics import metrics
 
@@ -46,17 +47,34 @@ class PlaylistAnalysisRequest(BaseModel):
 # Initialize router
 router = APIRouter()
 
+
+def safe_json_dumps(obj):
+    """Safely serialize objects to JSON, handling dataclasses and complex types."""
+    def default_serializer(obj):
+        if is_dataclass(obj):
+            return asdict(obj)
+        elif hasattr(obj, '__dict__'):
+            return obj.__dict__
+        elif hasattr(obj, 'isoformat'):  # datetime objects
+            return obj.isoformat()
+        else:
+            return str(obj)
+    
+    return json.dumps(obj, default=default_serializer)
+
 # Initialize agent components (these would be dependency injected in production)
+from config.settings import settings
+
 memory_store = MemoryStore()
 embedding_engine = EmbeddingEngine()
-nlp_processor = NaturalLanguageProcessor()
+llm_service = LLMService(api_key=settings.openai_api_key)
 tool_registry = ToolRegistry()
 
 # Initialize main agent
 agent = TimbreAgent(
     memory_store=memory_store,
     embedding_engine=embedding_engine,
-    nlp_processor=nlp_processor,
+    llm_service=llm_service,
     tool_registry=tool_registry
 )
 
@@ -144,36 +162,85 @@ async def chat_stream(request: ChatRequest):
         metrics.record_request()
         
         async def generate_stream():
+            import asyncio
+            from asyncio import Queue
+            
             context = await get_agent_context(request.user_id, request.session_id)
             
             # Send initial acknowledgment
-            yield f"data: {json.dumps({'type': 'start', 'message': 'Processing your request...'})}\n\n"
+            yield f"data: {safe_json_dumps({'type': 'start', 'message': 'Processing your request...'})}\n\n"
             
-            # Process query and yield intermediate results
+            # Create a queue for streaming updates
+            stream_queue = Queue()
+            processing_complete = False
+            
+            # Define streaming callback that puts updates in queue
+            async def stream_callback(data):
+                await stream_queue.put(data)
+            
+            # Start processing query in background
+            async def process_query():
+                nonlocal processing_complete
+                try:
+                    response = await agent.process_query(request.message, context, stream_callback)
+                    
+                    # Convert response to JSON-serializable format
+                    final_response = {
+                        'type': 'complete',
+                        'response': response.content,
+                        'tracks': [track for track in response.tracks] if response.tracks else [],
+                        'explanations': response.explanations,
+                        'confidence': response.confidence,
+                        'session_id': context.session_id
+                    }
+                    await stream_queue.put(final_response)
+                except Exception as e:
+                    await stream_queue.put({'type': 'error', 'error': str(e)})
+                finally:
+                    processing_complete = True
+                    await stream_queue.put(None)  # Signal end
+            
+            # Start processing
+            task = asyncio.create_task(process_query())
+            
+            # Stream updates as they come
             try:
-                response = await agent.process_query(request.message, context)
+                while not processing_complete or not stream_queue.empty():
+                    try:
+                        # Wait for next update with timeout
+                        update = await asyncio.wait_for(stream_queue.get(), timeout=0.1)
+                        if update is None:  # End signal
+                            break
+                        yield f"data: {safe_json_dumps(update)}\n\n"
+                    except asyncio.TimeoutError:
+                        continue
+                    except asyncio.CancelledError:
+                        # Handle cancellation gracefully
+                        break
+                        
+                # Ensure task completes or cancel it gracefully
+                if not task.done():
+                    try:
+                        await asyncio.wait_for(task, timeout=1.0)
+                    except (asyncio.TimeoutError, asyncio.CancelledError):
+                        task.cancel()
+                        try:
+                            await task
+                        except asyncio.CancelledError:
+                            pass
                 
-                # Send tool execution updates
-                for tool in response.tools_used:
-                    yield f"data: {json.dumps({'type': 'tool', 'tool': tool})}\n\n"
-                
-                # Send final response
-                final_data = {
-                    'type': 'complete',
-                    'response': response.content,
-                    'tracks': response.tracks,
-                    'explanations': response.explanations,
-                    'confidence': response.confidence,
-                    'session_id': context.session_id
-                }
-                yield f"data: {json.dumps(final_data)}\n\n"
-                
+            except asyncio.CancelledError:
+                # Handle cancellation at the stream level
+                if not task.done():
+                    task.cancel()
+                    try:
+                        await task
+                    except asyncio.CancelledError:
+                        pass
+                raise
             except Exception as e:
-                error_data = {
-                    'type': 'error',
-                    'error': str(e)
-                }
-                yield f"data: {json.dumps(error_data)}\n\n"
+                error_data = {'type': 'error', 'error': str(e)}
+                yield f"data: {safe_json_dumps(error_data)}\n\n"
         
         return StreamingResponse(
             generate_stream(),

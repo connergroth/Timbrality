@@ -3,7 +3,7 @@ import re
 from dataclasses import dataclass
 from datetime import datetime
 
-from ..core import IntentType
+from ..types import IntentType
 
 
 @dataclass
@@ -67,6 +67,8 @@ class NaturalLanguageProcessor:
             return self._generate_vibe_response(tracks, intent_result.entities)
         elif intent_result.intent == IntentType.ANALYZE_PLAYLIST:
             return self._generate_playlist_analysis_response(tracks, explanations)
+        elif intent_result.intent == IntentType.CONVERSATIONAL:
+            return self._generate_conversational_response(user_input, intent_result)
         else:
             return self._generate_general_response(tracks, explanations)
     
@@ -181,6 +183,15 @@ class NaturalLanguageProcessor:
                 r'\bnot\s+my\s+style\b',
                 r'\bmore\s+like\s+this\b',
                 r'\b(good|great|perfect|terrible|awful)\s+(recommendation|suggestion)\b'
+            ],
+            
+            IntentType.CONVERSATIONAL: [
+                r'(?:^|\s)(hey|hi|hello|hiya|sup|yo)(?:\s|$)',
+                r'(?:^|\s)(good morning|good afternoon|good evening)(?:\s|$)',
+                r'(?:^|\s)(how are you|whats up|how\'s it going)(?:\s|$)',
+                r'(?:^|\s)(thanks|thank you|thx)(?:\s|$)',
+                r'(?:^|\s)(bye|goodbye|see ya|later|cya)(?:\s|$)',
+                r'(?:^|\s)(what can you do|help|what are you)(?:\s|$)'
             ]
         }
     
@@ -228,8 +239,10 @@ class NaturalLanguageProcessor:
             
             'count': [
                 r'\b(\d+)\s+(?:songs?|tracks?|recommendations?)\b',
+                r'\b(\d+)\s+(?:summer|winter|chill|energetic|sad|happy|mood|vibe)\s+(?:songs?|tracks?|music)\b',
                 r'\b(few|several|many|lots?|bunch)\b',
-                r'\btop\s+(\d+)\b'
+                r'\btop\s+(\d+)\b',
+                r'\b(\d+)\b'  # Fallback: any number
             ]
         }
     
@@ -322,7 +335,11 @@ class NaturalLanguageProcessor:
             if match:
                 count_str = match.group(1)
                 if count_str.isdigit():
-                    entities['count'] = int(count_str)
+                    count = int(count_str)
+                    # Only use fallback numbers if they're reasonable (1-20)
+                    if 1 <= count <= 20:
+                        entities['count'] = count
+                        break
                 else:
                     # Convert word to number
                     word_to_num = {
@@ -330,7 +347,7 @@ class NaturalLanguageProcessor:
                         'lot': 20, 'lots': 20, 'bunch': 10
                     }
                     entities['count'] = word_to_num.get(count_str, 10)
-                break
+                    break
         
         return entities
     
@@ -429,6 +446,38 @@ class NaturalLanguageProcessor:
             return f"I found {count} recommendations. {explanation}"
         else:
             return f"Here are {count} personalized recommendations based on your preferences."
+    
+    def _generate_conversational_response(self, user_input: str, intent_result: IntentResult) -> str:
+        """Generate conversational response for greetings and general chat."""
+        user_input_lower = user_input.lower().strip()
+        
+        # Greetings
+        if any(greeting in user_input_lower for greeting in ['hey', 'hi', 'hello', 'hiya', 'sup', 'yo']):
+            return "Hey! I'm Timbre, your AI music companion. I can help you discover new music, find similar tracks, analyze playlists, or explore different vibes. What kind of music are you in the mood for?"
+        
+        # Morning/evening greetings
+        elif any(greeting in user_input_lower for greeting in ['good morning', 'good afternoon', 'good evening']):
+            return "Hello! Ready to discover some great music today? I can help you find tracks based on your mood, search for specific songs, or recommend similar music to what you love."
+        
+        # How are you / what's up
+        elif any(phrase in user_input_lower for phrase in ['how are you', 'whats up', "what's up", "how's it going"]):
+            return "I'm doing great, thanks for asking! I'm here and ready to help you explore music. What can I help you discover today?"
+        
+        # Thanks
+        elif any(thanks in user_input_lower for thanks in ['thanks', 'thank you', 'thx']):
+            return "You're welcome! Happy to help you discover amazing music. Anything else you'd like to explore?"
+        
+        # Goodbye
+        elif any(bye in user_input_lower for bye in ['bye', 'goodbye', 'see ya', 'later', 'cya']):
+            return "See you later! Thanks for exploring music with me. Come back anytime you want to discover something new!"
+        
+        # Help/capabilities
+        elif any(phrase in user_input_lower for phrase in ['what can you do', 'help', 'what are you']):
+            return "I'm Timbre, your AI music companion! I can help you:\n\n• Search for specific tracks or artists\n• Find music similar to songs you love\n• Discover music based on moods and vibes\n• Analyze your Spotify playlists\n• Get personalized recommendations\n\nJust tell me what you're looking for, like 'find me some chill indie music' or 'something similar to Radiohead'!"
+        
+        # Default friendly response
+        else:
+            return "I'm Timbre, your music discovery companion! I'm here to help you explore and discover music. Try asking me to find similar songs, recommend music for a specific mood, or search for tracks by your favorite artists!"
     
     def _generate_no_results_response(self, user_input: str, intent_result: IntentResult) -> str:
         """Generate response when no results are found."""

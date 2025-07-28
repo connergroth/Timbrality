@@ -20,26 +20,36 @@ class TrackSearchTool(BaseTool):
     async def execute(self, intent_result, context) -> ToolResult:
         """Execute track search based on intent results."""
         try:
-            entities = intent_result.entities
-            
-            # Extract search parameters
-            query = entities.get("search_query", "")
-            artist = entities.get("artist", "")
-            track_name = entities.get("track_name", "")
+            # Handle different intent_result formats
+            if hasattr(intent_result, 'entities'):
+                entities = intent_result.entities
+                query = entities.get("search_query", "")
+                artist = entities.get("artist", "")
+                track_name = entities.get("track_name", "")
+            elif hasattr(intent_result, 'raw_text'):
+                # Use the raw text as the search query
+                query = intent_result.raw_text
+                artist = ""
+                track_name = ""
+            else:
+                # Fallback: assume it's a mock intent object with raw_text
+                query = getattr(intent_result, 'raw_text', str(intent_result))
+                artist = ""
+                track_name = ""
             
             if not any([query, artist, track_name]):
                 return self._create_error_result("No search terms provided")
             
-            # Build search query
-            search_terms = []
-            if track_name:
-                search_terms.append(f"track:{track_name}")
-            if artist:
-                search_terms.append(f"artist:{artist}")
+            # Build search query - for general queries, just use the text
             if query and not track_name and not artist:
-                search_terms.append(query)
-            
-            final_query = " ".join(search_terms)
+                final_query = query
+            else:
+                search_terms = []
+                if track_name:
+                    search_terms.append(f"track:{track_name}")
+                if artist:
+                    search_terms.append(f"artist:{artist}")
+                final_query = " ".join(search_terms) if search_terms else query
             
             # Search both services concurrently
             spotify_task = self._search_spotify(final_query)
@@ -66,9 +76,11 @@ class TrackSearchTool(BaseTool):
     async def _search_spotify(self, query: str) -> List[Dict[str, Any]]:
         """Search Spotify for tracks."""
         try:
-            results = await self.spotify_service.search_tracks(query, limit=20)
+            # Use the spotipy search method directly
+            results = self.spotify_service.sp.search(q=query, type="track", limit=20)
             return self._format_spotify_results(results)
-        except Exception:
+        except Exception as e:
+            print(f"Spotify search error: {e}")
             return []
     
     async def _search_lastfm(self, query: str) -> List[Dict[str, Any]]:

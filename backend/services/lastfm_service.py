@@ -1,12 +1,21 @@
 import requests
 import os
 import pandas as pd
+from typing import List, Dict
 from dotenv import load_dotenv
-from backend.cache.redis import cache_user_profile
-from backend.models.user import User
-from backend.utils.database_utils import insert_data_to_db
 from sqlalchemy.orm import Session
-from backend.database import SessionLocal
+
+try:
+    from utils.cache import get_cache, set_cache
+    from models.database import SessionLocal
+except ImportError:
+    # Fallback if cache/database not available
+    def get_cache(*args, **kwargs):
+        return None
+    def set_cache(*args, **kwargs):
+        pass
+    class SessionLocal:
+        pass
 
 # Load environment variables
 load_dotenv()
@@ -158,21 +167,14 @@ def fetch_track_tags(track_id: str):
     return [tag["name"] for tag in tags]
 
 def ensure_user_exists(username: str):
-    """Ensure the user exists in the database before storing Last.fm data."""
-    db: Session = SessionLocal()
-    try:
-        user = db.query(User).filter_by(username=username).first()
-        if not user:
-            new_user = User(username=username)
-            db.add(new_user)
-            db.commit()
-            print(f"Created new user: {username}")
-    finally:
-        db.close()  # Ensure DB connection is closed
+    """Legacy function - user management moved to Supabase."""
+    print(f"User management for {username} handled by Supabase")
 
 async def cache_user_data(username: str, user_data: dict):
-    """Cache user data in Redis for faster access."""
-    return await cache_user_profile(username, user_data)
+    """Cache user data for faster access."""
+    cache_key = f"lastfm_user:{username}"
+    set_cache(cache_key, user_data, ttl=3600)  # 1 hour TTL
+    return user_data
 
 async def fetch_and_store_lastfm_data(username: str):
     """Fetch Last.fm user data and store it in the database."""
@@ -196,9 +198,8 @@ async def fetch_and_store_lastfm_data(username: str):
     await cache_user_data(username, user_data)  
 
     # Insert data into the database
-    insert_data_to_db(top_songs_df, "listening_histories")  
-    # insert_data_to_db(user_data['top_artists'], 'user_artists')  # Uncomment if needed
-    # insert_data_to_db(user_data['top_albums'], 'user_albums')  # Uncomment if needed
+    # Database storage moved to Supabase - data can be stored via ingestion pipeline
+    print(f"Last.fm data for {username} ready for Supabase ingestion")
 
     return {"message": f"Last.fm data fetched and stored successfully for {username}"}
 
@@ -218,3 +219,50 @@ def fetch_user_data(user: str):
         "recently_played": recently_played,
         "scrobbles": scrobbles,
     }
+
+
+class LastFMService:
+    """Service class for Last.fm API interactions."""
+    
+    def __init__(self):
+        self.api_key = API_KEY
+        self.base_url = "http://ws.audioscrobbler.com/2.0/"
+    
+    async def search_tracks(self, query: str, limit: int = 10) -> List[Dict]:
+        """Search for tracks using Last.fm API."""
+        try:
+            # Use the existing search function
+            results = search_track(query)
+            if isinstance(results, list):
+                return results[:limit]
+            return []
+        except Exception as e:
+            print(f"Error searching tracks: {e}")
+            return []
+    
+    async def get_track_info(self, artist: str, track: str) -> Dict:
+        """Get detailed track information."""
+        try:
+            # Use existing functions to get track info
+            track_info = {
+                "artist": artist,
+                "track": track,
+                "tags": get_track_tags(artist, track),
+                "similar": []  # Could be expanded
+            }
+            return track_info
+        except Exception as e:
+            print(f"Error getting track info: {e}")
+            return {}
+    
+    async def get_user_top_tracks(self, username: str, limit: int = 10) -> List[Dict]:
+        """Get user's top tracks."""
+        try:
+            # Use existing function
+            top_tracks = fetch_user_songs(username)
+            if isinstance(top_tracks, list):
+                return top_tracks[:limit]
+            return []
+        except Exception as e:
+            print(f"Error getting user top tracks: {e}")
+            return []

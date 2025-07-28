@@ -24,6 +24,11 @@ class HybridRecommenderTool(BaseTool):
             count = entities.get("count", 10)
             seed_data = entities.get("seed_data", {})
             
+            # Check if this is a mood-based request
+            mood = entities.get("mood")
+            if mood:
+                recommendation_type = "mood"
+            
             # Get user profile and history
             user_profile = await self._get_user_profile(context.user_id)
             
@@ -33,7 +38,7 @@ class HybridRecommenderTool(BaseTool):
             elif recommendation_type == "discovery":
                 tracks = await self._recommend_discovery(user_profile, count)
             elif recommendation_type == "mood":
-                tracks = await self._recommend_by_mood(entities.get("mood"), user_profile, count)
+                tracks = await self._recommend_by_mood(mood, user_profile, count)
             else:
                 tracks = await self._recommend_general(user_profile, count)
             
