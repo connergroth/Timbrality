@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://github.com/user-attachments/assets/ff6a407e-cefa-4855-8a90-22ae328b8e95" alt="Timbre" width="400px" />
+  <img src="https://github.com/user-attachments/assets/ff6a407e-cefa-4855-8a90-22ae328b8e95" alt="Timbre" width="350px" />
   <h1>Timbre - AI Powered Music Discovery</h1>
 </div>
 
