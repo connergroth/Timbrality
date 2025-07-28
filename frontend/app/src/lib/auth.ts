@@ -9,7 +9,7 @@ export function validateState(storedState: string, receivedState: string): boole
 }
 
 export function createSpotifyAuthUrl(clientId: string, redirectUri: string, state: string): string {
-  const scope = 'user-read-private user-read-email user-read-recently-played user-top-read playlist-read-private'
+  const scope = 'user-read-private user-read-email user-read-recently-played user-top-read playlist-read-private playlist-read-collaborative playlist-modify-public playlist-modify-private'
   
   const params = new URLSearchParams({
     client_id: clientId,

@@ -1,8 +1,12 @@
 import json
 import httpx
 import time
+import os
 from typing import Any, Optional, Dict
-from app.config import REDIS_URL, REDIS_TOKEN
+
+# Get Redis config from environment
+REDIS_URL = os.getenv("UPSTASH_REDIS_REST_URL")
+REDIS_TOKEN = os.getenv("UPSTASH_REDIS_REST_TOKEN")
 
 # Headers for Redis REST API
 HEADERS = {"Authorization": f"Bearer {REDIS_TOKEN}"} if REDIS_TOKEN else {}
@@ -130,3 +134,28 @@ async def clear_cache_pattern(pattern: str) -> None:
         # Exact match
         if pattern in memory_cache:
             del memory_cache[pattern]
+
+
+# Cache manager class for consistent interface
+class cache_manager:
+    """Cache manager class that provides a consistent interface for caching operations."""
+    
+    @staticmethod
+    async def get(key: str) -> Optional[Any]:
+        """Get a value from cache."""
+        return await get_cache(key)
+    
+    @staticmethod
+    async def set(key: str, value: Any, expire: int = 3600) -> None:
+        """Set a value in cache with expiration."""
+        await set_cache(key, value, expire)
+    
+    @staticmethod
+    async def delete(key: str) -> None:
+        """Delete a value from cache."""
+        await delete_cache(key)
+    
+    @staticmethod
+    async def clear_pattern(pattern: str) -> None:
+        """Clear all cache keys matching a pattern."""
+        await clear_cache_pattern(pattern)

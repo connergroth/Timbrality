@@ -18,6 +18,8 @@ const config: Config = {
     extend: {
       fontFamily: {
         playfair: ['var(--font-playfair), serif'],
+        inter: ['Inter', 'system-ui', 'sans-serif'],
+        mono: ['JetBrains Mono', 'Fira Code', 'Monaco', 'Cascadia Code', 'Roboto Mono', 'monospace'],
       },
       colors: {
         border: 'hsl(var(--border))',
@@ -72,7 +74,7 @@ const config: Config = {
       keyframes: {
         accordionDown: {
           from: {
-            height: 0
+            height: '0'
           },
           to: {
             height: 'var(--radix-accordion-content-height)'

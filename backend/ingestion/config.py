@@ -5,7 +5,7 @@ Now using centralized settings from config.settings
 """
 import os
 try:
-    from config.settings import get_settings
+    from config.settings import settings
 except ImportError:
     # Fallback to environment variables
     import os

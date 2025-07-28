@@ -8,9 +8,9 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
-SPOTIPY_CLIENT_ID = os.getenv("SPOTIPY_CLIENT_ID")
-SPOTIPY_CLIENT_SECRET = os.getenv("SPOTIPY_CLIENT_SECRET")
-SPOTIPY_REDIRECT_URI = os.getenv("SPOTIPY_REDIRECT_URI")
+SPOTIPY_CLIENT_ID = os.getenv("SPOTIFY_CLIENT_ID")
+SPOTIPY_CLIENT_SECRET = os.getenv("SPOTIFY_CLIENT_SECRET")
+SPOTIPY_REDIRECT_URI = os.getenv("SPOTIFY_REDIRECT_URI")
 
 class SpotifyService:
     def __init__(self, user_auth=False):
@@ -20,7 +20,7 @@ class SpotifyService:
                 client_id=SPOTIPY_CLIENT_ID,
                 client_secret=SPOTIPY_CLIENT_SECRET,
                 redirect_uri=SPOTIPY_REDIRECT_URI,
-                scope="user-library-read user-library-modify user-top-read user-follow-read"
+                scope="user-library-read user-library-modify user-top-read user-follow-read playlist-read-private playlist-read-collaborative playlist-modify-public playlist-modify-private user-read-currently-playing user-read-playback-state"
             ))
         else:
             self.sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(
@@ -29,6 +29,51 @@ class SpotifyService:
             ))
 
     ### USER DATA ###
+
+    ## Get Currently Playing Track
+    def get_currently_playing(self):
+        """Get the user's currently playing track."""
+        try:
+            current = self.sp.currently_playing()
+            if current is None or not current.get('is_playing', False):
+                return {
+                    "is_playing": False,
+                    "track": None,
+                    "message": "Not Playing - Spotify"
+                }
+            
+            track = current['item']
+            if track is None:
+                return {
+                    "is_playing": False,
+                    "track": None,
+                    "message": "Not Playing - Spotify"
+                }
+            
+            return {
+                "is_playing": True,
+                "track": {
+                    "id": track["id"],
+                    "name": track["name"],
+                    "artist": track["artists"][0]["name"],
+                    "artists": [artist["name"] for artist in track["artists"]],
+                    "album": track["album"]["name"],
+                    "album_id": track["album"]["id"],
+                    "cover_art": track["album"]["images"][0]["url"] if track["album"]["images"] else None,
+                    "preview_url": track.get("preview_url"),
+                    "external_urls": track["external_urls"],
+                    "duration_ms": track["duration_ms"],
+                    "progress_ms": current.get("progress_ms", 0)
+                },
+                "message": f"Now Playing: {track['name']} by {track['artists'][0]['name']}"
+            }
+        except Exception as e:
+            print(f"Error getting currently playing track: {e}")
+            return {
+                "is_playing": False,
+                "track": None,
+                "message": "Not Playing - Spotify"
+            }
 
     ## Fetch User's Liked Tracks
     def fetch_user_saved_tracks(self, user_id, limit=50):

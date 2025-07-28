@@ -6,20 +6,45 @@ from slowapi.middleware import SlowAPIMiddleware
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from contextlib import asynccontextmanager
+import asyncio
+
+# Import config to ensure environment variables are loaded
+import config
 
 from routes.album_routes import router as album_router
 from routes.user_routes import router as user_router
 from routes.metrics_routes import router as metrics_router
 from routes.ml_routes import ml_router
 from routes.scraper_routes import router as scraper_router
+from routes.agent_routes import router as agent_router
+from routes.playlist_routes import router as playlist_router
+from routes.spotify_routes import router as spotify_router
 from utils.metrics import metrics
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Initialize any resources on startup
+    print("🚀 Starting Timbre backend server...")
     yield
     # Clean up resources on shutdown
+    print("🛑 Shutting down Timbre backend server...")
+    
+    # Cancel any remaining tasks
+    import asyncio
+    tasks = [task for task in asyncio.all_tasks() if not task.done()]
+    if tasks:
+        print(f"Cancelling {len(tasks)} remaining tasks...")
+        for task in tasks:
+            task.cancel()
+        
+        # Wait for tasks to complete cancellation
+        try:
+            await asyncio.gather(*tasks, return_exceptions=True)
+        except Exception:
+            pass  # Ignore cancellation exceptions
+    
+    print("✅ Server shutdown complete")
 
 
 # Initialize the FastAPI app
@@ -62,6 +87,9 @@ app.add_middleware(
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 
+# Handle asyncio cancellation gracefully - moved to route level since CancelledError 
+# may not work properly as a global exception handler in all FastAPI versions
+
 # Global exception handler
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
@@ -82,6 +110,9 @@ app.include_router(user_router, prefix="/user", tags=["Users"])
 app.include_router(metrics_router, prefix="/metrics", tags=["Metrics"])
 app.include_router(ml_router, tags=["Machine Learning"])
 app.include_router(scraper_router, prefix="/scraper", tags=["AOTY Scraper"])
+app.include_router(agent_router, prefix="/agent", tags=["AI Agent"])
+app.include_router(playlist_router, prefix="/playlist", tags=["Playlists"])
+app.include_router(spotify_router, tags=["Spotify"])
 
 
 @app.get("/", summary="API Health Check")

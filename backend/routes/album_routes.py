@@ -1,10 +1,8 @@
-from fastapi import APIRouter, HTTPException, Depends, Query, Request
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, HTTPException, Query, Request
 from time import time
 from typing import List
 
 try:
-    from models.database import SessionLocal
     from models.aoty_models import Album, SearchResult
     from services.aoty_scraper_service import (
         get_album_url,
@@ -22,7 +20,6 @@ try:
     from utils.metrics import metrics
 except ImportError:
     # Fallback for development - create simple mock objects
-    from models.database import SessionLocal
     
     # Mock classes
     class Album:
@@ -73,12 +70,6 @@ router = APIRouter()
 limiter = Limiter(key_func=get_remote_address)
 
 # Dependency to get the database session
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 
 @router.get(
@@ -224,7 +215,7 @@ async def search_albums_endpoint(
 
 # Legacy endpoints for backward compatibility
 @router.get("/enrich/{album_id}")
-async def enrich_album(album_id: str, db: Session = Depends(get_db)):
+async def enrich_album(album_id: str):
     """Legacy endpoint - Enrich an album with AOTY metadata."""
     # This could be updated to use the new AOTY functionality
     # For now, return a placeholder response
@@ -234,8 +225,7 @@ async def enrich_album(album_id: str, db: Session = Depends(get_db)):
 @router.get("/similar/{album_id}")
 async def get_similar_albums_legacy(
     album_id: str, 
-    limit: int = Query(5, gt=0, le=10),
-    db: Session = Depends(get_db)
+    limit: int = Query(5, gt=0, le=10)
 ):
     """Legacy endpoint - Get similar albums for a given album."""
     # This could be updated to use the new AOTY functionality

@@ -1,60 +1,76 @@
 # backend/tasks/batch_processing.py
 import asyncio
-from sqlalchemy.orm import Session
-from app.models.database import SessionLocal
-from app.models.album import Album
-from app.middleware.aoty_middleware import enrich_album_with_aoty
+
+try:
+    from ingestion.insert_to_supabase import get_supabase_client, get_training_dataset
+    from middleware.aoty_middleware import enrich_album_with_aoty
+except ImportError:
+    # Fallback functions if services not available
+    def get_supabase_client():
+        return None
+    
+    def get_training_dataset(*args, **kwargs):
+        return []
+    
+    async def enrich_album_with_aoty(*args, **kwargs):
+        return None
 
 async def batch_enrich_albums(limit: int = 100, skip: int = 0):
     """
-    Batch process albums to enrich with AOTY data.
+    Batch process albums to enrich with AOTY data using Supabase.
     Processes albums in chunks to avoid overloading the API.
     """
-    db = SessionLocal()
     try:
-        # Get total albums count
-        total_albums = db.query(Album).count()
+        supabase = get_supabase_client()
+        if not supabase:
+            print("Supabase client not available")
+            return {"total": 0, "processed": 0, "failed": 0}
         
+        # Get albums from Supabase (tracks table contains album info)
+        tracks_data = get_training_dataset(limit=1000)  # Get sample of tracks
+        
+        # Extract unique albums
+        unique_albums = {}
+        for track in tracks_data:
+            album_key = f"{track.get('artist', '').lower()}-{track.get('album', '').lower()}"
+            if album_key not in unique_albums and track.get('album') and track.get('artist'):
+                unique_albums[album_key] = {
+                    'artist': track.get('artist'),
+                    'album': track.get('album')
+                }
+        
+        total_albums = len(unique_albums)
         processed = 0
         failed = 0
         
-        # Process in chunks
-        while skip < total_albums:
-            # Get a batch of albums
-            albums = db.query(Album).order_by(Album.id).offset(skip).limit(limit).all()
-            
-            # Process each album
-            for album in albums:
-                try:
-                    success = await enrich_album_with_aoty(db, album.id)
-                    if success:
-                        processed += 1
-                    else:
-                        failed += 1
-                        
-                    # Small delay to avoid overwhelming the API
-                    await asyncio.sleep(1)
-                    
-                except Exception as e:
-                    print(f"Error processing album {album.id}: {str(e)}")
+        # Process each unique album
+        for album_info in list(unique_albums.values())[skip:skip+limit]:
+            try:
+                result = await enrich_album_with_aoty(album_info['artist'], album_info['album'])
+                if result:
+                    processed += 1
+                    print(f"Enriched: {album_info['artist']} - {album_info['album']}")
+                else:
                     failed += 1
-            
-            # Update skip for next batch
-            skip += limit
-            
-            print(f"Progress: {skip}/{total_albums} albums processed")
-            
-            # Optional: larger delay between batches
-            await asyncio.sleep(5)
-            
+                    
+                # Small delay to avoid overwhelming the API
+                await asyncio.sleep(1)
+                
+            except Exception as e:
+                print(f"Error processing album {album_info['album']} by {album_info['artist']}: {str(e)}")
+                failed += 1
+        
+        print(f"Progress: {processed + failed}/{total_albums} albums processed")
+        
         return {
             "total": total_albums,
             "processed": processed,
             "failed": failed
         }
         
-    finally:
-        db.close()
+    except Exception as e:
+        print(f"Error in batch processing: {str(e)}")
+        return {"total": 0, "processed": 0, "failed": 0}
 
 # Function to run the task
 def start_batch_processing():

@@ -1,11 +1,13 @@
 'use client'
 
 import { useSupabase } from '@/components/SupabaseProvider'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { Navbar } from '@/components/Navbar'
 import { Footer } from '@/components/Footer'
 import { AlgorithmSidebar } from '@/components/AlgorithmSidebar'
-import { Plus, Settings, Mic, Music, Send } from 'lucide-react'
+import { AgentChat } from '@/components/AgentChat'
+import { NavigationSidebar } from '@/components/NavigationSidebar'
+import type { Track as AgentTrack } from '@/lib/agent'
 
 // Define the track type to fix TypeScript error
 interface Track {
@@ -18,10 +20,12 @@ interface Track {
 }
 
 export default function HomePage() {
-  const { user, loading } = useSupabase();
+  const { user, loading, signOut } = useSupabase();
   const [userProfile, setUserProfile] = useState<any>(null)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
-  const inputRef = useRef<HTMLInputElement>(null)
+  const [isNavigationSidebarOpen, setIsNavigationSidebarOpen] = useState(false)
+  const [agentRecommendations, setAgentRecommendations] = useState<AgentTrack[]>([])
+  const [isChatActive, setIsChatActive] = useState(false)
 
   useEffect(() => {
     if (user && !loading) {
@@ -35,7 +39,7 @@ export default function HomePage() {
     // For now, using mock data
     setUserProfile({
       name: 'Conner',
-      taste: ['Atmospheric,Experimental, fi'],
+      taste: ['Atmospheric', 'Experimental', 'Lo-fi'],
       recentTracks: [
         {
           id: 1,
@@ -65,6 +69,18 @@ export default function HomePage() {
     })
   }
 
+  const handleAgentRecommendations = (tracks: AgentTrack[]) => {
+    setAgentRecommendations(tracks)
+  }
+
+  const handleStartChat = () => {
+    setIsChatActive(true)
+  }
+
+  const handleCloseChat = () => {
+    setIsChatActive(false)
+  }
+
   // Show loading state while checking authentication
   if (loading) {
     return (
@@ -82,11 +98,11 @@ export default function HomePage() {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2l font-bold mb-4">Please sign in to continue</h1>
-          <p className="text-muted-foreground mb-4">You need to authenticate to access Timbre.</p>
+          <h1 className="text-2xl font-inter font-semibold mb-4 tracking-tight">Please sign in to continue</h1>
+          <p className="text-muted-foreground mb-4 font-inter">You need to authenticate to access Timbre.</p>
           <button 
             onClick={() => window.location.href = '/auth'}
-            className="bg-primary text-primary-foreground px-6 py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors"
+            className="bg-primary text-primary-foreground px-6 py-3 rounded-lg font-inter font-medium hover:bg-primary/90 transition-colors"
           >
             Go to Auth Page
           </button>
@@ -96,80 +112,69 @@ export default function HomePage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-background">
-      <Navbar user={user} onOpenAlgorithmSidebar={() => setIsSidebarOpen(true)} />
-      
-      <main className="flex-1 container mx-auto px-4 py-8 max-w-7xl">
-        {/* Welcome Section */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-playfair font-bold text-foreground mb-2">
-            Welcome back, {userProfile?.name || user.email?.split('@')[0]}.
-          </h1>
-          <p className="text-lg text-muted-foreground font-playfair">
-            Your taste leans: {userProfile?.taste?.join(' •') || 'Loading...'}
-          </p>
-        </div>
+    <div className="flex min-h-screen bg-background">
+      {/* Navigation Sidebar */}
+      <NavigationSidebar 
+        isOpen={isNavigationSidebarOpen}
+        onClose={() => setIsNavigationSidebarOpen(false)}
+        userId={user.id}
+      />
 
-        {/* Track Grid */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-playfair font-semibold mb-4">Recent Recommendations</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {userProfile?.recentTracks?.map((track: Track) => (
-              <div key={track.id} className="bg-card border border-border rounded-lg p-3">
-                <div className="flex items-center space-x-3">
-                  <div className="w-12 h-12 bg-muted rounded-md flex-shrink-0"></div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-medium text-foreground truncate">{track.title}</h3>
-                    <p className="text-sm text-muted-foreground truncate">{track.artist}</p>
-                    <p className="text-xs text-muted-foreground truncate">{track.album}</p>
-                  </div>
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col">
+        <Navbar 
+          user={user} 
+          onOpenAlgorithmSidebar={() => setIsSidebarOpen(true)}
+          onOpenNavigationSidebar={() => setIsNavigationSidebarOpen(!isNavigationSidebarOpen)}
+          onSignOut={signOut}
+        />
+        
+        <main className={`flex-1 container mx-auto px-4 py-8 max-w-7xl ${isChatActive ? 'pb-24' : ''}`}>
+          {/* Welcome Section and Track Grid - Only show when chat is not active */}
+          {!isChatActive && (
+            <>
+              {/* Welcome Section */}
+              <div className="mb-8">
+                <h1 className="text-3xl font-inter font-semibold text-foreground mb-2 tracking-tight">
+                  Welcome back, {userProfile?.name || user.email?.split('@')[0]}.
+                </h1>
+                <p className="text-base text-muted-foreground font-inter font-medium">
+                  Your taste leans: {userProfile?.taste?.join(' • ') || 'Loading...'}
+                </p>
+              </div>
+
+              {/* Track Grid */}
+              <div className="mb-8">
+                <h2 className="text-xl font-inter font-semibold mb-6 tracking-tight">Recent Recommendations</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {userProfile?.recentTracks?.map((track: Track) => (
+                    <div key={track.id} className="bg-card border border-border rounded-lg p-3">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-12 h-12 bg-muted rounded-md flex-shrink-0"></div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-inter font-semibold text-foreground truncate text-sm">{track.title}</h3>
+                          <p className="text-xs text-muted-foreground truncate font-inter">{track.artist}</p>
+                          <p className="text-xs text-muted-foreground/70 truncate font-inter">{track.album}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
-            ))}
-          </div>
-        </div>
+            </>
+          )}
 
-        {/* Mood Input */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-playfair font-semibold mb-4">What are you in the mood for?</h2>
-          <div className="max-w-2xl">
-            <div 
-              className="bg-card border border-border rounded-xl p-4 relative cursor-text"
-              onClick={() => inputRef.current?.focus()}
-            >
-              <input
-                ref={inputRef}
-                type="text"
-                placeholder="Songs that feel like a summer night"
-                autoComplete="off"
-                className="w-full bg-transparent text-foreground placeholder:text-muted-foreground outline-none border-none text-lg mb-8"
-              />
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <button className="flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors">
-                    <Plus className="w-5 h-5" />
-                  </button>
-                  <button className="flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors">
-                    <Settings className="w-5 h-5" />
-                    <span>Tools</span>
-                  </button>
-                </div>
-                <div className="flex items-center space-x-4">
-                  <button className="flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors">
-                    <Music className="w-5 h-5" />
-                  </button>
-                  <button className="flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors">
-                    <Send className="w-5 h-5" />
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </main>
-
-      <Footer />
+          {/* AI Agent Chat */}
+          <AgentChat 
+            userId={user.id} 
+            onTrackRecommendations={handleAgentRecommendations}
+            onStartChat={handleStartChat}
+            isInline={isChatActive}
+            onClose={isChatActive ? handleCloseChat : undefined}
+            user={user}
+          />
+        </main>
+      </div>
 
       {/* Algorithm Sidebar */}
       <AlgorithmSidebar 

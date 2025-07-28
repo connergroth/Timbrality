@@ -1,8 +1,22 @@
 import httpx
 from typing import Optional, Dict, Any, List
-from app.config import AOTY_API_URL
-from backend.aoty_api.app.scraper.aoty_scraper import get_album_url
-from backend.utils.matching import find_best_match, clean_title
+
+try:
+    from config.settings import settings
+    from services.aoty_scraper_service import get_album_url, scrape_album
+    from utils.matching import find_best_match
+except ImportError:
+    # Fallback settings if services not available
+    settings = type('Settings', (), {'aoty_api_url': 'https://albumoftheyear.org'})()
+    
+    async def get_album_url(*args, **kwargs):
+        return None
+    
+    async def scrape_album(*args, **kwargs):
+        return None
+    
+    def find_best_match(*args, **kwargs):
+        return None
 
 # Simple in-memory cache
 _album_cache = {}
@@ -16,15 +30,16 @@ async def cache_album_data(cache_key: str, data: Dict[str, Any]) -> None:
     _album_cache[cache_key] = data
 
 class AOTYService:
-    def __init__(self, base_url=AOTY_API_URL):
-        self.base_url = base_url
+    def __init__(self, base_url=None):
+        settings = get_settings()
+        self.base_url = base_url or getattr(settings, 'aoty_base_url', 'https://albumoftheyear.org')
         self.client = httpx.AsyncClient(timeout=30.0)
     
     async def close(self):
         await self.client.aclose()
     
     async def get_album(self, artist: str, album: str) -> Optional[Dict[str, Any]]:
-        """Fetch album data from AOTY API with caching."""
+        """Fetch album data from AOTY using scraper service with caching."""
         # Generate a cache key
         cache_key = f"{artist}:{album}".lower().replace(" ", "-")
         
@@ -33,22 +48,21 @@ class AOTYService:
         if cached_data:
             return cached_data
         
-        # Fetch from API if not in cache
+        # Fetch using scraper service if not in cache
         try:
-            response = await self.client.get(
-                f"{AOTY_API_URL}/album/",
-                params={"artist": artist, "album": album}
-            )
-            response.raise_for_status()
-            album_data = response.json()
-            
-            # Cache for future use
-            await cache_album_data(cache_key, album_data)
-            return album_data
-        except httpx.HTTPStatusError as e:
-            if e.response.status_code == 404:
+            # First get the album URL
+            album_url = await get_album_url(artist, album)
+            if not album_url:
                 return None
-            raise
+            
+            # Then scrape the album data
+            album_data = await scrape_album(album_url)
+            if album_data:
+                # Cache for future use
+                await cache_album_data(cache_key, album_data)
+                return album_data
+            
+            return None
         except Exception as e:
             print(f"Error fetching album data for {artist} - {album}: {str(e)}")
             return None

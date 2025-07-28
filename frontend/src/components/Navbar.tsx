@@ -27,10 +27,10 @@ export const Navbar = () => {
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-200 group-hover:w-full"></span>
             </a>
             <a 
-              href="#why-timbre" 
+              href="#agent-demo" 
               className="text-muted-foreground hover:text-foreground transition-colors duration-200 text-sm font-medium relative group"
             >
-              Why Timbre
+              AI Curator
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-200 group-hover:w-full"></span>
             </a>
             <a 
@@ -44,20 +44,6 @@ export const Navbar = () => {
 
           {/* Desktop Buttons */}
           <div className="hidden md:flex items-center space-x-3">
-            {/* Dark Mode Toggle */}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={toggleTheme}
-              className="text-muted-foreground hover:text-foreground hover:bg-background/50 p-2"
-            >
-              {theme === 'light' ? (
-                <Moon className="w-4 h-4" />
-              ) : (
-                <Sun className="w-4 h-4" />
-              )}
-            </Button>
-            
             <Button 
               variant="ghost" 
               size="sm"
@@ -95,11 +81,11 @@ export const Navbar = () => {
                 How it works
               </a>
               <a 
-                href="#why-timbre" 
+                href="#agent-demo" 
                 className="block text-muted-foreground hover:text-foreground transition-colors duration-200 text-sm font-medium text-center"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Why Timbre
+                AI Curator
               </a>
               <a 
                 href="#your-dna" 
