@@ -20,7 +20,7 @@ except ImportError:
 # Load environment variables
 load_dotenv()
 
-API_KEY = os.getenv("API_KEY")  # Last.fm API key
+API_KEY = os.getenv("API_KEY") or os.getenv("LASTFM_API_KEY")  # Last.fm API key
 
 def make_request(params):
     try:
@@ -45,6 +45,7 @@ def fetch_user_songs(user: str):
     tracks = data.get("toptracks", {}).get("track", [])
     return pd.DataFrame([{
         "name": track["name"],
+        "artist": track["artist"]["name"] if isinstance(track.get("artist"), dict) else str(track.get("artist", "")),
         "track_id": track["url"],
         "playcount": int(track["playcount"])
     } for track in tracks])
@@ -79,6 +80,7 @@ def fetch_user_albums(user: str):
     albums = data.get("topalbums", {}).get("album", [])
     return pd.DataFrame([{
         "name": album["name"],
+        "artist": album["artist"]["name"] if isinstance(album.get("artist"), dict) else str(album.get("artist", "")),
         "album_id": album["url"],
         "playcount": int(album["playcount"])
     } for album in albums])
@@ -159,6 +161,32 @@ def fetch_track_tags(track_id: str):
     params = {
         "method": "track.getTopTags",
         "track": track_id,
+        "api_key": API_KEY,
+        "format": "json",
+    }
+    data = make_request(params)
+    tags = data.get("toptags", {}).get("tag", [])
+    return [tag["name"] for tag in tags]
+
+def search_track(query: str, limit: int = 10):
+    """Search for tracks on Last.fm."""
+    params = {
+        "method": "track.search",
+        "track": query,
+        "api_key": API_KEY,
+        "format": "json",
+        "limit": limit,
+    }
+    data = make_request(params)
+    tracks = data.get("results", {}).get("trackmatches", {}).get("track", [])
+    return tracks
+
+def get_track_tags(artist: str, track: str):
+    """Get tags for a specific track by artist and track name."""
+    params = {
+        "method": "track.getTopTags",
+        "artist": artist,
+        "track": track,
         "api_key": API_KEY,
         "format": "json",
     }
@@ -259,10 +287,178 @@ class LastFMService:
         """Get user's top tracks."""
         try:
             # Use existing function
-            top_tracks = fetch_user_songs(username)
-            if isinstance(top_tracks, list):
-                return top_tracks[:limit]
+            df = fetch_user_songs(username)
+            if hasattr(df, 'to_dict'):
+                records = df.to_dict('records')
+                return records[:limit]
             return []
         except Exception as e:
             print(f"Error getting user top tracks: {e}")
+            return []
+    
+    async def get_user_top_albums(self, username: str, limit: int = 10) -> List[Dict]:
+        """Get user's top albums."""
+        try:
+            df = fetch_user_albums(username)
+            if hasattr(df, 'to_dict'):
+                records = df.to_dict('records')
+                return records[:limit]
+            return []
+        except Exception as e:
+            print(f"Error getting user top albums: {e}")
+            return []
+    
+    async def get_user_top_artists(self, username: str, limit: int = 10) -> List[Dict]:
+        """Get user's top artists."""
+        try:
+            df = fetch_user_artists(username)
+            if hasattr(df, 'to_dict'):
+                records = df.to_dict('records')
+                return records[:limit]
+            return []
+        except Exception as e:
+            print(f"Error getting user top artists: {e}")
+            return []
+    
+    async def get_user_info(self, username: str) -> Dict:
+        """Get user profile information."""
+        try:
+            params = {
+                "method": "user.getInfo",
+                "user": username,
+                "api_key": self.api_key,
+                "format": "json",
+            }
+            data = make_request(params)
+            user_info = data.get("user", {})
+            return user_info
+        except Exception as e:
+            print(f"Error getting user info: {e}")
+            return {}
+    
+    async def get_user_following(self, username: str, limit: int = 50) -> List[Dict]:
+        """Get users that this user follows."""
+        try:
+            params = {
+                "method": "user.getFriends",
+                "user": username,
+                "api_key": self.api_key,
+                "format": "json",
+                "limit": limit,
+            }
+            data = make_request(params)
+            friends = data.get("friends", {}).get("user", [])
+            
+            # Convert to consistent format
+            following = []
+            for friend in friends:
+                following.append({
+                    "name": friend.get("name", ""),
+                    "realname": friend.get("realname", ""),
+                    "country": friend.get("country", ""),
+                    "playcount": int(friend.get("playcount", 0)),
+                    "registered": friend.get("registered", {}),
+                    "method": "following"
+                })
+            
+            return following
+            
+        except Exception as e:
+            print(f"Error getting user following: {e}")
+            return []
+    
+    async def get_track_top_tags(self, track_name: str, artist_name: str) -> List[str]:
+        """Get top tags/moods for a specific track"""
+        try:
+            params = {
+                "method": "track.getTopTags",
+                "track": track_name,
+                "artist": artist_name,
+                "api_key": self.api_key,
+                "format": "json"
+            }
+            data = make_request(params)
+            tags_data = data.get("toptags", {}).get("tag", [])
+            
+            # Extract tag names and return as list
+            tags = []
+            for tag in tags_data:
+                tag_name = tag.get("name", "").strip().lower()
+                if tag_name and len(tag_name) > 1:  # Filter out single chars and empty
+                    tags.append(tag_name)
+            
+            return tags[:10]  # Return top 10 tags
+            
+        except Exception as e:
+            print(f"Error getting track tags for '{track_name}' by '{artist_name}': {e}")
+            return []
+
+    async def get_user_loved_tracks(self, username: str, limit: int = 100) -> List[Dict]:
+        """Get user's loved tracks from Last.fm"""
+        try:
+            params = {
+                "method": "user.getLovedTracks",
+                "user": username,
+                "api_key": self.api_key,
+                "format": "json",
+                "limit": limit,
+            }
+            data = make_request(params)
+            loved_tracks = data.get("lovedtracks", {}).get("track", [])
+            
+            # Convert to consistent format
+            tracks = []
+            for track in loved_tracks:
+                tracks.append({
+                    "name": track.get("name", ""),
+                    "artist": track["artist"]["name"] if isinstance(track.get("artist"), dict) else str(track.get("artist", "")),
+                    "track_id": track.get("url", ""),
+                    "loved": True,  # All tracks from this endpoint are loved
+                    "date_loved": track.get("date", {}).get("uts") if track.get("date") else None
+                })
+            
+            return tracks
+            
+        except Exception as e:
+            print(f"Error getting loved tracks for {username}: {e}")
+            return []
+
+    async def get_similar_users(self, username: str, limit: int = 10) -> List[Dict]:
+        """Get similar users (if API supports it)."""
+        try:
+            # Last.fm doesn't have a direct getSimilar users method
+            # We'll try to get user's friends as a proxy
+            params = {
+                "method": "user.getFriends",
+                "user": username,
+                "api_key": self.api_key,
+                "format": "json",
+                "limit": limit,
+            }
+            data = make_request(params)
+            friends = data.get("friends", {}).get("user", [])
+            
+            # Format as similar users with mock similarity scores
+            similar_users = []
+            for i, friend in enumerate(friends[:limit]):
+                similar_users.append({
+                    "name": friend.get("name", ""),
+                    "match": 0.5 - (i * 0.05),  # Decreasing similarity score
+                    "url": friend.get("url", "")
+                })
+            
+            return similar_users
+        except Exception as e:
+            print(f"Error getting similar users: {e}")
+            return []
+    
+    async def get_artist_top_fans(self, artist_name: str, limit: int = 10) -> List[Dict]:
+        """Get top fans of an artist (if API supports it)."""
+        try:
+            # Last.fm doesn't have a direct getTopFans method for artists
+            # This is a placeholder that could be implemented with workarounds
+            print(f"get_artist_top_fans not implemented for {artist_name}")
+            return []
+        except Exception as e:
+            print(f"Error getting artist top fans: {e}")
             return []

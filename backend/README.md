@@ -1,418 +1,403 @@
-# Tensoe Backend - Complete ML Music Platform
+# Timbre Data Ingestion Pipeline
 
-A comprehensive music discovery and machine learning platform that integrates Spotify, Last.fm, and Album of the Year data to create rich training datasets for ML models.
+A high-performance, async data ingestion pipeline for the Timbre music recommendation engine. Pulls 10,000 tracks from Last.fm, enriches them with Spotify and AOTY metadata, deduplicates using canonical IDs, and bulk-loads into PostgreSQL via Supabase.
 
-## 🚀 Features
+## 🎯 Overview
 
-### Core Capabilities
+This pipeline implements the complete data flow for Timbre's ML-powered music recommendations:
 
-- **Music Data Ingestion**: Automated collection from Spotify, Last.fm, and AOTY
-- **ML Training Pipeline**: Complete feature engineering and data preparation
-- **Real-time Analytics**: Genre/mood distribution and popularity insights
-- **RESTful API**: Full FastAPI-based interface with automatic documentation
-- **Scalable Architecture**: Async processing, connection pooling, and caching
-
-### Data Sources
-
-- **Spotify**: Track metadata, audio features, popularity metrics
-- **Last.fm**: Genre tags, mood classifications, social data
-- **AOTY**: Album ratings, critic scores, release information
-
-## 📋 Prerequisites
-
-- Python 3.9+
-- PostgreSQL database
-- Redis (optional, for caching)
-- API keys for Spotify and Last.fm
-
-## ⚡ Quick Start
-
-### 1. Environment Setup
-
-Create a `.env` file with required configuration:
-
-```bash
-# Database
-DATABASE_URL=postgresql://user:password@localhost:5432/tensoe_db
-
-# Spotify API (Required)
-SPOTIFY_CLIENT_ID=your_spotify_client_id
-SPOTIFY_CLIENT_SECRET=your_spotify_client_secret
-
-# Last.fm API (Required)
-LASTFM_API_KEY=your_lastfm_api_key
-LASTFM_API_SECRET=your_lastfm_secret
-
-# Supabase (Optional)
-SUPABASE_URL=your_supabase_url
-SUPABASE_ANON_KEY=your_supabase_key
-
-# Redis Cache (Optional)
-REDIS_URL=redis://localhost:6379/0
-
-# API Configuration
-ENVIRONMENT=development
-DEBUG=true
-API_HOST=0.0.0.0
-API_PORT=8000
-```
-
-### 2. Installation
-
-```bash
-# Install dependencies
-pip install -r requirements.txt
-
-# Initialize database tables
-python -m backend.startup
-```
-
-### 3. Run the Server
-
-```bash
-# Using the startup script
-python -m backend.startup
-
-# Or directly with uvicorn
-uvicorn backend.main:app --reload --host 0.0.0.0 --port 8000
-```
-
-### 4. Access the API
-
-- **API Documentation**: http://localhost:8000/docs
-- **Health Check**: http://localhost:8000/
-- **System Info**: http://localhost:8000/system
-
-## 🎵 Usage Examples
-
-### Ingest Music Data
-
-```python
-import requests
-
-# Ingest a single album
-response = requests.post("http://localhost:8000/ml/ingest/album", json={
-    "album_name": "The Dark Side of the Moon",
-    "artist_name": "Pink Floyd"
-})
-
-# Batch ingestion
-response = requests.post("http://localhost:8000/ml/ingest/batch", json={
-    "albums": [
-        ["Abbey Road", "The Beatles"],
-        ["Kind of Blue", "Miles Davis"],
-        ["Nevermind", "Nirvana"]
-    ]
-})
-```
-
-### Get Training Data
-
-```python
-# Get ML training data
-response = requests.get("http://localhost:8000/ml/training-data?limit=1000")
-training_data = response.json()
-
-# Get prepared feature matrix
-response = requests.get("http://localhost:8000/ml/feature-matrix?limit=1000")
-feature_matrix = response.json()
-```
-
-### Analytics & Insights
-
-```python
-# Get comprehensive analytics
-response = requests.get("http://localhost:8000/ml/analytics")
-analytics = response.json()
-
-# Genre distribution
-response = requests.get("http://localhost:8000/ml/genres?limit=20")
-genres = response.json()
-
-# Ingestion statistics
-response = requests.get("http://localhost:8000/ml/stats")
-stats = response.json()
-```
+1. **Last.fm Integration**: Pulls user's top tracks with rate limiting and caching
+2. **Spotify Enrichment**: Adds basic metadata, popularity, and album information 
+3. **AOTY Scraping**: Extracts album ratings and genres with anti-bot measures
+4. **Intelligent Deduplication**: Uses canonical IDs (ISRC > Spotify ID > hash)
+5. **Bulk Database Operations**: Efficient PostgreSQL insertion via Supabase
 
 ## 🏗️ Architecture
 
-### Directory Structure
-
 ```
-backend/
-├── config/
-│   └── settings.py          # Centralized configuration
-├── models/
-│   ├── database.py          # Database connection & base
-│   ├── track.py            # Track model
-│   ├── album.py            # Album model
-│   ├── artist.py           # Artist model
-│   └── ingestion_models.py # ML-optimized models
-├── services/
-│   └── ml_service.py       # Core ML service
-├── routes/
-│   ├── ml_routes.py        # ML & ingestion endpoints
-│   ├── album_routes.py     # Album endpoints
-│   ├── user_routes.py      # User endpoints
-│   └── metrics_routes.py   # Metrics endpoints
-├── ingestion/
-│   ├── spotify_fetcher.py  # Spotify API integration
-│   ├── lastfm_fetcher.py   # Last.fm API integration
-│   ├── aoty_scraper.py     # AOTY scraper wrapper
-│   ├── normalizer.py       # Data normalization
-│   ├── insert_to_supabase.py # Database insertion
-│   └── ingest_runner.py    # Main ingestion orchestrator
-├── utils/
-├── cache/
-├── metrics/
-├── startup.py              # Complete system startup
-├── main.py                 # FastAPI application
-└── requirements.txt
+┌─────────────┐    ┌──────────────┐    ┌─────────────┐
+│   Last.fm   │───▶│   Pipeline   │───▶│  Supabase   │
+│  (30k raw)  │    │ Orchestrator │    │ PostgreSQL  │
+└─────────────┘    │              │    └─────────────┘
+                   │              │
+┌─────────────┐    │              │    ┌─────────────┐
+│   Spotify   │───▶│  (10k final) │───▶│    Redis    │
+│  Metadata   │    │              │    │   Cache     │
+└─────────────┘    │              │    └─────────────┘
+                   │              │
+┌─────────────┐    │              │
+│    AOTY     │───▶│              │
+│  Ratings    │    │              │
+└─────────────┘    └──────────────┘
 ```
 
-### Data Schema
+## 🚀 Quick Start
 
-The system uses an enhanced schema optimized for ML training:
+### Prerequisites
+
+- Python 3.11+
+- Poetry
+- PostgreSQL (or Supabase account)
+- Redis (optional, for caching)
+- API keys for Last.fm, Spotify, and Supabase
+
+### Installation
+
+1. **Clone and setup**:
+   ```bash
+   cd backend
+   poetry install
+   ```
+
+2. **Configure environment**:
+   ```bash
+   cp .env.example .env
+   # Edit .env with your API credentials
+   ```
+
+3. **Database setup**:
+   ```bash
+   # Apply database schema
+   psql -f migrations/enhanced_schema.sql
+   ```
+
+4. **Run pipeline**:
+   ```bash
+   poetry run python scripts/run_pipeline.py run
+   ```
+
+### Docker Deployment
+
+```bash
+# Development with local services
+docker-compose -f docker-compose.ingestion.yml up
+
+# Production deployment
+docker-compose -f docker-compose.ingestion.yml --profile pipeline up
+```
+
+## 📋 Environment Variables
+
+### Required Credentials
+
+```env
+# Last.fm API (https://www.last.fm/api)
+LASTFM_API_KEY=your_api_key
+LASTFM_USERNAME=your_username
+
+# Spotify API (https://developer.spotify.com/)
+SPOTIFY_CLIENT_ID=your_client_id
+SPOTIFY_CLIENT_SECRET=your_client_secret
+
+# Supabase (https://supabase.com/)
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+```
+
+### Pipeline Configuration
+
+```env
+MAX_SONGS=10000                    # Target song count
+SCRAPE_CONCURRENCY=4               # AOTY concurrent requests
+SCRAPE_DELAY_SEC=2.0              # Delay between AOTY requests
+BATCH_SIZE=50                     # Processing batch size
+DB_BATCH_SIZE=2000                # Database insertion batch size
+
+# Rate Limiting (requests per minute)
+SPOTIFY_RATE_LIMIT=100
+LASTFM_RATE_LIMIT=200
+AOTY_RATE_LIMIT=30
+```
+
+## 🗄️ Database Schema
+
+The pipeline uses a normalized PostgreSQL schema with canonical IDs:
 
 ```sql
--- Enhanced tracks table
-CREATE TABLE enhanced_tracks (
-    id TEXT PRIMARY KEY,
-    title TEXT NOT NULL,
+-- Core songs table
+CREATE TABLE songs (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     artist TEXT NOT NULL,
-    album TEXT,
-    genres TEXT[],              -- Array of genres
-    moods TEXT[],               -- Array of moods from Last.fm
-    audio_features JSONB,       -- Spotify audio features
-    popularity INTEGER,
-    duration_ms INTEGER,
-    track_number INTEGER,
-    release_date DATE,
-    aoty_score REAL,           -- Album of the Year score
-    explicit BOOLEAN,
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW()
+    title TEXT NOT NULL,
+    canonical_id TEXT UNIQUE NOT NULL,  -- ISRC > Spotify > Hash
+    isrc TEXT,
+    spotify_id TEXT
 );
 
--- GIN indexes for efficient array searches
-CREATE INDEX idx_tracks_genres ON enhanced_tracks USING GIN(genres);
-CREATE INDEX idx_tracks_moods ON enhanced_tracks USING GIN(moods);
+-- Spotify basic metadata
+CREATE TABLE spotify_attrs (
+    song_id UUID REFERENCES songs(id),
+    duration_ms INTEGER,
+    popularity INTEGER,
+    album_id TEXT,
+    artist_id TEXT,
+    album_name TEXT,
+    release_date TEXT,
+    explicit BOOLEAN,
+    track_number INTEGER
+);
+
+-- Last.fm user statistics
+CREATE TABLE lastfm_stats (
+    song_id UUID REFERENCES songs(id),
+    playcount INTEGER,
+    tags JSONB
+);
+
+-- Album of the Year ratings
+CREATE TABLE aoty_attrs (
+    song_id UUID REFERENCES songs(id),
+    user_score NUMERIC,
+    rating_count INTEGER,
+    tags JSONB,
+    genres JSONB
+);
 ```
 
-## 🔧 Configuration
+## 🔧 CLI Usage
 
-### Environment Variables
-
-| Variable                | Description                  | Required | Default        |
-| ----------------------- | ---------------------------- | -------- | -------------- |
-| `DATABASE_URL`          | PostgreSQL connection string | ✅       | -              |
-| `SPOTIFY_CLIENT_ID`     | Spotify API client ID        | ✅       | -              |
-| `SPOTIFY_CLIENT_SECRET` | Spotify API client secret    | ✅       | -              |
-| `LASTFM_API_KEY`        | Last.fm API key              | ✅       | -              |
-| `LASTFM_API_SECRET`     | Last.fm API secret           | ❌       | -              |
-| `SUPABASE_URL`          | Supabase project URL         | ❌       | -              |
-| `SUPABASE_ANON_KEY`     | Supabase anonymous key       | ❌       | -              |
-| `REDIS_URL`             | Redis connection string      | ❌       | localhost:6379 |
-| `ENVIRONMENT`           | Environment (dev/prod/test)  | ❌       | development    |
-| `DEBUG`                 | Enable debug mode            | ❌       | false          |
-| `API_HOST`              | API server host              | ❌       | 0.0.0.0        |
-| `API_PORT`              | API server port              | ❌       | 8000           |
-
-### Advanced Configuration
+### Basic Commands
 
 ```bash
-# Ingestion settings
-INGESTION_BATCH_SIZE=50
-INGESTION_MAX_CONCURRENT=10
-MAX_GENRES_PER_TRACK=10
-MAX_MOODS_PER_TRACK=15
+# Run complete pipeline
+poetry run python scripts/run_pipeline.py run
 
-# ML settings
-ML_TRAINING_DATA_LIMIT=50000
-ML_FEATURE_MATRIX_LIMIT=20000
-ML_MIN_FEATURES_PER_TRACK=3
+# Quick test with 100 songs
+poetry run python scripts/run_pipeline.py test --quick
 
-# Cache settings
-CACHE_DEFAULT_TTL=3600
-CACHE_ALBUM_TTL=7200
-CACHE_USER_TTL=1800
+# Dry run (no database writes)
+poetry run python scripts/run_pipeline.py run --dry-run
 
-# Database settings
-DB_POOL_SIZE=5
-DB_MAX_OVERFLOW=10
-DB_POOL_TIMEOUT=30
+# Skip AOTY scraping for speed
+poetry run python scripts/run_pipeline.py run --skip-aoty
+
+# Custom song count
+poetry run python scripts/run_pipeline.py run --max-songs 5000
 ```
 
-## 📚 API Reference
-
-### ML & Ingestion Endpoints
-
-| Endpoint                         | Method | Description                 |
-| -------------------------------- | ------ | --------------------------- |
-| `/ml/ingest/album`               | POST   | Ingest single album         |
-| `/ml/ingest/batch`               | POST   | Batch album ingestion       |
-| `/ml/training-data`              | GET    | Get ML training data        |
-| `/ml/feature-matrix`             | GET    | Get prepared feature matrix |
-| `/ml/analytics`                  | GET    | Comprehensive analytics     |
-| `/ml/genres`                     | GET    | Genre distribution          |
-| `/ml/moods`                      | GET    | Mood distribution           |
-| `/ml/stats`                      | GET    | Ingestion statistics        |
-| `/ml/export/training-data`       | POST   | Export training data to CSV |
-| `/ml/recommendations/{track_id}` | GET    | Get similar tracks          |
-
-### System Endpoints
-
-| Endpoint   | Method | Description                    |
-| ---------- | ------ | ------------------------------ |
-| `/`        | GET    | Health check with data summary |
-| `/system`  | GET    | Detailed system information    |
-| `/docs`    | GET    | Interactive API documentation  |
-| `/metrics` | GET    | API usage metrics              |
-
-## 🤖 ML Integration
-
-### Feature Engineering
-
-The system automatically creates ML-ready features:
-
-```python
-from backend.services.ml_service import get_feature_matrix
-
-# Get prepared feature matrix
-X, y = get_feature_matrix(limit=10000)
-
-# Features include:
-# - Numerical: duration_ms, popularity, track_number, release_year
-# - Audio: danceability, energy, valence, tempo, acousticness, etc.
-# - Categorical: top genres (one-hot encoded)
-# - Mood: top moods (one-hot encoded)
-# - Binary: explicit content
-
-print(f"Feature matrix shape: {X.shape}")
-print(f"Features: {list(X.columns)}")
-```
-
-### Training Data Export
-
-```python
-# Export for external ML frameworks
-import requests
-
-# Export training data
-response = requests.post("http://localhost:8000/ml/export/training-data",
-                        params={"filename": "training_data.csv", "limit": 10000})
-
-# Export feature matrix
-response = requests.post("http://localhost:8000/ml/export/feature-matrix",
-                        params={"filename": "features.csv", "limit": 10000})
-```
-
-## 🧪 Development
-
-### Running Tests
+### Configuration and Validation
 
 ```bash
-# Run ingestion tests
-python backend/test_ingestion.py
+# Show current configuration
+poetry run python scripts/run_pipeline.py config
 
-# Test individual components
-python -m pytest tests/
+# Validate environment setup
+poetry run python scripts/run_pipeline.py validate
 ```
 
-### Database Migrations
+## 🌐 API Endpoints
+
+When running as a service, the pipeline exposes these endpoints:
 
 ```bash
-# Generate migration
-alembic revision --autogenerate -m "Add new features"
+# Health check
+GET /health
 
-# Apply migration
-alembic upgrade head
+# Pipeline statistics
+GET /stats
+
+# Start pipeline (background)
+POST /pipeline/start
+{
+  "max_tracks": 10000,
+  "skip_aoty": false,
+  "dry_run": false
+}
+
+# Pipeline status
+GET /pipeline/status
+
+# Database counts
+GET /database/counts
 ```
 
-### Adding New Data Sources
+## 🧪 Testing
 
-1. Create fetcher in `ingestion/` directory
-2. Add to `normalizer.py` for data standardization
-3. Update `ingest_runner.py` to include new source
-4. Add configuration to `config/settings.py`
+```bash
+# Run all tests
+poetry run pytest
 
-## 📊 Performance
+# Run with coverage
+poetry run pytest --cov=app --cov-report=html
 
-### Optimization Features
+# Run specific test categories
+poetry run pytest -m unit          # Unit tests only
+poetry run pytest -m integration   # Integration tests
+poetry run pytest -m "not slow"    # Skip slow tests
+```
 
-- **Connection Pooling**: Efficient database connections
-- **Async Processing**: Non-blocking I/O operations
-- **Batch Processing**: Bulk operations for large datasets
-- **Caching**: Redis/in-memory caching with configurable TTL
-- **Rate Limiting**: API protection and external service compliance
+## 📊 Performance & Monitoring
+
+### Expected Performance
+
+- **Runtime**: ~60 minutes for 10,000 songs (4-core machine)
+- **Memory**: ~2GB peak usage
+- **Storage**: ~500MB for raw data, logs, and exports
+
+### Rate Limiting
+
+The pipeline respects API rate limits:
+
+- **Last.fm**: 5 requests/second (with jitter)
+- **Spotify**: 100 requests/minute 
+- **AOTY**: 30 requests/minute (with proxy rotation)
 
 ### Monitoring
 
-The system provides comprehensive metrics:
+```bash
+# View pipeline logs
+tail -f logs/pipeline_summary_*.json
 
-```python
-# Get system performance metrics
-response = requests.get("http://localhost:8000/metrics")
-metrics = response.json()
+# Check coverage statistics
+curl http://localhost:8000/stats
 
-# Monitor ingestion progress
-response = requests.get("http://localhost:8000/ml/stats")
-stats = response.json()
+# Monitor Redis cache hits
+redis-cli monitor
 ```
 
-## 🔐 Security
+## 🔍 Data Quality Features
 
-- Environment-based configuration
-- API rate limiting
-- SQL injection prevention via ORM
-- CORS configuration
-- Input validation and sanitization
+### Canonical ID Hierarchy
+
+1. **ISRC** (International Standard Recording Code) - Most reliable
+2. **Spotify ID** - Platform specific but stable
+3. **Hash** - Fallback based on normalized artist::title
+
+### Deduplication Logic
+
+- Case-insensitive artist/title matching
+- Removes common variations (remaster, live, acoustic)
+- Handles "The" prefix and featuring credits
+- Selects best version based on metadata completeness and playcount
+
+### Data Validation
+
+- Required field validation before insertion
+- Rate limit compliance monitoring
+- Coverage percentage tracking
+- Sanity checks on final counts
+
+## 🐳 Deployment
+
+### Local Development
+
+```bash
+# Install dependencies
+poetry install
+
+# Run development server
+poetry run uvicorn app.main:app --reload
+
+# Run background pipeline
+poetry run python scripts/run_pipeline.py run
+```
+
+### Docker Production
+
+```bash
+# Build image
+docker build -f Dockerfile.ingestion -t timbre-ingestion .
+
+# Run with docker-compose
+docker-compose -f docker-compose.ingestion.yml up -d
+
+# Check logs
+docker-compose logs -f timbre-ingestion
+```
+
+### GitHub Actions
+
+The pipeline includes automated CI/CD:
+
+- **Pull Requests**: Dry-run testing
+- **Main Branch**: Limited production run
+- **Scheduled**: Nightly full pipeline execution
+- **Manual**: Configurable runs via workflow dispatch
+
+## 🔧 Advanced Configuration
+
+### Proxy Setup (for AOTY)
+
+```env
+AOTY_PROXY_URL=http://your-proxy:port
+```
+
+### Custom Data Directories
+
+```env
+DATA_DIR=./custom_data
+LOGS_DIR=./custom_logs  
+EXPORTS_DIR=./custom_exports
+```
+
+### Database Tuning
+
+```env
+DB_BATCH_SIZE=5000          # Larger batches for faster insertion
+DB_RETRY_ATTEMPTS=5         # More retries for reliability
+DB_RETRY_DELAY=2.0          # Longer delays between retries
+```
+
+## 📁 Project Structure
+
+```
+backend/
+├── app/                    # Main application code
+│   ├── config.py          # Pydantic settings
+│   ├── models.py          # Data models
+│   ├── db.py              # Database client
+│   ├── main.py            # FastAPI application
+│   ├── pipelines.py       # Main orchestrator
+│   └── tasks/             # Pipeline modules
+│       ├── lastfm.py      # Last.fm integration
+│       ├── spotify.py     # Spotify enrichment
+│       ├── aoty.py        # AOTY scraping
+│       ├── unify.py       # Deduplication logic
+│       └── ingest.py      # Database operations
+├── scripts/               # CLI utilities
+│   └── run_pipeline.py    # Main CLI script
+├── migrations/            # Database schema
+├── tests/                 # Test suite
+├── docker-compose.ingestion.yml
+├── Dockerfile.ingestion
+├── pyproject.toml         # Poetry dependencies
+└── README.md              # This file
+```
 
 ## 🤝 Contributing
 
-1. Fork the repository
-2. Create a feature branch
-3. Add tests for new functionality
-4. Update documentation
-5. Submit a pull request
+1. **Fork the repository**
+2. **Create a feature branch**: `git checkout -b feature/my-feature`
+3. **Run tests**: `poetry run pytest`
+4. **Check code quality**: `poetry run black . && poetry run flake8`
+5. **Submit a pull request**
 
-## 📄 License
+## 📝 Known Limitations
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+- **AOTY Rate Limits**: Aggressive rate limiting may require proxy rotation
+- **Memory Usage**: Large datasets may require chunked processing
+- **API Changes**: External APIs may change without notice
+- **Regional Restrictions**: Some APIs have geographic limitations
 
-## 🆘 Troubleshooting
+## 🔮 Future Enhancements
 
-### Common Issues
+- [ ] Additional music service integrations (Apple Music, Bandcamp)
+- [ ] Caching tiers by volatility (7-day vs 24-hour)
+- [ ] Redis Streams for distributed processing
+- [ ] Real-time pipeline monitoring dashboard
+- [ ] ML model integration for data quality scoring
+- [ ] Enhanced genre classification using AOTY data
 
-**Database Connection Errors**
+## 📜 License
 
-```bash
-# Check DATABASE_URL format
-DATABASE_URL=postgresql://user:password@host:port/database
-```
+This project is part of the Timbre music recommendation engine. See the main repository for license information.
 
-**API Key Issues**
+## 🆘 Support
 
-```bash
-# Verify Spotify credentials
-curl -X POST "https://accounts.spotify.com/api/token" \
-     -H "Content-Type: application/x-www-form-urlencoded" \
-     -d "grant_type=client_credentials&client_id=YOUR_ID&client_secret=YOUR_SECRET"
-```
-
-**Import Errors**
-
-```bash
-# Ensure proper Python path
-export PYTHONPATH="${PYTHONPATH}:/path/to/your/project"
-```
-
-### Getting Help
-
-- Check `/docs` endpoint for API documentation
-- View logs with `LOG_LEVEL=DEBUG`
-- Use `/system` endpoint for system diagnostics
+- **Issues**: Report bugs and feature requests in the main repository
+- **Documentation**: See `/docs` in the main repository
+- **API Reference**: Available at `/docs` when running the service
 
 ---
 
-**Built with ❤️ for the music and ML community**
+**Built with ❤️ for music discovery**

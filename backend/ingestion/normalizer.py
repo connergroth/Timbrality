@@ -27,6 +27,8 @@ class TrackData:
     explicit: Optional[bool] = None
     track_number: Optional[int] = None
     album_total_tracks: Optional[int] = None
+    cover_url: Optional[str] = None
+    spotify_id: Optional[str] = None
     
     def __post_init__(self):
         if self.genres is None:
@@ -317,12 +319,12 @@ def to_dict(track: TrackData) -> Dict[str, Any]:
         'release_date': track.release_date,
         'duration_ms': track.duration_ms,
         'popularity': track.popularity,
-        'genres': track.genres,  # New array column
-        'moods': track.moods,    # New array column
-        'aoty_score': int(track.aoty_score) if track.aoty_score else None,  # Keep as integer for existing schema
-        'audio_features': {},    # Empty for now - can be enhanced later
-        'cover_url': None,       # Can be added later
+        'genres': track.genres,  # Array column
+        'moods': track.moods,    # Array column
+        'aoty_score': track.aoty_score,  # Float value, matches schema
+        'cover_url': getattr(track, 'cover_url', None),  # Cover URL if available
         'spotify_url': track.spotify_url,
+        'spotify_id': getattr(track, 'spotify_id', None),  # Spotify track ID
         'explicit': track.explicit,
         'track_number': track.track_number,
         'album_total_tracks': track.album_total_tracks

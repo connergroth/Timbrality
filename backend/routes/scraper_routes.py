@@ -4,6 +4,9 @@ from typing import List, Optional
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
+# Always import the Pydantic models first
+from models.aoty_models import Album, SearchResult, UserProfile
+
 try:
     # Use absolute imports
     from scraper.aoty_cloudscraper import (
@@ -17,7 +20,6 @@ try:
         get_similar_albums,
         get_user_profile,
     )
-    from models.aoty_models import Album, SearchResult, UserProfile
 except ImportError:
     # Mock functions if scraper modules fail
     async def get_album_url(*args, **kwargs):
@@ -37,19 +39,6 @@ except ImportError:
     
     async def get_user_profile(*args, **kwargs):
         return None
-    
-    # Mock classes
-    class Album:
-        def __init__(self, **kwargs):
-            self.__dict__.update(kwargs)
-    
-    class SearchResult:
-        def __init__(self, **kwargs):
-            self.__dict__.update(kwargs)
-    
-    class UserProfile:
-        def __init__(self, **kwargs):
-            self.__dict__.update(kwargs)
 
 # Create the router
 router = APIRouter()

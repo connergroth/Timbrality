@@ -121,9 +121,10 @@ def insert_tracks(tracks: List[TrackData], batch_size: int = 100) -> bool:
         for track in tracks:
             if validate_track_data(track):
                 track_dict = to_dict(track)
-                # Convert lists to JSON strings for Supabase
-                track_dict['genres'] = json.dumps(track_dict['genres']) if track_dict['genres'] else '[]'
-                track_dict['moods'] = json.dumps(track_dict['moods']) if track_dict['moods'] else '[]'
+                # Supabase handles PostgreSQL arrays natively, no need to convert to JSON strings
+                # Ensure arrays are properly formatted
+                track_dict['genres'] = track_dict['genres'] if track_dict['genres'] else []
+                track_dict['moods'] = track_dict['moods'] if track_dict['moods'] else []
                 valid_tracks.append(track_dict)
             else:
                 logger.warning(f"Skipping invalid track: {track.track_id}")
@@ -192,9 +193,9 @@ def get_track_by_id(track_id: str) -> Optional[Dict]:
         
         if result.data and len(result.data) > 0:
             track = result.data[0]
-            # Parse JSON strings back to lists
-            track['genres'] = json.loads(track['genres']) if track['genres'] else []
-            track['moods'] = json.loads(track['moods']) if track['moods'] else []
+            # Arrays are already properly formatted from PostgreSQL
+            track['genres'] = track['genres'] if track['genres'] else []
+            track['moods'] = track['moods'] if track['moods'] else []
             return track
         
         return None
@@ -223,9 +224,9 @@ def get_tracks_by_artist(artist_name: str, limit: int = 100) -> List[Dict]:
         tracks = []
         if result.data:
             for track in result.data:
-                # Parse JSON strings back to lists
-                track['genres'] = json.loads(track['genres']) if track['genres'] else []
-                track['moods'] = json.loads(track['moods']) if track['moods'] else []
+                # Arrays are already properly formatted from PostgreSQL
+                track['genres'] = track['genres'] if track['genres'] else []
+                track['moods'] = track['moods'] if track['moods'] else []
                 tracks.append(track)
         
         return tracks
@@ -255,9 +256,9 @@ def get_tracks_by_genre(genre: str, limit: int = 100) -> List[Dict]:
         tracks = []
         if result.data:
             for track in result.data:
-                # Parse JSON strings back to lists
-                track['genres'] = json.loads(track['genres']) if track['genres'] else []
-                track['moods'] = json.loads(track['moods']) if track['moods'] else []
+                # Arrays are already properly formatted from PostgreSQL
+                track['genres'] = track['genres'] if track['genres'] else []
+                track['moods'] = track['moods'] if track['moods'] else []
                 
                 # Filter to only include tracks that actually have the genre
                 if genre.lower() in [g.lower() for g in track['genres']]:
@@ -326,15 +327,15 @@ def get_training_dataset(limit: int = 10000, offset: int = 0) -> List[Dict]:
         supabase = get_supabase_client()
         
         result = supabase.table('tracks').select(
-            'id, title, artist, album, release_date, duration_ms, popularity, genres, moods, aoty_score, explicit'
+            'id, title, artist, album, release_date, duration_ms, popularity, genres, moods, aoty_score, explicit, cover_url, spotify_id, track_number, spotify_url'
         ).range(offset, offset + limit - 1).execute()
         
         training_data = []
         if result.data:
             for track in result.data:
-                # Parse JSON strings back to lists
-                track['genres'] = json.loads(track['genres']) if track['genres'] else []
-                track['moods'] = json.loads(track['moods']) if track['moods'] else []
+                # Arrays are already properly formatted from PostgreSQL
+                track['genres'] = track['genres'] if track['genres'] else []
+                track['moods'] = track['moods'] if track['moods'] else []
                 training_data.append(track)
         
         logger.info(f"Retrieved {len(training_data)} tracks for training dataset")

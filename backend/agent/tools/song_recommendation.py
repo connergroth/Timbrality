@@ -97,7 +97,7 @@ class SongRecommendationTool(BaseTool):
                 "artists": best_match.get("artists", [best_match["artist"]]),
                 "album": best_match.get("album"),
                 "album_id": best_match.get("album_id"),
-                "artwork_url": best_match.get("cover_art"),
+                "artwork_url": best_match.get("artwork_url"),
                 "spotify_url": best_match.get("spotify_url"),
                 "preview_url": best_match.get("preview_url"),
                 "duration_ms": best_match.get("duration_ms"),

@@ -59,7 +59,7 @@ class SpotifyService:
                     "artists": [artist["name"] for artist in track["artists"]],
                     "album": track["album"]["name"],
                     "album_id": track["album"]["id"],
-                    "cover_art": track["album"]["images"][0]["url"] if track["album"]["images"] else None,
+                    "artwork_url": track["album"]["images"][0]["url"] if track["album"]["images"] else None,
                     "preview_url": track.get("preview_url"),
                     "external_urls": track["external_urls"],
                     "duration_ms": track["duration_ms"],
@@ -95,7 +95,7 @@ class SpotifyService:
                     "popularity": track["popularity"],
                     "duration_ms": track["duration_ms"],
                     "preview_url": track.get("preview_url", None),
-                    "cover_art": track["album"]["images"][0]["url"] if track["album"]["images"] else None,
+                    "artwork_url": track["album"]["images"][0]["url"] if track["album"]["images"] else None,
                     "added_at": item["added_at"]
                 })
 
@@ -103,7 +103,7 @@ class SpotifyService:
             if not results["next"]:
                 break  # Stop pagination when there are no more tracks
 
-        return pd.DataFrame(saved_tracks) if saved_tracks else pd.DataFrame(columns=["track_id", "name", "artist", "album", "popularity", "duration_ms", "preview_url", "cover_art", "added_at"])
+        return pd.DataFrame(saved_tracks) if saved_tracks else pd.DataFrame(columns=["track_id", "name", "artist", "album", "popularity", "duration_ms", "preview_url", "artwork_url", "added_at"])
 
     ## Fetch User’s Top Tracks
     def fetch_user_top_tracks(self, limit=20, time_range="medium_term"):
@@ -123,12 +123,12 @@ class SpotifyService:
                     "artist": track["artists"][0]["name"],
                     "popularity": track["popularity"],
                     "preview_url": track.get("preview_url", None),
-                    "cover_art": track["album"]["images"][0]["url"] if track["album"]["images"] else None
+                    "artwork_url": track["album"]["images"][0]["url"] if track["album"]["images"] else None
                 })
 
             offset += limit  # Increase offset for next batch
 
-        return pd.DataFrame(top_tracks) if top_tracks else pd.DataFrame(columns=["track_id", "name", "artist", "popularity", "preview_url", "cover_art"])
+        return pd.DataFrame(top_tracks) if top_tracks else pd.DataFrame(columns=["track_id", "name", "artist", "popularity", "preview_url", "artwork_url"])
     
     ## Fetch User’s Top Artists
     def fetch_user_top_artists(self, limit=20, time_range="medium_term"):
@@ -222,7 +222,7 @@ class SpotifyService:
                 "preview_url": track.get("preview_url", None),  # Track snippet
                 "popularity": track["popularity"],
                 "album_name": track["album"]["name"],
-                "cover_art": track["album"]["images"][0]["url"] if track["album"]["images"] else None
+                "artwork_url": track["album"]["images"][0]["url"] if track["album"]["images"] else None
             } for track in tracks])
 
         except Exception as e:
@@ -251,7 +251,7 @@ class SpotifyService:
             "name": album["name"],
             "release_date": album["release_date"],
             "total_tracks": album["total_tracks"],
-            "cover_art": album["images"][0]["url"] if album["images"] else None  
+            "artwork_url": album["images"][0]["url"] if album["images"] else None  
         } for album in albums])
 
     ## Fetch User's Saved Albums
@@ -271,14 +271,14 @@ class SpotifyService:
                     "artist": album["artists"][0]["name"],
                     "release_date": album["release_date"],
                     "total_tracks": album["total_tracks"],
-                    "cover_art": album["images"][0]["url"] if album["images"] else None
+                    "artwork_url": album["images"][0]["url"] if album["images"] else None
                 })
 
             offset += limit  # Increase offset for next batch
             if not results["next"]:
                 break  # Stop pagination when there are no more albums
 
-        return pd.DataFrame(saved_albums) if saved_albums else pd.DataFrame(columns=["album_id", "name", "artist", "release_date", "total_tracks", "cover_art"])
+        return pd.DataFrame(saved_albums) if saved_albums else pd.DataFrame(columns=["album_id", "name", "artist", "release_date", "total_tracks", "artwork_url"])
 
     ## Check If Albums Are Saved
     def check_saved_albums(self, album_ids):

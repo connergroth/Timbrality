@@ -1,5 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
-import { Send, Loader2, Music, User, Settings, X, ArrowUp } from 'lucide-react';
+import { Send, Loader2, Music, User, Settings, X, ArrowUp, BarChart3, Tag, TrendingUp, Info, Activity, Target, Sliders } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Button } from '@/components/ui/button';
+import { Slider } from '@/components/ui/slider';
 import { useAgent, type AgentMessage } from '@/hooks/useAgent';
 import { TrackCard } from './TrackCard';
 import { TrackRecommendationCard } from './TrackRecommendationCard';
@@ -18,6 +21,8 @@ interface AgentChatProps {
   isInline?: boolean;
   onStartChat?: () => void;
   user?: any; // Add user prop for PlaylistModal
+  onSelectTool?: (tool: string) => void;
+  showMusicDepthSlider?: boolean;
 }
 
 export function AgentChat({ 
@@ -29,12 +34,16 @@ export function AgentChat({
   onClose,
   isInline = false,
   onStartChat,
-  user
+  user,
+  onSelectTool,
+  showMusicDepthSlider = false
 }: AgentChatProps) {
   const [input, setInput] = useState('');
   const [hasStartedChat, setHasStartedChat] = useState(false);
   const [playlistModalOpen, setPlaylistModalOpen] = useState(false);
   const [selectedTrack, setSelectedTrack] = useState<{ id: string; name: string; artist: string } | null>(null);
+  const [feedTuning, setFeedTuning] = useState(50); // 0-100, 50 is center
+  const [musicDepth, setMusicDepth] = useState([75]); // 0-100, 75 is default
   const inputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
@@ -114,8 +123,34 @@ export function AgentChat({
   };
 
   const handleToolsClick = () => {
-    // TODO: Implement tools functionality
-    console.log('Tools clicked');
+    // Dropdown handles this now
+  };
+
+  const handleQuickModuleClick = (moduleType: string) => {
+    let promptText = '';
+    
+    switch (moduleType) {
+      case 'continue-listening':
+        promptText = 'Show me music similar to what I\'ve been listening to lately';
+        break;
+      case 'because-you-played':
+        promptText = 'Give me recommendations based on my recent plays';
+        break;
+      case 'fresh-for-you':
+        promptText = 'Show me fresh releases that match my taste';
+        break;
+    }
+
+    setInput(promptText);
+    // Auto-submit the prompt
+    if (promptText && !isLoading) {
+      if (!hasStartedChat && onStartChat) {
+        setHasStartedChat(true);
+        onStartChat();
+      }
+      setInput('');
+      sendMessage(promptText, { streaming: true });
+    }
   };
 
   const ThinkingEffect = () => (
@@ -287,8 +322,13 @@ export function AgentChat({
         <div className={isInline ? "max-w-2xl mx-auto" : "max-w-2xl"}>
           <form onSubmit={handleSubmit}>
             <div 
-              className="bg-card rounded-xl px-4 pt-3 pb-2 relative cursor-text"
-              onClick={() => inputRef.current?.focus()}
+              className="bg-card rounded-xl px-4 pt-3 pb-2 relative cursor-text border border-border/20 border-glow-animation"
+              onClick={(e) => {
+                // Don't focus input if clicking on slider area
+                if (!(e.target as HTMLElement).closest('[data-slider-area]')) {
+                  inputRef.current?.focus()
+                }
+              }}
             >
               <input
                 ref={inputRef}
@@ -300,16 +340,73 @@ export function AgentChat({
                 disabled={isLoading}
                 className="w-full bg-transparent text-foreground placeholder:text-muted-foreground outline-none border-none text-base font-inter mb-8 disabled:opacity-50"
               />
+              
+              {/* Music Depth Slider */}
+              {showMusicDepthSlider && (
+                <div className="mb-6 px-2 cursor-default" data-slider-area>
+                  <div className="flex items-center justify-between mb-3">
+                    <label className="text-sm font-medium text-foreground">Music Depth</label>
+                    <span className="text-xs text-muted-foreground">{musicDepth[0]}%</span>
+                  </div>
+                  <Slider
+                    value={musicDepth}
+                    onValueChange={setMusicDepth}
+                    max={100}
+                    min={0}
+                    step={1}
+                    className="w-full"
+                  />
+                  <div className="flex justify-between text-xs text-muted-foreground mt-2">
+                    <span>Surface</span>
+                    <span>Deep</span>
+                  </div>
+                </div>
+              )}
+              
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
-                  <button 
-                    type="button"
-                    onClick={handleToolsClick}
-                    className="flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors text-sm font-inter"
-                  >
-                    <Settings className="w-4 h-4" />
-                    <span>Tools</span>
-                  </button>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors text-sm font-inter h-auto p-1"
+                      >
+                        <Settings className="w-4 h-4" />
+                        <span>Tools</span>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-56" align="start">
+                      <DropdownMenuItem onClick={() => onSelectTool?.('nmf-weights')}>
+                        <BarChart3 className="mr-2 h-4 w-4" />
+                        <span className="font-inter text-sm">NMF Weights</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => onSelectTool?.('bert-tags')}>
+                        <Tag className="mr-2 h-4 w-4" />
+                        <span className="font-inter text-sm">BERT Tag Similarities</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => onSelectTool?.('tag-influences')}>
+                        <TrendingUp className="mr-2 h-4 w-4" />
+                        <span className="font-inter text-sm">Tag Influences</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => onSelectTool?.('aoty-influences')}>
+                        <Target className="mr-2 h-4 w-4" />
+                        <span className="font-inter text-sm">AOTY Influences</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => onSelectTool?.('lastfm-tags')}>
+                        <Activity className="mr-2 h-4 w-4" />
+                        <span className="font-inter text-sm">Last.fm Tags</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => onSelectTool?.('music-depth')}>
+                        <Sliders className="mr-2 h-4 w-4" />
+                        <span className="font-inter text-sm">Music Depth</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => onSelectTool?.('algorithm-info')}>
+                        <Info className="mr-2 h-4 w-4" />
+                        <span className="font-inter text-sm">How it works</span>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
                 <div className="flex items-center space-x-2">
                   <button
@@ -336,8 +433,33 @@ export function AgentChat({
               </div>
             </div>
           </form>
+          
+          {/* Quick Modules - Only show when chat is not active */}
+          {!isInline && !hasStartedChat && (
+            <div className="mt-6 flex flex-wrap gap-3 justify-center">
+              <button 
+                onClick={() => handleQuickModuleClick('continue-listening')}
+                className="bg-card hover:bg-card/80 transition-colors rounded-full px-4 py-2 text-sm font-inter font-medium text-foreground border border-border/50"
+              >
+                Continue Listening / Recently Liked
+              </button>
+              <button 
+                onClick={() => handleQuickModuleClick('because-you-played')}
+                className="bg-card hover:bg-card/80 transition-colors rounded-full px-4 py-2 text-sm font-inter font-medium text-foreground border border-border/50"
+              >
+                "Because you played X"
+              </button>
+              <button 
+                onClick={() => handleQuickModuleClick('fresh-for-you')}
+                className="bg-card hover:bg-card/80 transition-colors rounded-full px-4 py-2 text-sm font-inter font-medium text-foreground border border-border/50"
+              >
+                Fresh for You
+              </button>
+            </div>
+          )}
         </div>
       </div>
+
 
       {/* Playlist Modal */}
              {selectedTrack && (

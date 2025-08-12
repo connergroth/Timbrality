@@ -5,13 +5,12 @@ import { useState, useEffect } from 'react'
 import { Navbar } from '@/components/Navbar'
 import { AlgorithmSidebar } from '@/components/AlgorithmSidebar'
 import { AgentChat } from '@/components/AgentChat'
-import { ChatSidebar } from '@/components/ChatSidebar'
+import { NavigationSidebar } from '@/components/NavigationSidebar'
 import type { Track as AgentTrack } from '@/lib/agent'
 
 export default function ChatPage() {
   const { user, loading, signOut } = useSupabase();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
-  const [isChatSidebarOpen, setIsChatSidebarOpen] = useState(true)
   const [agentRecommendations, setAgentRecommendations] = useState<AgentTrack[]>([])
 
   // Show loading state while checking authentication
@@ -50,21 +49,16 @@ export default function ChatPage() {
 
   return (
     <div className="flex h-screen bg-background">
-      {/* Chat Sidebar */}
-      <ChatSidebar 
-        isOpen={isChatSidebarOpen}
-        onToggle={() => setIsChatSidebarOpen(!isChatSidebarOpen)}
-        userId={user.id}
-      />
+      {/* Persistent Sidebar */}
+      <NavigationSidebar user={user} onSignOut={signOut} />
 
       {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col ml-16">
         {/* Navbar */}
         <Navbar 
           user={user} 
-          onOpenAlgorithmSidebar={() => setIsSidebarOpen(true)}
-          onOpenNavigationSidebar={() => {}} // Not used in chat page
           onSignOut={signOut}
+          onToggleAlgorithmSidebar={() => setIsSidebarOpen(true)}
         />
         
         {/* Chat Content */}

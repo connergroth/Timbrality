@@ -1,0 +1,1611 @@
+{
+  "aoty|radiohead|ok computer|": {
+    "match_type": "found",
+    "target_data": {
+      "title": "OK Computer",
+      "artist": "Radiohead",
+      "user_score": 93.2,
+      "num_ratings": 13,
+      "tracks": [
+        {
+          "number": 1,
+          "title": "Airbag",
+          "length": "4:47",
+          "rating": 94,
+          "featured_artists": []
+        },
+        {
+          "number": 2,
+          "title": "Paranoid Android",
+          "length": "6:27",
+          "rating": 97,
+          "featured_artists": []
+        },
+        {
+          "number": 3,
+          "title": "Subterranean Homesick Alien",
+          "length": "4:27",
+          "rating": 93,
+          "featured_artists": []
+        },
+        {
+          "number": 4,
+          "title": "Exit Music (For a Film)",
+          "length": "4:27",
+          "rating": 97,
+          "featured_artists": []
+        },
+        {
+          "number": 5,
+          "title": "Let Down",
+          "length": "4:59",
+          "rating": 96,
+          "featured_artists": []
+        },
+        {
+          "number": 6,
+          "title": "Karma Police",
+          "length": "4:24",
+          "rating": 96,
+          "featured_artists": []
+        },
+        {
+          "number": 7,
+          "title": "Fitter Happier",
+          "length": "1:57",
+          "rating": 85,
+          "featured_artists": []
+        },
+        {
+          "number": 8,
+          "title": "Electioneering",
+          "length": "3:50",
+          "rating": 91,
+          "featured_artists": []
+        },
+        {
+          "number": 9,
+          "title": "Climbing Up the Walls",
+          "length": "4:45",
+          "rating": 94,
+          "featured_artists": []
+        },
+        {
+          "number": 10,
+          "title": "No Surprises",
+          "length": "3:49",
+          "rating": 97,
+          "featured_artists": []
+        },
+        {
+          "number": 11,
+          "title": "Lucky",
+          "length": "4:18",
+          "rating": 94,
+          "featured_artists": []
+        },
+        {
+          "number": 12,
+          "title": "The Tourist",
+          "length": "5:26",
+          "rating": 94,
+          "featured_artists": []
+        }
+      ],
+      "critic_reviews": [
+        {
+          "author": "Ryan Schreiber",
+          "publication": "Pitchfork",
+          "rating": 100,
+          "text": "The record is brimming with genuine emotion, beautiful and complex imagery and music, and lyrics that are at once passive and fire-breathing. OK Computer is like tossing David Bowie, old U2, Spacehog and lots of Pink Floyd into a blender and pushing the 'kill' button."
+        },
+        {
+          "author": "Mr P",
+          "publication": "Tiny Mix Tapes",
+          "rating": 100,
+          "text": "This landmark masterpiece set a new standard for rock musicians that has yet to be challenged. It's beautiful, mysterious, scary, and thought-provoking; a record that will indefinitely be a future classic."
+        },
+        {
+          "author": "Stephen Thomas Erlewine",
+          "publication": "AllMusic",
+          "rating": 100,
+          "text": "OK Computer is the album that establishes Radiohead as one of the most inventive and rewarding guitar rock bands of the '90s."
+        },
+        {
+          "author": "James Oldham",
+          "publication": "NME",
+          "rating": 100,
+          "text": "Here are 12 tracks crammed with towering lyrical ambition and musical exploration; that refuse to retread the successful formulas of before and instead opt for innovation and surprise"
+        },
+        {
+          "author": "Stephen Thompson",
+          "publication": "A.V. Club",
+          "rating": 100,
+          "text": "You'll discover more the more you listen to it, and that fact alone makes the album downright essential."
+        },
+        {
+          "author": "Unknown",
+          "publication": "Sputnikmusic",
+          "rating": 100,
+          "text": "Their finest moment, and one that demonstrated their brilliance both musically, lyrically, and at creating feelings."
+        },
+        {
+          "author": "Bernard Zuel",
+          "publication": "The Sydney Morning Herald",
+          "rating": 100,
+          "text": "Musically this is an album of so many pleasures."
+        },
+        {
+          "author": "David Cavanagh",
+          "publication": "Q Magazine",
+          "rating": 100,
+          "text": "Not the least achievement of OK Computer is that a major weirdo-psychological English guitar band can induce gasps of admiration, stunned silence and more than a few lumps in the throat. It's and emotionally draining, epic experience. Now Radiohead can definitely be ranked high among the world's greatest bands."
+        },
+        {
+          "author": "Sal Cinquemani",
+          "publication": "Slant Magazine",
+          "rating": 90,
+          "text": "OK Computer ... took guitar rock (and make no mistake—despite its amalgam of analog and digital technologies, that's what the album is) to places it had never gone before."
+        },
+        {
+          "author": "David Browne",
+          "publication": "Entertainment Weekly",
+          "rating": 83,
+          "text": "Shrouded in wafting guitars, swoony rhythms, and moody-blue strings, it shrugs off mosh-pit conventions for a poignant delicacy and breadth."
+        },
+        {
+          "author": "Barry Walters",
+          "publication": "SPIN",
+          "rating": 80,
+          "text": "It feels utterly contemporary, an achievement few mainstream guitar bands can claim. OK Computer bridges the touch-feely/block-rockin' divide of '90s pop with more urgency than a house party of confessional troubadours or breakbeat scientists."
+        },
+        {
+          "author": "Mark Kemp",
+          "publication": "Rolling Stone",
+          "rating": 80,
+          "text": "At a time when they could have played it safe, selling their psychedelic souls for more radio-friendly rock & roll, Radio-head have released a concept album whose theme ... unfolds gradually during the course of the album's 12 songs."
+        },
+        {
+          "author": "Caroline Sullivan",
+          "publication": "The Guardian",
+          "rating": 80,
+          "text": "... surprising and sometimes inspiring but its intensity makes for a demanding listen."
+        }
+      ],
+      "popular_reviews": [
+        {
+          "author": "RandomChUllz",
+          "rating": 100,
+          "text": "We are living what this album feared right now.",
+          "likes": 0
+        },
+        {
+          "author": "Chode",
+          "rating": 100,
+          "text": "September 28, 2020- A young Chodester who is just beginning to embark on his exploration of music outside of hip-hop naively presses play on Airbag by Radiohead for the first time, unbeknownst to him just how transformative the once-in-a-lifetime experience he was about to plunge into would be; and similarly unaware of just how integral this album would be to his future musical journey. See, this day would mark my first time shedding a tear to any album ever. Not only that but more importantly, ... read more",
+          "likes": 0
+        },
+        {
+          "author": "ParthanyJobtano",
+          "rating": 80,
+          "text": "to no-one's surpriseok computer is 'bouthuman emotions\nor how we try todetach ourselves from it butfail miserably \nat the end of all.airtight and futuristic.deserves all the praise",
+          "likes": 0
+        },
+        {
+          "author": "Plepro",
+          "rating": 96,
+          "text": "so far Radiohead improves even more than ever with OK Computer! ok also love all songs",
+          "likes": 0
+        },
+        {
+          "author": "squeakinabottle",
+          "rating": 93,
+          "text": "its coldness precedes it. and yet the strings cut through my fingers (made out of wood) and i think its all true. ya[yap[yap.",
+          "likes": 0
+        },
+        {
+          "author": "JLH",
+          "rating": 100,
+          "text": "Absolute masterpiece of an album.",
+          "likes": 0
+        }
+      ],
+      "is_must_hear": true,
+      "buy_links": [
+        {
+          "platform": "Amazon",
+          "url": "https://www.amazon.com/gp/search?ie=UTF8&tag=albumoftheyear-20&linkCode=ur2&linkId=38fef4f0370d06c157a7b648f4d50018&camp=1789&creative=9325&index=aps&keywords=radiohead+ok+computer"
+        },
+        {
+          "platform": "Apple Music",
+          "url": "https://music.apple.com/us/album/ok-computer/1097861387?uo=4&at=10l4PB&ct=albumAM"
+        },
+        {
+          "platform": "Spotify",
+          "url": "https://open.spotify.com/album/6dVIqQ8qmQ5GBnJ9shOYGE"
+        },
+        {
+          "platform": "Bandcamp",
+          "url": "https://radiohead.bandcamp.com/album/ok-computer"
+        },
+        {
+          "platform": "Buy Vinyl",
+          "url": "https://amzn.to/30iMH5S"
+        }
+      ]
+    },
+    "timestamp": "2025-08-10T00:25:18.998566"
+  },
+  "aoty|radiohead|ok computer (collector's edition)|": {
+    "match_type": "found",
+    "target_data": {
+      "title": "OK Computer (Collector's Edition)",
+      "artist": "Radiohead",
+      "user_score": 94.5,
+      "num_ratings": 8,
+      "tracks": [],
+      "critic_reviews": [
+        {
+          "author": "Scott Plagenhoef",
+          "publication": "Pitchfork",
+          "rating": 100,
+          "text": "OK Computer was the balance everyone agreed upon ... real songs and tunes, but ones that didn't shrink from the increasingly unlimited possibilities of modern music-making."
+        },
+        {
+          "author": "Mark Kemp",
+          "publication": "Paste",
+          "rating": 100,
+          "text": "A dynamic progressive-rock concept album revolving around the breakdown of humanity, OK Computer easily stands the test of time, its loose storyline making an even a stronger statement amid today’s economic clusterfuck."
+        },
+        {
+          "author": "Josh Modell",
+          "publication": "A.V. Club",
+          "rating": 100,
+          "text": "What can be said about 1997’s OK Computer that hasn’t been said before? It really is the perfect synthesis of Radiohead’s seemingly conflicted impulses."
+        },
+        {
+          "author": "Will Hermes",
+          "publication": "Rolling Stone",
+          "rating": 100,
+          "text": "By OK Computer (1997), the band was working strictly with Nigel Godrich as producer, and the mix is its richest yet, lurching between guitar freakouts, Gregorian-chant-style vocals and intergalactic synth noise."
+        },
+        {
+          "author": "Sam Richards",
+          "publication": "Uncut",
+          "rating": 100,
+          "text": "Existential angst has never been realised with such heart-rending potency, via a collection of awesomely supple and substantial songs that haven’t worn or dated one iota. There hasn’t been a better album released in the intervening 12 years."
+        },
+        {
+          "author": "Victoria Segal",
+          "publication": "Q Magazine",
+          "rating": 100,
+          "text": "It remains an astonishing record ... blistering like a super-sensitive immune response to the pre-millennial tensions around them."
+        },
+        {
+          "author": "Tony Clayton-Lea",
+          "publication": "The Irish Times",
+          "rating": 100,
+          "text": "OK Computer (1997) was the start of their fragmentation, but what glittering grace notes they splintered into."
+        },
+        {
+          "author": "Andrew Hultkrans",
+          "publication": "SPIN",
+          "rating": 90,
+          "text": "These two albums remain pillars of pre-millennial angst, now augmented by videos and concert footage."
+        }
+      ],
+      "popular_reviews": [
+        {
+          "author": "Netto910",
+          "rating": 100,
+          "text": "GOAT.",
+          "likes": 0
+        }
+      ],
+      "is_must_hear": false,
+      "buy_links": [
+        {
+          "platform": "Amazon",
+          "url": "https://www.amazon.com/gp/search?ie=UTF8&tag=albumoftheyear-20&linkCode=ur2&linkId=38fef4f0370d06c157a7b648f4d50018&camp=1789&creative=9325&index=aps&keywords=radiohead+ok+computer+collectors+edition"
+        },
+        {
+          "platform": "Apple Music",
+          "url": "https://itunes.apple.com/us/album/ok-computer-collectors-edition/id699631607?uo=4&at=10l4PB&ct=albumAM"
+        },
+        {
+          "platform": "Spotify",
+          "url": "https://open.spotify.com/album/5bNn3KPcrlgLmhRXj4d2EX"
+        }
+      ]
+    },
+    "timestamp": "2025-08-10T00:26:41.645366"
+  },
+  "aoty|radiohead|kid a|": {
+    "match_type": "found",
+    "target_data": {
+      "title": "Kid A",
+      "artist": "Radiohead",
+      "user_score": 91.2,
+      "num_ratings": 18,
+      "tracks": [
+        {
+          "number": 1,
+          "title": "Everything in Its Right Place",
+          "length": "4:11",
+          "rating": 96,
+          "featured_artists": []
+        },
+        {
+          "number": 2,
+          "title": "Kid A",
+          "length": "4:44",
+          "rating": 89,
+          "featured_artists": []
+        },
+        {
+          "number": 3,
+          "title": "The National Anthem",
+          "length": "5:51",
+          "rating": 94,
+          "featured_artists": []
+        },
+        {
+          "number": 4,
+          "title": "How to Disappear Completely",
+          "length": "5:56",
+          "rating": 98,
+          "featured_artists": []
+        },
+        {
+          "number": 5,
+          "title": "Treefingers",
+          "length": "3:42",
+          "rating": 88,
+          "featured_artists": []
+        },
+        {
+          "number": 6,
+          "title": "Optimistic",
+          "length": "5:15",
+          "rating": 94,
+          "featured_artists": []
+        },
+        {
+          "number": 7,
+          "title": "In Limbo",
+          "length": "3:31",
+          "rating": 91,
+          "featured_artists": []
+        },
+        {
+          "number": 8,
+          "title": "Idioteque",
+          "length": "5:09",
+          "rating": 96,
+          "featured_artists": []
+        },
+        {
+          "number": 9,
+          "title": "Morning Bell",
+          "length": "4:35",
+          "rating": 91,
+          "featured_artists": []
+        },
+        {
+          "number": 10,
+          "title": "Motion Picture Soundtrack",
+          "length": "3:20",
+          "rating": 95,
+          "featured_artists": []
+        },
+        {
+          "number": 11,
+          "title": "[untitled]",
+          "length": "0:52",
+          "rating": 85,
+          "featured_artists": []
+        }
+      ],
+      "critic_reviews": [
+        {
+          "author": "Alexander Tudor",
+          "publication": "Drowned in Sound",
+          "rating": 100,
+          "text": "About half of Kid A is a legitimate \"move into electronica\" and not a case of \"bringing in the synths\" as everyone from Genesis to The Strokes has done, when inspiration and musicianship fails them; after all, the dynamics of pop or rock music  just aren't there."
+        },
+        {
+          "author": "Mr P",
+          "publication": "Tiny Mix Tapes",
+          "rating": 100,
+          "text": "A constant battle between digital versus organic plays throughout Kid A, like an organism trying to reach homeostasis but is instead suspended in a state between entropy and equilibrium."
+        },
+        {
+          "author": "Stephen Thomas Erlewine",
+          "publication": "AllMusic",
+          "rating": 100,
+          "text": "This emphasis on texture, this reliance on elliptical songs, means that Kid A is easily the most successful electronica album from a rock band: it doesn't even sound like the work of a rock band, even if it does sound like Radiohead."
+        },
+        {
+          "author": "Unknown",
+          "publication": "Sputnikmusic",
+          "rating": 100,
+          "text": "This is really happening. This is really happening."
+        },
+        {
+          "author": "Brent DiCrescenzo",
+          "publication": "Pitchfork",
+          "rating": 100,
+          "text": "The experience and emotions tied to listening to Kid A are like witnessing the stillborn birth of a child while simultaneously having the opportunity to see her play in the afterlife on Imax."
+        },
+        {
+          "author": "Unknown",
+          "publication": "Record Collector",
+          "rating": 100,
+          "text": "Suitably liberated. These are recordings with soul."
+        },
+        {
+          "author": "Simon Reynolds",
+          "publication": "SPIN",
+          "rating": 90,
+          "text": "The fans will persevere and discover that Kid A is not only Radiohead's bravest album but its best one as well."
+        },
+        {
+          "author": "David Browne",
+          "publication": "Entertainment Weekly",
+          "rating": 83,
+          "text": "As unnervingly cryptic as Kid A can be, it is a genuinely challenging work in a generally unchallenging time."
+        },
+        {
+          "author": "Devon Powers",
+          "publication": "PopMatters",
+          "rating": 80,
+          "text": "Kid A forces its patrons to submerge themselves into the wiles of noise, to work for melody and signifieds, to seek within and find something that wants, needs, and is able to understand. It may not be easy, but music shouldn’t have to be."
+        },
+        {
+          "author": "David Fricke",
+          "publication": "Rolling Stone",
+          "rating": 80,
+          "text": "This is pop, a music of ornery, glistening guile and honest ache, and it will feel good under your skin once you let it get there."
+        },
+        {
+          "author": "Matt Galloway",
+          "publication": "NOW Magazine",
+          "rating": 80,
+          "text": "The quintet's response to OK Computer has been to eliminate everything they succeeded with -- big guitars, proper songs and soaring choruses -- and replace it with dissonant interludes, squealing brass orchestras and a wheezing pump organ. A ballsy move, but is it any good? For the most part, yes."
+        },
+        {
+          "author": "Unknown",
+          "publication": "The Independent",
+          "rating": 80,
+          "text": "One of the year's most anticipated releases is an interesting affair, to say the least"
+        },
+        {
+          "author": "Keith Cameron",
+          "publication": "NME",
+          "rating": 70,
+          "text": "For all its feats of brinkmanship, the patently magnificent construct called 'Kid A' betrays a band playing one-handed just to prove they can, scared to commit itself emotionally."
+        },
+        {
+          "author": "Stuart Maconie",
+          "publication": "Q Magazine",
+          "rating": 60,
+          "text": "Kid A will tax even those who thought Fitter Happier was the catchiest thing on their last record."
+        },
+        {
+          "author": "Unknown",
+          "publication": "Classic Rock",
+          "rating": 60,
+          "text": "Radiohead's fourth album - ethereal, beguiling, not especially good."
+        },
+        {
+          "author": "Unknown",
+          "publication": "Alternative Press",
+          "rating": 60,
+          "text": "Like the soundtrack to a movie that hasn't been filmed. This is music that messes with your insides."
+        },
+        {
+          "author": "Sal Cinquemani",
+          "publication": "Slant Magazine",
+          "rating": 50,
+          "text": "What bothers me is how thinly constructed it is. Whatever messages it attempts to convey are buried underneath a self-indulgent mess."
+        },
+        {
+          "author": "Adam Sweeting",
+          "publication": "The Guardian",
+          "rating": 40,
+          "text": "Thom Yorke rejects the notion that the disc was designed to be \"challenging\", but he didn't explain why it sounds like a score composed for an experimental dance troupe. It also fails to sweep away preconceptions about Radiohead, pandering to the worst cliches about their relentless miserabilism."
+        }
+      ],
+      "popular_reviews": [
+        {
+          "author": "StellaTheDiver",
+          "rating": 97,
+          "text": "Im not being Optimistic, but whenever i hear Kid A, Everything seems to be in its Right Place. Sorry if this review is a little Idioteque.",
+          "likes": 0
+        },
+        {
+          "author": "‎Remi's Reviews",
+          "rating": 100,
+          "text": "2000 FOLLOWERS REVIEW SPECIAL - Kid A (thank you)\nBefore I start the review, I would like to say a few things. *corny alert* I've been on this site for quite a while now, but only recently, by the end of last year has my account started getting some traction. And as much as there have been a lot of negatives, and toxicity on the site, generally, it has been absolutely amazing. It's been a great journey of discovering new music, branching out into unknown territories and genres, and connecting ... read more",
+          "likes": 0
+        },
+        {
+          "author": "ClayDJs03",
+          "rating": 100,
+          "text": "The Epitome of Abstract Art  \n(Before beginning: In the linked reviews, I talk about the fundamental elements that make Radiohead’s music so enduring, why its brilliant, the fundamentals of the music etc., which I feel will adequately convey information that I didn’t focus on in this review, I invite you to read them).\nOk Computer Review: https://www.albumoftheyear.org/user/claydjs03/album/362-ok-computer/In Rainbows Review: ... read more",
+          "likes": 0
+        },
+        {
+          "author": "JLH",
+          "rating": 80,
+          "text": "If you love synths, this album is for you.",
+          "likes": 0
+        },
+        {
+          "author": "Iamfurrybabe",
+          "rating": 90,
+          "text": "Radiohead's electronic adventures collide with their rock experience and song craft, and the result is pretty awesome overall!",
+          "likes": 0
+        },
+        {
+          "author": "JackNelson",
+          "rating": 91,
+          "text": "This might Grow on me over time \nHas two of my top 5 Radiohead songs \nFav Songs - HTDC, MPS",
+          "likes": 0
+        }
+      ],
+      "is_must_hear": true,
+      "buy_links": [
+        {
+          "platform": "Amazon",
+          "url": "https://www.amazon.com/gp/search?ie=UTF8&tag=albumoftheyear-20&linkCode=ur2&linkId=38fef4f0370d06c157a7b648f4d50018&camp=1789&creative=9325&index=aps&keywords=radiohead+kid+a"
+        },
+        {
+          "platform": "Apple Music",
+          "url": "https://music.apple.com/us/album/kid-a/1097862870?uo=4&at=10l4PB&ct=albumAM"
+        },
+        {
+          "platform": "Spotify",
+          "url": "https://open.spotify.com/album/6J6nlVu4JMveJz0YM9zDgL"
+        },
+        {
+          "platform": "Bandcamp",
+          "url": "https://radiohead.bandcamp.com/album/kid-a"
+        },
+        {
+          "platform": "Buy Vinyl",
+          "url": "https://amzn.to/2Odyn7h"
+        }
+      ]
+    },
+    "timestamp": "2025-08-10T00:26:42.295144"
+  },
+  "aoty|pink floyd|the dark side of the moon|": {
+    "match_type": "found",
+    "target_data": {
+      "title": "The Dark Side of the Moon",
+      "artist": "Pink Floyd",
+      "user_score": 91.0,
+      "num_ratings": 9,
+      "tracks": [
+        {
+          "number": 1,
+          "title": "Speak to Me",
+          "length": "1:05",
+          "rating": 81,
+          "featured_artists": []
+        },
+        {
+          "number": 2,
+          "title": "Breathe (In the Air)",
+          "length": "2:49",
+          "rating": 93,
+          "featured_artists": []
+        },
+        {
+          "number": 3,
+          "title": "On the Run",
+          "length": "3:45",
+          "rating": 82,
+          "featured_artists": []
+        },
+        {
+          "number": 4,
+          "title": "Time",
+          "length": "6:53",
+          "rating": 96,
+          "featured_artists": []
+        },
+        {
+          "number": 5,
+          "title": "The Great Gig in the Sky",
+          "length": "4:43",
+          "rating": 95,
+          "featured_artists": []
+        },
+        {
+          "number": 6,
+          "title": "Money",
+          "length": "6:22",
+          "rating": 95,
+          "featured_artists": []
+        },
+        {
+          "number": 7,
+          "title": "Us and Them",
+          "length": "7:49",
+          "rating": 96,
+          "featured_artists": []
+        },
+        {
+          "number": 8,
+          "title": "Any Colour You Like",
+          "length": "3:26",
+          "rating": 90,
+          "featured_artists": []
+        },
+        {
+          "number": 9,
+          "title": "Brain Damage",
+          "length": "3:46",
+          "rating": 95,
+          "featured_artists": []
+        },
+        {
+          "number": 10,
+          "title": "Eclipse",
+          "length": "2:10",
+          "rating": 94,
+          "featured_artists": []
+        }
+      ],
+      "critic_reviews": [
+        {
+          "author": "Stephen Thomas Erlewine",
+          "publication": "AllMusic",
+          "rating": 100,
+          "text": "It's dense with detail, but leisurely paced, creating its own dark, haunting world. Pink Floyd may have better albums than Dark Side of the Moon, but no other record defines them quite as well as this one"
+        },
+        {
+          "author": "Stephen Deusner",
+          "publication": "Paste",
+          "rating": 100,
+          "text": "Even forty years later these songs still manage to transcend their genre and era and capture the imagination of subsequent generations of listeners even when they’re not cued up to The Wizard of Oz."
+        },
+        {
+          "author": "Loyd Grossman",
+          "publication": "Rolling Stone",
+          "rating": 100,
+          "text": "The Dark Side of the Moon is a fine album with a textural and conceptual richness that not only invites, but demands involvement."
+        },
+        {
+          "author": "Richard Smirke",
+          "publication": "Billboard",
+          "rating": 100,
+          "text": "\"The Dark Side of the Moon\" ... transformed Pink Floyd from ambitious art-house hipsters to international superstars, while influencing virtually every rock band of the past forty years."
+        },
+        {
+          "author": "Neil McCormick",
+          "publication": "The Telegraph",
+          "rating": 100,
+          "text": "Everything comes together on a gorgeoues, trippy, sonically, lyricall, melodically, harmonically fluid rock journey into inner space."
+        },
+        {
+          "author": "Unknown",
+          "publication": "Q Magazine",
+          "rating": 100,
+          "text": "Less a rock album, more a voyage into the outer reaches of sound."
+        },
+        {
+          "author": "Tyler Golsen",
+          "publication": "Far Out Magazine",
+          "rating": 100,
+          "text": "It’s an album that transcends style and genre, yet it still represents the apex of progressive rock music, tapping into something that everyone can enjoy and obsess over."
+        },
+        {
+          "author": "Eric Harvey",
+          "publication": "Pitchfork",
+          "rating": 93,
+          "text": "Pink Floyd’s era of the rock star guru gave way to multiple waves of larger-than-life icons decades ago, but any performer-mogul bent on building impossibly huge and expensive musical experiences to call the faithful to their knees is, to some degree, working from The Dark Side of the Moon’s original text."
+        },
+        {
+          "author": "Unknown",
+          "publication": "Sputnikmusic",
+          "rating": 80,
+          "text": "The Dark Side Of The Moon has the reputation that it does for a reason. It's one of the few prog-style albums to really successfully make the jump into mainstream culture, and that's because everyone can find something to identify with here"
+        }
+      ],
+      "popular_reviews": [
+        {
+          "author": "FearFlour",
+          "rating": 0,
+          "text": "Does not bump in the whip.",
+          "likes": 0
+        },
+        {
+          "author": "lena ( ^ω^ )",
+          "rating": 52,
+          "text": "they tryna be lil yachty so bad ☝🤓",
+          "likes": 0
+        },
+        {
+          "author": "TheGod",
+          "rating": 85,
+          "text": "Sex Education\nInstructions for use: Dear AOTY newcomer, this album MUST be your first contact with \"old music\", your very first \"rock classic\". Or one of your first, anyway. If you're under 16, it's better. Are you ready for your first auditory orgasm, are you ready to take an interstellar slap straight from the 70's galaxy?\nSo, you're discovering \"The Dark Side of the Moon\", and you're going to love it. But like, you're gonna be fucking into it, though. (This ... read more",
+          "likes": 0
+        },
+        {
+          "author": "Veximus",
+          "rating": 95,
+          "text": "Two of my favorite things when it comes to music:\nLetting instrumentals carry on and let them flow.\nMaking music that ends up sounding and feeling timeless.\nThis album has both.",
+          "likes": 0
+        },
+        {
+          "author": "JLH",
+          "rating": 80,
+          "text": "Yet another incredible album to add to Pink Floyd's legacy.",
+          "likes": 0
+        },
+        {
+          "author": "Masondugl",
+          "rating": 100,
+          "text": "My Dad Introduced me to Pink Floyd and said it is one of his favorite bands ever. I bet that claim will pass on for generations. I started by listening to “Wish You Were Here” which is still one of my favorite albums of all time. He encouraged me to listening to “Dark Side Of The Moon” and I will thank him every day for it. I listened to this album just laying on my bed. Eyes closed and music full volume. With all of my focus on the music. I will go by the claim that it ... read more",
+          "likes": 0
+        }
+      ],
+      "is_must_hear": true,
+      "buy_links": [
+        {
+          "platform": "Amazon",
+          "url": "https://www.amazon.com/gp/search?ie=UTF8&tag=albumoftheyear-20&linkCode=ur2&linkId=38fef4f0370d06c157a7b648f4d50018&camp=1789&creative=9325&index=aps&keywords=pink+floyd+the+dark+side+of+the+moon"
+        },
+        {
+          "platform": "Apple Music",
+          "url": "https://music.apple.com/us/album/the-dark-side-of-the-moon/1065973699?uo=4&at=10l4PB&ct=albumAM"
+        },
+        {
+          "platform": "Spotify",
+          "url": "https://open.spotify.com/album/3a0UOgDWw2pTajw85QPMiz"
+        },
+        {
+          "platform": "Buy Vinyl",
+          "url": "https://amzn.to/32dTkDu"
+        }
+      ]
+    },
+    "timestamp": "2025-08-10T00:26:45.705923"
+  },
+  "aoty|the beatles|abbey road|": {
+    "match_type": "found",
+    "target_data": {
+      "title": "Abbey Road",
+      "artist": "The Beatles",
+      "user_score": 91.8,
+      "num_ratings": 8,
+      "tracks": [
+        {
+          "number": 1,
+          "title": "Come Together",
+          "length": "4:20",
+          "rating": 95,
+          "featured_artists": []
+        },
+        {
+          "number": 2,
+          "title": "Something",
+          "length": "3:02",
+          "rating": 96,
+          "featured_artists": []
+        },
+        {
+          "number": 3,
+          "title": "Maxwell's Silver Hammer",
+          "length": "3:27",
+          "rating": 88,
+          "featured_artists": []
+        },
+        {
+          "number": 4,
+          "title": "Oh! Darling",
+          "length": "3:27",
+          "rating": 94,
+          "featured_artists": []
+        },
+        {
+          "number": 5,
+          "title": "Octopus's Garden",
+          "length": "2:50",
+          "rating": 91,
+          "featured_artists": []
+        },
+        {
+          "number": 6,
+          "title": "I Want You (She's So Heavy)",
+          "length": "7:47",
+          "rating": 95,
+          "featured_artists": []
+        },
+        {
+          "number": 7,
+          "title": "Here Comes the Sun",
+          "length": "3:05",
+          "rating": 96,
+          "featured_artists": []
+        },
+        {
+          "number": 8,
+          "title": "Because",
+          "length": "2:45",
+          "rating": 90,
+          "featured_artists": []
+        },
+        {
+          "number": 9,
+          "title": "You Never Give Me Your Money",
+          "length": "4:02",
+          "rating": 93,
+          "featured_artists": []
+        },
+        {
+          "number": 10,
+          "title": "Sun King",
+          "length": "2:26",
+          "rating": 87,
+          "featured_artists": []
+        },
+        {
+          "number": 11,
+          "title": "Mean Mr. Mustard",
+          "length": "1:06",
+          "rating": 87,
+          "featured_artists": []
+        },
+        {
+          "number": 12,
+          "title": "Polythene Pam",
+          "length": "1:12",
+          "rating": 87,
+          "featured_artists": []
+        },
+        {
+          "number": 13,
+          "title": "She Came in Through the Bathroom Window",
+          "length": "1:58",
+          "rating": 91,
+          "featured_artists": []
+        },
+        {
+          "number": 14,
+          "title": "Golden Slumbers",
+          "length": "1:31",
+          "rating": 94,
+          "featured_artists": []
+        },
+        {
+          "number": 15,
+          "title": "Carry That Weight",
+          "length": "1:36",
+          "rating": 94,
+          "featured_artists": []
+        },
+        {
+          "number": 16,
+          "title": "The End",
+          "length": "2:21",
+          "rating": 94,
+          "featured_artists": []
+        },
+        {
+          "number": 17,
+          "title": "Her Majesty",
+          "length": "0:25",
+          "rating": 82,
+          "featured_artists": []
+        }
+      ],
+      "critic_reviews": [
+        {
+          "author": "Mark Richardson",
+          "publication": "Pitchfork",
+          "rating": 100,
+          "text": "The perfect ending to a recording career, this LP shows a band still in its prime, capable of songwriting and recording feats others could only envy."
+        },
+        {
+          "author": "Ajitpaul Mangat",
+          "publication": "Tiny Mix Tapes",
+          "rating": 100,
+          "text": "By putting their differences aside and recording Abbey Road with a passion for music they had nearly extinguished with petty disputes and grudges, The Beatles gave music fans another blissful musical experience that is still producing joy decades after its creation."
+        },
+        {
+          "author": "Stephen Thomas Erlewine",
+          "publication": "AllMusic",
+          "rating": 100,
+          "text": "Whether Abbey Road is the Beatles' best work is debatable, but it's certainly the most immaculately produced (with the possible exception of Sgt. Pepper) and most tightly constructed."
+        },
+        {
+          "author": "Mark Kemp",
+          "publication": "Paste",
+          "rating": 100,
+          "text": "Abbey Road would’ve been the perfect swan song for a monumental musical career."
+        },
+        {
+          "author": "John Mendelsohn",
+          "publication": "Rolling Stone",
+          "rating": 100,
+          "text": "That the Beatles can unify seemingly countless musical fragments and lyrical doodlings into a uniformly wonderful suite, as they've done on side two, seems potent testimony that no, they've far from lost it, and no, they haven't stopped trying."
+        },
+        {
+          "author": "Neil McCormick",
+          "publication": "The Telegraph",
+          "rating": 100,
+          "text": "The disintegrating band called a ceasefire on hostilities to record this last love letter to each other and to the world."
+        },
+        {
+          "author": "Anthony Fantano",
+          "publication": "The Needle Drop",
+          "rating": 100,
+          "text": "Hands down The Beatles' strongest crop of tracks."
+        },
+        {
+          "author": "Tim Coffman",
+          "publication": "Far Out Magazine",
+          "rating": 100,
+          "text": "If Sgt Pepper opened The Beatles up to greater sonic pastures, Abbey Road is what happens when all of those creative minds work together for one last time."
+        }
+      ],
+      "popular_reviews": [
+        {
+          "author": "Chode",
+          "rating": 100,
+          "text": "Every 60s rock band got the\n- Wife Abuser- Wife Abuser- Wife Abuser- Cocaine Abuser- Wife Abuser",
+          "likes": 0
+        },
+        {
+          "author": "𝒩𝑒𝓋𝑒𝓇𝓂𝑒𝒶𝓃𝓉",
+          "rating": 80,
+          "text": "Gather round all ye haters, here’s a hot one for ye.\nWell, not so much a hot take as middlingly lukewarm, especially considering the recent trend of us little ones calling the Beatles overrated. Despite my modest score of their most beloved record though, I don’t think they’re overrated. My high school music teacher might’ve audibly snickered when he heard the scolding embarrassment that was my presentation on music history, but even I recognize the contribution and ... read more",
+          "likes": 0
+        },
+        {
+          "author": "‎Remi's Reviews",
+          "rating": 100,
+          "text": "The most iconic piece of art of all time\nREVIEW REPOST #009. I repost my old reviews, which got no attention, with updated thoughts. Posted this review in December of 2020 but I'm posting it again.\nAbbey Road is the first album I've ever heard in my life. I remember my dad had a CD of this that automatically started playing in the car every time he started the car, and he never turned it off. I was a little baby. So I've heard this album probably a thousand times since I was like 3 years old. ... read more",
+          "likes": 0
+        },
+        {
+          "author": "yonn",
+          "rating": 60,
+          "text": "The 12th of my ratings and reviews of all top 500 albums on this website. Currently at 13#, 91.8. As of 10/08/25.\nSoooo this is one of my hottest takes yet and honestly i stand by it. This album is fundamentally fantastic as most of the instrumentals are spot on perfect. However i grew up in a household where beatles was played almost neverending and i honestly got so much flavour fatigue as a result. Im sorry for the lowball rating but i seriously cannot enjoy this album more than putting it ... read more",
+          "likes": 0
+        },
+        {
+          "author": "Limo",
+          "rating": 92,
+          "text": "👍 👍",
+          "likes": 0
+        },
+        {
+          "author": "JLH",
+          "rating": 80,
+          "text": "Who doesn't love this album?",
+          "likes": 0
+        }
+      ],
+      "is_must_hear": true,
+      "buy_links": [
+        {
+          "platform": "Amazon",
+          "url": "https://www.amazon.com/gp/search?ie=UTF8&tag=albumoftheyear-20&linkCode=ur2&linkId=38fef4f0370d06c157a7b648f4d50018&camp=1789&creative=9325&index=aps&keywords=the+beatles+abbey+road"
+        },
+        {
+          "platform": "Apple Music",
+          "url": "https://music.apple.com/us/album/abbey-road-remastered/1441164426?uo=4&at=10l4PB&ct=albumAM"
+        },
+        {
+          "platform": "Spotify",
+          "url": "https://open.spotify.com/album/2Pqkn9Dq2DFtdfkKAeqgMd"
+        },
+        {
+          "platform": "Buy Vinyl",
+          "url": "https://amzn.to/3a5u5qD"
+        }
+      ]
+    },
+    "timestamp": "2025-08-10T00:26:47.358091"
+  },
+  "aoty|isaiah rashad|cilvia demo [explicit]|": {
+    "match_type": "not_found",
+    "target_data": null,
+    "timestamp": "2025-08-10T00:39:27.546423"
+  },
+  "aoty|frank ocean|blonde|": {
+    "match_type": "found",
+    "target_data": {
+      "title": "Blonde",
+      "artist": "Frank Ocean",
+      "user_score": 89.4,
+      "num_ratings": 42,
+      "tracks": [
+        {
+          "number": 1,
+          "title": "Nikes",
+          "length": "5:14",
+          "rating": 88,
+          "featured_artists": []
+        },
+        {
+          "number": 2,
+          "title": "Ivy",
+          "length": "4:09",
+          "rating": 94,
+          "featured_artists": []
+        },
+        {
+          "number": 3,
+          "title": "Pink + White",
+          "length": "3:04",
+          "rating": 95,
+          "featured_artists": []
+        },
+        {
+          "number": 4,
+          "title": "Be Yourself",
+          "length": "1:26",
+          "rating": 81,
+          "featured_artists": []
+        },
+        {
+          "number": 5,
+          "title": "Solo",
+          "length": "4:17",
+          "rating": 92,
+          "featured_artists": []
+        },
+        {
+          "number": 6,
+          "title": "Skyline To",
+          "length": "3:04",
+          "rating": 88,
+          "featured_artists": []
+        },
+        {
+          "number": 7,
+          "title": "Self Control",
+          "length": "4:09",
+          "rating": 95,
+          "featured_artists": []
+        },
+        {
+          "number": 8,
+          "title": "Good Guy",
+          "length": "1:06",
+          "rating": 81,
+          "featured_artists": []
+        },
+        {
+          "number": 9,
+          "title": "Nights",
+          "length": "5:07",
+          "rating": 96,
+          "featured_artists": []
+        },
+        {
+          "number": 10,
+          "title": "Solo (Reprise)",
+          "length": "1:18",
+          "rating": 89,
+          "featured_artists": []
+        },
+        {
+          "number": 11,
+          "title": "Pretty Sweet",
+          "length": "2:38",
+          "rating": 87,
+          "featured_artists": []
+        },
+        {
+          "number": 12,
+          "title": "Facebook Story",
+          "length": "1:08",
+          "rating": 76,
+          "featured_artists": []
+        },
+        {
+          "number": 13,
+          "title": "Close to You",
+          "length": "1:25",
+          "rating": 84,
+          "featured_artists": []
+        },
+        {
+          "number": 14,
+          "title": "White Ferrari",
+          "length": "4:08",
+          "rating": 95,
+          "featured_artists": []
+        },
+        {
+          "number": 15,
+          "title": "Seigfried",
+          "length": "5:34",
+          "rating": 93,
+          "featured_artists": []
+        },
+        {
+          "number": 16,
+          "title": "Godspeed",
+          "length": "2:57",
+          "rating": 92,
+          "featured_artists": []
+        },
+        {
+          "number": 17,
+          "title": "Futura Free",
+          "length": "9:24",
+          "rating": 87,
+          "featured_artists": []
+        }
+      ],
+      "critic_reviews": [
+        {
+          "author": "Eric Renner Brown",
+          "publication": "Entertainment Weekly",
+          "rating": 100,
+          "text": "With these 17 tracks, Ocean shows himself to be one of pop’s foremost innovators."
+        },
+        {
+          "author": "Tim Jonze",
+          "publication": "The Guardian",
+          "rating": 100,
+          "text": "Realign your expectations, and what gradually emerges is a record of enigmatic beauty, intoxicating depth and intense emotion."
+        },
+        {
+          "author": "Katie Hawthorne",
+          "publication": "The Skinny",
+          "rating": 100,
+          "text": "It's a dignified, down-tempo celebration of taking all the damn time you need to get something done that's worth doing right."
+        },
+        {
+          "author": "Nina Corcoran",
+          "publication": "Consequence of Sound",
+          "rating": 100,
+          "text": "Blonde is R&B minimalism that only Ocean could have made, and he created it as such so that its details emerge when they feel comfortable to do so — namely when the listener is prepared to face their similarities to his autobiographical faults with the same lack of a need for exoneration."
+        },
+        {
+          "author": "Paige Luisa",
+          "publication": "Earmilk",
+          "rating": 95,
+          "text": "After hearing blond - you gotta respect the craftsmanship."
+        },
+        {
+          "author": "Stephen Kearse",
+          "publication": "Paste",
+          "rating": 93,
+          "text": "Beautifully more simple than any of our mythmaking delusions, Blonde is Ocean’s life as he experiences it: fluid and fluctuating, one man in motion. This is what freedom sounds like."
+        },
+        {
+          "author": "Peter Tabakis",
+          "publication": "Pretty Much Amazing",
+          "rating": 91,
+          "text": "On the whole, Blonde is more assured and consistent than Channel Orange. It inherits the bagginess of his overstuffed debut, but lacks the thrill of groundbreaking novelty. Frank Ocean is an outlier, an artist who can produce an album this phenomenal and nevertheless fall a bit short."
+        },
+        {
+          "author": "Dave Hanratty",
+          "publication": "Drowned in Sound",
+          "rating": 90,
+          "text": "Blonde feels like a confessional, one of naked pain, powerful acceptance and so much knowing ambiguity that the man behind these often pitch-shifted words once again keeps those rapt at arm’s length even when finally delivering."
+        },
+        {
+          "author": "Ed Jupp",
+          "publication": "God Is in the TV",
+          "rating": 90,
+          "text": "It confirms once more just how essential Ocean is as an artist, not just as a singer-songwriter.  It seems likely that this album will feature highly on End of Year polls, and that is utterly deserved."
+        },
+        {
+          "author": "Luke Winstanley",
+          "publication": "Clash",
+          "rating": 90,
+          "text": "More quintessential than any of his previous releases, ‘Blonde’ rewards repeated listens. It demands your attention, but more importantly, it deserves it too. This is the sound of an artist in complete control, full of confidence and dazzling flair."
+        },
+        {
+          "author": "Stephen Butchard",
+          "publication": "GIGsoup",
+          "rating": 90,
+          "text": "'Blonde' isn’t an album that can be concisely written about; these are rich, multifaceted songs that know when to keep the listener at arm’s length, and when to pull them in close."
+        },
+        {
+          "author": "Ryan B. Patrick",
+          "publication": "Exclaim!",
+          "rating": 90,
+          "text": "Blonde is chaotic. Vibrant, it colours outside the lines. Poignant, it's transparent with altering modes of bravado, vulnerability and desperation. It is, thoroughly, a Frank Ocean album, yearning for perfection, sating the audience's hunger for dynamism, yet with the persistent feeling that the artist feels it's all a failure."
+        },
+        {
+          "author": "Thomas Edward",
+          "publication": "The Line of Best Fit",
+          "rating": 90,
+          "text": "For an album that is at times intentionally difficult to follow - for all its vague and indistinct meanderings between subjects, between minds and bodies, between place and time, Blonde remains a highly accessible album - and not just sonically."
+        },
+        {
+          "author": "Tirhaka Love",
+          "publication": "Spectrum Culture",
+          "rating": 90,
+          "text": "The multiplicity of spins and perspectives Ocean draws out of love stories, social commentary and self-reflection is payoff enough to return to the album again and again."
+        },
+        {
+          "author": "Allyson Johnson",
+          "publication": "The Young Folks",
+          "rating": 90,
+          "text": "Blonde is a success not only because, technically speaking, it’s a outstanding sophomoric effort, but also because it’s pure artistry with soul and life injected into it to make it something each listener can engage with and relate to."
+        },
+        {
+          "author": "John Murphy",
+          "publication": "musicOMH",
+          "rating": 90,
+          "text": "It’s just about impossible to live up to the hype that an album like this has been subjected to, but Ocean comes pretty close. Blonde is often a bit of a sprawling mess, but with some patience it becomes one of the most rewarding albums you’ll hear all year."
+        },
+        {
+          "author": "Ryan Dombal",
+          "publication": "Pitchfork",
+          "rating": 90,
+          "text": "Frank is 28 now, and his voice has grown stronger and more dexterous, while some of his tales have become more abstract."
+        },
+        {
+          "author": "Kyle Mullin",
+          "publication": "Under the Radar",
+          "rating": 85,
+          "text": "If casual fans looking for simpler, catchier grooves to vibe to don't get it, then so be it. Judging by the way that Ocean sings without abandon on Blonde, he's well aware of what his true fans need."
+        },
+        {
+          "author": "Dan Caffrey",
+          "publication": "A.V. Club",
+          "rating": 83,
+          "text": "For the most part, the musicality—much sparser than the maximalist sonic feasts of his earlier work—still holds the same synesthetic power of the past, even for those who don’t claim to have the ability to see sounds."
+        },
+        {
+          "author": "Martyn Young",
+          "publication": "Dork",
+          "rating": 80,
+          "text": "No gimmicks, no massive production. Just beautiful songs with depth, feeling and passion."
+        },
+        {
+          "author": "Kate Mossman",
+          "publication": "The Observer",
+          "rating": 80,
+          "text": "There is still the powerful sense of a veiled introvert, and of the unlikely intimacy he achieves within this pose. You find yourself caring anew about the “I” of these songs, who is reflected in snatches of impressionistic poetry, in sunlight, summer smoke and boxer shorts."
+        },
+        {
+          "author": "Anthony Fantano",
+          "publication": "The Needle Drop",
+          "rating": 80,
+          "text": "Frank Ocean doesn't disappoint on this highly-anticipated followup to his breakout album Channel Orange."
+        },
+        {
+          "author": "Neil McCormick",
+          "publication": "The Telegraph",
+          "rating": 80,
+          "text": "In its defiant strangeness, Blonde should be celebrated as part of a generational shift away from the obvious in pop, as a new mood of serious artistic daring permeates an increasingly soul-searching hip-hop culture."
+        },
+        {
+          "author": "Bernard Zuel",
+          "publication": "The Sydney Morning Herald",
+          "rating": 80,
+          "text": "Vulnerabilities are present, intra-relationship conversations are not left to easy cliches, Ocean feels never less than real."
+        },
+        {
+          "author": "Unknown",
+          "publication": "Q Magazine",
+          "rating": 80,
+          "text": "These records might not eclipse Channel Orange, but they have their own mercurial gleam, mapping the spaces between people, reaching for a hazy intimacy that almost feels real."
+        },
+        {
+          "author": "Richard Godwin",
+          "publication": "Evening Standard",
+          "rating": 80,
+          "text": "It may lack a certain focus and go on a little, but there are gorgeous depths if you care to delve."
+        },
+        {
+          "author": "Karl Smith",
+          "publication": "Crack Magazine",
+          "rating": 80,
+          "text": "With 44 credited contributors, some of them literal and some very much spiritual, over 17 songs ... the only thought given to consistency is that consistency has no place in reality or the narrative arc of this album."
+        },
+        {
+          "author": "Kevin Ritchie",
+          "publication": "NOW Magazine",
+          "rating": 80,
+          "text": "Blonde delves even further into Ocean’s creeping sense of mortality than Endless, but with the kind of focused songwriting and production values befitting the intense level of fan expectation that preceded its release."
+        },
+        {
+          "author": "Andy Cowan",
+          "publication": "Mojo",
+          "rating": 80,
+          "text": "It’s a beguiling, meandering sprawl that rewards total immersion."
+        },
+        {
+          "author": "Unknown",
+          "publication": "Uncut",
+          "rating": 80,
+          "text": "The sprawling haziness still lingers, but the songs are sharper and studded with guests."
+        },
+        {
+          "author": "Jesse Cataldo",
+          "publication": "Slant Magazine",
+          "rating": 80,
+          "text": "While Ocean's previous album was about currency of the monetary and interpersonal sort ... this one digs inward to examine issues of identity and personality in the shadow of growing recognition."
+        },
+        {
+          "author": "Jonah Weiner",
+          "publication": "Rolling Stone",
+          "rating": 80,
+          "text": "The album is by turns oblique, smolderingly direct, forlorn, funny, dissonant and gorgeous: a vertiginous marvel of digital-age psychedelic pop."
+        },
+        {
+          "author": "Scott Glaysher",
+          "publication": "XXL",
+          "rating": 80,
+          "text": "Luckily for Frank and his army of die-hard fans, the time he took to craft the album sufficiently equates to its’ quality."
+        },
+        {
+          "author": "Jim Beviglia",
+          "publication": "American Songwriter",
+          "rating": 80,
+          "text": "This is music that fascinates on first listen but requires multiple spins for its complexities and idiosyncrasies to take hold."
+        },
+        {
+          "author": "Jamie Milton",
+          "publication": "DIY",
+          "rating": 80,
+          "text": "Searching for ‘Blonde’’s true meaning is like fishing for treasure in the Great Barrier Reef. There’s bound to be something down there somewhere, but you’ve got to get past the infinite, beautiful distractions."
+        },
+        {
+          "author": "Juan Edgardo Rodríguez",
+          "publication": "No Ripcord",
+          "rating": 80,
+          "text": "There’s a reason why this could be considered his attempt at writing an album akin to Sgt. Pepper: as Ocean consciously sets a very clear tone with some intrepid experimentation, he finds to way to put the focus almost entirely on thought-provoking sentiments."
+        },
+        {
+          "author": "Dan Weiss",
+          "publication": "SPIN",
+          "rating": 80,
+          "text": "The first half of Blonde is astonishing, sustained beauty. The second is more distant, closer to the shower improvs of Friday’s sounds-like-a-soundtrack-and-it-is Endless."
+        },
+        {
+          "author": "Emmanuel Elone",
+          "publication": "PopMatters",
+          "rating": 80,
+          "text": "Like the greatest artists, Frank Ocean makes the new and experimental appealing towards even the most mainstream audiences, except this time the songs are more fulfilling and memorable than ever before."
+        },
+        {
+          "author": "Pat Beane",
+          "publication": "Tiny Mix Tapes",
+          "rating": 80,
+          "text": "Blonde is of instances, of stretches and yawns, creativity in recreation, invisible labor, a time-lapse collapsed into one space."
+        },
+        {
+          "author": "Andy Kellman",
+          "publication": "AllMusic",
+          "rating": 70,
+          "text": "An undoubtedly reactive work, this is undiluted and progressive nonetheless."
+        },
+        {
+          "author": "William Ketchum III",
+          "publication": "HipHopDX",
+          "rating": 68,
+          "text": "Frank is rarely completely straightforward on Blonde, but many of the best moments come when he gets closer to it."
+        },
+        {
+          "author": "Andy Gill",
+          "publication": "The Independent",
+          "rating": 40,
+          "text": "Less structured and song-oriented than Channel Orange, it’s a long, meandering ramble through Ocean’s passing interests and attitudes, hopes and memories ... delivered in an undulating sprechstimme that seems to be avoiding the difficult choice of a compelling melody."
+        }
+      ],
+      "popular_reviews": [
+        {
+          "author": "morningsbell",
+          "rating": 0,
+          "text": "i hate this album its the reason why i sob alone at 3 am",
+          "likes": 0
+        },
+        {
+          "author": "Cambridge",
+          "rating": 100,
+          "text": "\"Blond Is\"\nPoetic to exhaustion.Rebelliously virtuous.Progressive but not obnoxiously ambitious.Naked with a warm tone of soulfulness.Euphorically sinister of nostalgia.Tastefully sour like an onion.The Sistine Chapel of R&B.",
+          "likes": 0
+        },
+        {
+          "author": "Matt",
+          "rating": 100,
+          "text": "The feeling of comfort is something we all need as of now. From the world we live in, the situations we always get into, we just need a break from it all. That alleviation of pain or distress keeps you from just going astray, and that’s the last thing we all want right now. To go onto a more personal note, it’s more or less what I’ve been going through recently. Without the people in my personal life, and even the people on this very website, I don’t know where I’d ... read more",
+          "likes": 0
+        },
+        {
+          "author": "Limo",
+          "rating": 85,
+          "text": "Good r&b music",
+          "likes": 0
+        },
+        {
+          "author": "Veximus",
+          "rating": 90,
+          "text": "Less of common R&B music, more of an art form. Need I say more?",
+          "likes": 0
+        },
+        {
+          "author": "Plepro",
+          "rating": 98,
+          "text": "frank dropped another banger album and then left us for yearsFav songs:Pink + WhiteNightsSelf ControlIvySolo (Reprise)White Ferrari",
+          "likes": 0
+        }
+      ],
+      "is_must_hear": true,
+      "buy_links": [
+        {
+          "platform": "Amazon",
+          "url": "https://www.amazon.com/gp/search?ie=UTF8&tag=albumoftheyear-20&linkCode=ur2&linkId=38fef4f0370d06c157a7b648f4d50018&camp=1789&creative=9325&index=aps&keywords=frank+ocean+blonde"
+        },
+        {
+          "platform": "Apple Music",
+          "url": "https://music.apple.com/us/album/blonde/1146195596?uo=4&at=10l4PB&ct=albumAM"
+        },
+        {
+          "platform": "Spotify",
+          "url": "https://open.spotify.com/album/1PDX0hMmsSdq122EupvNZF"
+        },
+        {
+          "platform": "Buy Vinyl",
+          "url": "https://amzn.to/3Se0LoX"
+        }
+      ]
+    },
+    "timestamp": "2025-08-10T00:39:27.955478"
+  },
+  "aoty|kanye west|the life of paul|": {
+    "match_type": "not_found",
+    "target_data": null,
+    "timestamp": "2025-08-10T00:39:28.277319"
+  },
+  "aoty|sampha|dual|": {
+    "match_type": "found",
+    "target_data": {
+      "title": "Dual",
+      "artist": "Sampha",
+      "user_score": 77.9,
+      "num_ratings": 5,
+      "tracks": [
+        {
+          "number": 1,
+          "title": "Demons",
+          "length": "0:54",
+          "rating": 74,
+          "featured_artists": []
+        },
+        {
+          "number": 2,
+          "title": "Beneath the Tree",
+          "length": "4:00",
+          "rating": 79,
+          "featured_artists": []
+        },
+        {
+          "number": 3,
+          "title": "Without",
+          "length": "3:49",
+          "rating": 86,
+          "featured_artists": []
+        },
+        {
+          "number": 4,
+          "title": "Hesitant Oath",
+          "length": "0:36",
+          "rating": 75,
+          "featured_artists": []
+        },
+        {
+          "number": 5,
+          "title": "Indecision",
+          "length": "4:28",
+          "rating": 94,
+          "featured_artists": []
+        },
+        {
+          "number": 6,
+          "title": "Can't Get Close",
+          "length": "3:38",
+          "rating": 86,
+          "featured_artists": []
+        }
+      ],
+      "critic_reviews": [
+        {
+          "author": "Steve Lampiris",
+          "publication": "The Line of Best Fit",
+          "rating": 85,
+          "text": "If there’s a more effective way to suggest the twofold nature of emotion, I haven’t seen it recently."
+        },
+        {
+          "author": "Jabbari Weekes",
+          "publication": "Exclaim!",
+          "rating": 80,
+          "text": "The EP is filled to the brim with six soulful tracks that recount feelings of loss and miscommunication, spilling over from one song to the next."
+        },
+        {
+          "author": "Zach Kelly",
+          "publication": "Pitchfork",
+          "rating": 74,
+          "text": "While a passing glance at these songs may not reveal many layers, his use of repetition and unfussy language afford Dual some startling emotional relevance."
+        },
+        {
+          "author": "Nick Levine",
+          "publication": "NME",
+          "rating": 70,
+          "text": "Sampha shows impressive range by moving from the spare, piano-led opener ‘Demons’ to the fuller, spooky gospel sound of final track ‘Can’t Get Close’."
+        },
+        {
+          "author": "Glenn Jackson",
+          "publication": "XLR8R",
+          "rating": 70,
+          "text": "Dual may have its hiccups, but there’s little question that Sampha’s talents are indeed worthwhile, even when they’re being presented on their own."
+        }
+      ],
+      "popular_reviews": [
+        {
+          "author": "gronner",
+          "rating": 87,
+          "text": "beautiful.",
+          "likes": 0
+        },
+        {
+          "author": "𝘍𝘢𝘺𝘦",
+          "rating": 84,
+          "text": "Raw, beautiful, and stellar underproduced music.A side of Sampha where it feels more dragged and emotional from him",
+          "likes": 0
+        },
+        {
+          "author": "MANONTHEM00N",
+          "rating": 75,
+          "text": "It's really good, but at the same time, a little forgettable to me.",
+          "likes": 0
+        },
+        {
+          "author": "Mocro",
+          "rating": 87,
+          "text": "Dual by sampha released in 2013 is an amazing introduction to sampha style and music its a six track ep that blend many style  is production minimalist .  Here my notes track by track\nDemons interlude can’t rate that\nBeneath the tree. 88\nWithout. 86\nHésitant oath interlude can’t rate that\nIndécision 96 this song is amazing \nCan’t get close. 88",
+          "likes": 0
+        },
+        {
+          "author": "kielsmells",
+          "rating": 81,
+          "text": "even with it being forgettable at times and the fact that it is very short, it is still a gorgeous ep.\nFavorite tracks: Indecision, Can’t Get Close\nLeast favorite track: Beneath the Tree",
+          "likes": 0
+        },
+        {
+          "author": "Josephearsmusic",
+          "rating": 80,
+          "text": "With just 4 songs, Sampha brings in this emotional feeling that not many EPs had back in the early 2010s. The production just brings me to tears for how amazing it is, and it is all created by him himself, and do not get me started on how angelic his voice is. He was born with a gift, and he is using it to his advantage, creating timeless art. \nFavorite Song: Indecision Least Favorite Song: Beneath the Tree",
+          "likes": 0
+        }
+      ],
+      "is_must_hear": false,
+      "buy_links": [
+        {
+          "platform": "Amazon",
+          "url": "https://www.amazon.com/gp/search?ie=UTF8&tag=albumoftheyear-20&linkCode=ur2&linkId=38fef4f0370d06c157a7b648f4d50018&camp=1789&creative=9325&index=aps&keywords=sampha+dual"
+        },
+        {
+          "platform": "Apple Music",
+          "url": "https://itunes.apple.com/us/album/dual-ep/id667388485?uo=4&at=10l4PB&ct=albumAM"
+        },
+        {
+          "platform": "Spotify",
+          "url": "https://open.spotify.com/album/0vrEKuIGhomsOTY2n7ChA1"
+        },
+        {
+          "platform": "Bandcamp",
+          "url": "https://sampha.bandcamp.com/album/dual"
+        }
+      ]
+    },
+    "timestamp": "2025-08-10T00:39:28.332535"
+  }
+}

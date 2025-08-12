@@ -1,164 +1,120 @@
-# Tensoe Backend Architecture
+1. Dataset Pipeline
+Step	What Happens	Key Tables / Buckets
+1.1 Pull Last.fm data	Cron / user-triggered job hits user.getRecentTracks, getTopArtists/Tracks, library.getTracks. Store raw JSON ➜ S3-style bucket, then upsert to DB.	user_tracks_raw, user_scrobbles_raw
+1.2 Pull Spotify metadata	For every unique track (artist+title fingerprint) call: search?q={...}&type=track, then audio-features (if allowed). Persist.	tracks_spotify, audio_features_spotify
+1.3 Scrape AOTY	Existing AOTY-API scraper dumps album & review JSON. Publish Kafka/Redis stream ➜ consumer writes.	albums_aoty, album_reviews_aoty
+1.4 Canonical track mapping	Deterministic hash on artist-title-duration to resolve duplicates. Produce track_id used everywhere.	tracks_core
+1.5 Tag aggregation	Deduplicate & weight tags from Last.fm + AOTY + Spotify genres.	track_tags
+1.6 Feature snapshot	Materialized view joins everything into a single row per track_id.	track_feature_view
 
-## System Overview
+2. Data-Enrichment Layer
+Text embeddings
 
-The Tensoe Backend API is a comprehensive music discovery platform that integrates Album of the Year (AOTY) functionality with a modern, scalable architecture.
+Sentence-BERT (“all-mpnet-base-v2”) on: track tags, album description, AOTY review snippets.
 
-## Architecture Diagram
+Store 768-d vector ➜ track_text_embedding.
 
-```mermaid
-graph TB
-    subgraph "Tensoe Backend API"
-        subgraph "API Layer"
-            A[FastAPI Application]
-            B[Rate Limiting]
-            C[CORS Middleware]
-        end
+Predicted mood/energy (Model 1)
 
-        subgraph "Routes"
-            D[Album Routes]
-            E[User Routes]
-            F[Metrics Routes]
-        end
+Inference job runs nightly on any track lacking pred_energy/pred_valence.
 
-        subgraph "Services"
-            G[AOTY Scraper Service]
-            H[Browser Management]
-        end
+Output floats 0-1 + categorical flags (upbeat, chill, dark, …).
 
-        subgraph "Models"
-            I[Album Models]
-            J[User Models]
-            K[Search Models]
-        end
+Persist ➜ track_mood_pred.
 
-        subgraph "Utilities"
-            L[Cache System]
-            M[Metrics Collector]
-        end
+Track vector assembly
+Concatenate / PCA-reduce: text-embedding || predicted-mood || normalized audio features (if Spotify gave them).
+→ 256-d track_vector stored in Redis for ANN search (eg, Milvus or Redis Vector).
 
-        subgraph "Storage"
-            N[Redis Cache]
-            O[In-Memory Cache]
-            P[PostgreSQL DB]
-        end
+3. Model 1 – Mood / Energy Predictor
+Item	Details
+Training data	Million Song Dataset + Last.fm tag subset. Filter tracks with ≥3 mood tags and valid Echo-Nest energy/valence.
+Input features	Bag-of-tags TF-IDF (20k vocab)
+Genre one-hot (1 k)
+Artist popularity bucket
+Year bucket
+Targets	energy, valence (regression) and 6 one-vs-rest mood labels (multi-label clf).
+Model	XGBoost (n_estimators=800, max_depth=10) for regression branch; LightGBM classifier for mood tags.
+Offline eval	5-fold CV: RMSE ≤ 0.10 on energy; micro-F1 ≥ 0.62 on mood tags.
+Outputs	pred_energy, pred_valence, prob_upbeat, prob_chill, etc.
+Artifacts	model_energy.pkl, model_valence.pkl, model_mood.bin + requirements.txt.
+Serving	Lightweight FastAPI internal endpoint (/internal/mood/predict) loaded once per worker.
 
-        subgraph "External"
-            Q[albumoftheyear.org]
-        end
-    end
+4. Model 2 – Hybrid Recommender
+4.1 Collaborative-Filtering Component
+Build implicit feedback matrix (user × track) where confidence = log(1+playcount).
 
-    A --> B
-    B --> C
-    C --> D
-    C --> E
-    C --> F
+Use Alternating Least Squares (implicit library) with 128-d latent factors.
 
-    D --> G
-    E --> G
-    F --> M
+4.2 Content-Similarity Component
+KNN (FAISS) over track_vector for cold-start & diversification.
 
-    G --> H
-    G --> I
-    G --> J
-    G --> K
+4.3 Rank Fusion
+makefile
+Copy
+Edit
+score = α · CF_score
+      + β · cosine(track_vector, user_vector)
+      + γ · (1 - popularity_penalty)
+Start with α=0.6, β=0.3, γ=0.1; tune offline.
 
-    G --> L
-    L --> N
-    L --> O
+4.4 User Vector Construction
+If Last.fm history exists: mean of CF latent vectors weighted by playcount.
 
-    D --> P
-    E --> P
+Else if Spotify Top N exists: same using those tracks.
 
-    H --> Q
+Else: cold-start vector from seed picks / liked songs UI.
 
-    style A fill:#60A5FA
-    style G fill:#93C5FD
-    style L fill:#FBBF24
-    style M fill:#34D399
-```
+5. Search & NLP Layer
+Query encoder – same SBERT model as tracks.
 
-## Component Descriptions
+ANN search against track_vector + lexical filter (genre, year).
 
-### API Layer
+Optional reranker: cross-encoder (ms-marco-MiniLM-L-6-v2) for top 100 candidates.
 
-- **FastAPI Application**: Main application server with async support
-- **Rate Limiting**: SlowAPI integration for request throttling (30/min default)
-- **CORS Middleware**: Cross-origin resource sharing configuration
+6. API Surface (FastAPI, GraphQL sub-layer)
+Route	Purpose
+POST /ingest/lastfm	User token → fetch & schedule scrobble import job
+GET /recs/home	Returns 5 blended carousels (For You, New & Hype, Genre Mixes…)
+GET /recs/track/{track_id}	Tracks similar to X (KNN on track_vector)
+POST /search	Free-text query → semantic search results
+GET /taste/summary	User taste profile JSON (top genres, mood distribution)
 
-### Routes
+7. Playlist Autofill (Post-MVP ready)
+User posts seed playlist ID.
 
-- **Album Routes**: Handle album discovery, similar albums, and search functionality
-- **User Routes**: Manage AOTY user profile retrieval and caching
-- **Metrics Routes**: Provide API usage statistics and monitoring
+Aggregate centroid of seed tracks’ track_vector.
 
-### Services
+KNN search (exclude seeds + user library).
 
-- **AOTY Scraper Service**: Core web scraping using Playwright browser automation
-- **Browser Management**: Shared browser instances for optimal performance
+Diversify via Maximal Marginal Relevance (λ = 0.3).
 
-### Models
+Return top k; optional “Add to Spotify” with single /batch addTracks call.
 
-- **Album Models**: Pydantic models for album data, metadata, tracks, and reviews
-- **User Models**: User profiles, statistics, and social information
-- **Search Models**: Search results and discovery data structures
+8. Evaluation & Monitoring
+Offline metrics: Precision@10, Recall@50, NDCG using held-out 3-month slice.
 
-### Utilities
+Online (after launch): implicit click-through rate, long-play rate (>60 s), playlist-save rate.
 
-- **Cache System**: Multi-tier caching with Redis primary and in-memory fallback
-- **Metrics Collector**: Real-time API usage tracking and performance monitoring
+Dashboards: Grafana panel reading Postgres job logs + Redis hit/miss + model inference latency.
 
-### Storage
+ML retraining cadence:
 
-- **Redis Cache**: Primary caching layer with configurable TTL
-- **In-Memory Cache**: Fallback caching when Redis is unavailable
-- **PostgreSQL DB**: Persistent data storage with SQLAlchemy integration
+CF matrix - nightly
 
-### External Dependencies
+Mood model - quarterly (or when tag drift > 5 %)
 
-- **albumoftheyear.org**: Source website for music data and user information
+9. Cold-Start & Fallback Logic
+Scenario	Action
+No Last.fm, no Spotify	Show onboarding picker (genres + sample tracks). Build user vector from selections.
+Track has only genre	Use genre→energy prior table; mark mood_confidence = low.
+New release with zero tags	Run web-scrape enrichment micro-service only if album’s weekly Scrobbles > 1000 or explicit user search triggers.
 
-## Data Flow
+10. DevOps / Repo Notes
+Keep all ML code inside Timbral; expose as Docker image timbre-recs:v1.
 
-1. **Request Processing**:
+Timbre (monorepo) imports recs via internal gRPC or REST.
 
-   - Incoming requests hit the FastAPI application
-   - Rate limiting middleware checks request frequency
-   - CORS middleware handles cross-origin requests
+CI: model unit tests (pytest) + smoke inference test on sample track.
 
-2. **Route Handling**:
-
-   - Requests are routed to appropriate handlers (Albums, Users, Metrics)
-   - Cache is checked first for existing data
-   - Metrics are recorded for monitoring
-
-3. **Data Acquisition**:
-
-   - Cache miss triggers the AOTY Scraper Service
-   - Playwright browser automation extracts data from AOTY
-   - Data is validated using Pydantic models
-
-4. **Response & Caching**:
-   - Processed data is cached with appropriate TTL
-   - Response is sent to client
-   - Metrics are updated with performance data
-
-## Performance Optimizations
-
-- **Browser Reuse**: Shared Playwright browser instances reduce overhead
-- **Intelligent Caching**: Multi-tier strategy with Redis and in-memory fallback
-- **Async Processing**: Full async/await support throughout the application
-- **Connection Pooling**: Database connections managed efficiently
-- **Rate Limiting**: Prevents abuse and ensures fair usage
-
-## Monitoring & Observability
-
-The system provides comprehensive metrics including:
-
-- Request counts and response times
-- Cache hit/miss ratios
-- Error rates and types
-- Endpoint-specific usage patterns
-- Browser automation performance
-
-Access real-time metrics at `/metrics/` endpoint.
+CD: GitHub Actions pushes new model image ➜ Fly.io deploy hook, zero-downtime rollout.

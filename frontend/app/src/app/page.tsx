@@ -4,9 +4,11 @@ import { useSupabase } from '@/components/SupabaseProvider'
 import { useState, useEffect } from 'react'
 import { Navbar } from '@/components/Navbar'
 import { Footer } from '@/components/Footer'
-import { AlgorithmSidebar } from '@/components/AlgorithmSidebar'
 import { AgentChat } from '@/components/AgentChat'
 import { NavigationSidebar } from '@/components/NavigationSidebar'
+import { AlgorithmSidebar } from '@/components/AlgorithmSidebar'
+import { SoundBar } from '@/components/SoundBar'
+import { VinylShader } from '@/components/VinylShader'
 import type { Track as AgentTrack } from '@/lib/agent'
 
 // Define the track type to fix TypeScript error
@@ -22,10 +24,12 @@ interface Track {
 export default function HomePage() {
   const { user, loading, signOut } = useSupabase();
   const [userProfile, setUserProfile] = useState<any>(null)
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [isNavigationSidebarOpen, setIsNavigationSidebarOpen] = useState(false)
+  const [isAlgorithmSidebarOpen, setIsAlgorithmSidebarOpen] = useState(false)
   const [agentRecommendations, setAgentRecommendations] = useState<AgentTrack[]>([])
   const [isChatActive, setIsChatActive] = useState(false)
+  const [selectedTool, setSelectedTool] = useState<string | null>(null)
+  const [showMusicDepthSlider, setShowMusicDepthSlider] = useState(false)
 
   useEffect(() => {
     if (user && !loading) {
@@ -35,38 +39,103 @@ export default function HomePage() {
   }, [user, loading])
 
   const fetchUserProfile = async () => {
-    // This would fetch user's music taste profile from your backend
-    // For now, using mock data
-    setUserProfile({
-      name: 'Conner',
-      taste: ['Atmospheric', 'Experimental', 'Lo-fi'],
-      recentTracks: [
-        {
-          id: 1,
-          title: 'Midnight City',
-          artist: 'M83',
-          album: 'Hurry Up, We\'re Dreaming',
-          cover: '/api/placeholder/3000',
-          why: 'High atmospheric score, matches your preference for dreamy soundscapes'
-        },
-        {
-          id: 2,
-          title: 'Motion',
-          artist: 'Calvin Harris',
-          album: 'Motion',
-          cover: '/api/placeholder/3000',
-          why: 'Experimental electronic elements align with your taste'
-        },
-        {
-          id: 3,
-          title: 'Teardrop',
-          artist: 'Massive Attack',
-          album: 'Mezzanine',
-          cover: '/api/placeholder/3000',
-          why: 'Lo-fi production style matches your preference for raw, intimate sounds'
+    try {
+      // Define the tracks we want to fetch
+      const trackQueries = [
+        { query: 'Nights Frank Ocean', why: 'Atmospheric R&B production matches your dreamy soundscape preference' },
+        { query: 'THANK GOD Travis Scott', why: 'Experimental hip-hop production aligns with your taste for innovative sounds' },
+        { query: 'Sk8 JID', why: 'Creative lyricism and unique flow patterns match your preference for artistic expression' }
+      ];
+
+      // Fetch track data from backend
+      const trackPromises = trackQueries.map(async ({ query, why }, index) => {
+        try {
+          const response = await fetch(`/api/spotify/search-track?q=${encodeURIComponent(query)}`);
+          if (response.ok) {
+            const trackData = await response.json();
+            return {
+              id: index + 1,
+              title: trackData.name,
+              artist: trackData.artist,
+              album: trackData.album,
+              cover: trackData.artwork_url,
+              why
+            };
+          }
+        } catch (error) {
+          console.error(`Error fetching ${query}:`, error);
         }
-      ]
-    })
+        return null;
+      });
+
+      const tracks = await Promise.all(trackPromises);
+      const validTracks = tracks.filter(track => track !== null);
+
+      // Use fetched tracks or fallback to hardcoded data
+      setUserProfile({
+        name: 'Conner',
+        taste: ['Atmospheric', 'Experimental', 'Lo-fi'],
+        recentTracks: validTracks.length > 0 ? validTracks : [
+          {
+            id: 1,
+            title: 'Nights',
+            artist: 'Frank Ocean',
+            album: 'Blonde',
+            cover: 'https://i.scdn.co/image/ab67616d0000b2738343d6fc2866e9e52acd74df',
+            why: 'Atmospheric R&B production matches your dreamy soundscape preference'
+          },
+          {
+            id: 2,
+            title: 'THANK GOD',
+            artist: 'Travis Scott',
+            album: 'UTOPIA',
+            cover: 'https://i.scdn.co/image/ab67616d0000b273881d8d8378cd01099babcd44',
+            why: 'Experimental hip-hop production aligns with your taste for innovative sounds'
+          },
+          {
+            id: 3,
+            title: 'Sk8',
+            artist: 'JID',
+            album: 'The Never Story',
+            cover: 'https://i.scdn.co/image/ab67616d0000b273230dde08404b4e4c3b5a3b13',
+            why: 'Creative lyricism and unique flow patterns match your preference for artistic expression'
+          }
+        ]
+      });
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
+      // Fallback to hardcoded data
+      setUserProfile({
+        name: 'Conner',
+        taste: ['Atmospheric', 'Experimental', 'Lo-fi'],
+        recentTracks: [
+          {
+            id: 1,
+            title: 'Nights',
+            artist: 'Frank Ocean',
+            album: 'Blonde',
+            cover: 'https://i.scdn.co/image/ab67616d0000b2738343d6fc2866e9e52acd74df',
+            why: 'Atmospheric R&B production matches your dreamy soundscape preference'
+          },
+          {
+            id: 2,
+            title: 'THANK GOD',
+            artist: 'Travis Scott',
+            album: 'UTOPIA',
+            cover: 'https://i.scdn.co/image/ab67616d0000b273881d8d8378cd01099babcd44',
+            why: 'Experimental hip-hop production aligns with your taste for innovative sounds'
+          },
+          {
+            id: 3,
+            title: 'Sk8 Head',
+            artist: 'JID',
+            album: 'The Never Story',
+            cover: 'https://i.scdn.co/image/ab67616d0000b273230dde08404b4e4c3b5a3b13',
+            why: 'Creative lyricism and unique flow patterns match your preference for artistic expression'
+          }
+        ]
+      });
+    }
   }
 
   const handleAgentRecommendations = (tracks: AgentTrack[]) => {
@@ -81,13 +150,30 @@ export default function HomePage() {
     setIsChatActive(false)
   }
 
+  const handleToolSelect = (tool: string) => {
+    setSelectedTool(tool)
+    
+    if (tool === 'music-depth') {
+      setShowMusicDepthSlider(!showMusicDepthSlider)
+    } else {
+      // For other tools, you could show a modal or inline component here
+      console.log(`Selected tool: ${tool}`)
+    }
+  }
+
+  const handleToggleAlgorithmSidebar = () => {
+    setIsAlgorithmSidebarOpen(!isAlgorithmSidebarOpen)
+  }
+
   // Show loading state while checking authentication
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading...</p>
+        <div className="relative w-16 h-16">
+          <div className="absolute inset-0 rounded-full border-4 border-white/20"></div>
+          <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-white animate-spin"></div>
+          <div className="absolute inset-2 rounded-full border-2 border-transparent border-t-white/60 animate-spin" style={{animationDirection: 'reverse', animationDuration: '0.8s'}}></div>
+          <div className="absolute top-1/2 left-1/2 w-2 h-2 bg-white rounded-full transform -translate-x-1/2 -translate-y-1/2 animate-pulse"></div>
         </div>
       </div>
     )
@@ -115,18 +201,17 @@ export default function HomePage() {
     <div className="flex min-h-screen bg-background">
       {/* Navigation Sidebar */}
       <NavigationSidebar 
-        isOpen={isNavigationSidebarOpen}
-        onClose={() => setIsNavigationSidebarOpen(false)}
-        userId={user.id}
+        user={user}
+        onSignOut={signOut}
       />
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col ml-16">
         <Navbar 
           user={user} 
-          onOpenAlgorithmSidebar={() => setIsSidebarOpen(true)}
           onOpenNavigationSidebar={() => setIsNavigationSidebarOpen(!isNavigationSidebarOpen)}
           onSignOut={signOut}
+          onToggleAlgorithmSidebar={handleToggleAlgorithmSidebar}
         />
         
         <main className={`flex-1 container mx-auto px-4 py-8 max-w-7xl ${isChatActive ? 'pb-24' : ''}`}>
@@ -135,6 +220,11 @@ export default function HomePage() {
             <>
               {/* Welcome Section */}
               <div className="mb-8">
+                {/* Sound Bar aligned with text */}
+                <div className="mb-4 flex justify-start">
+                  <SoundBar className="" barCount={9} />
+                </div>
+                
                 <h1 className="text-3xl font-inter font-semibold text-foreground mb-2 tracking-tight">
                   Welcome back, {userProfile?.name || user.email?.split('@')[0]}.
                 </h1>
@@ -148,9 +238,13 @@ export default function HomePage() {
                 <h2 className="text-xl font-inter font-semibold mb-6 tracking-tight">Recent Recommendations</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {userProfile?.recentTracks?.map((track: Track) => (
-                    <div key={track.id} className="bg-card border border-border rounded-lg p-3">
+                    <div key={track.id} className="bg-card rounded-lg p-3 border border-border/50">
                       <div className="flex items-center space-x-3">
-                        <div className="w-12 h-12 bg-muted rounded-md flex-shrink-0"></div>
+                        <img 
+                          src={track.cover} 
+                          alt={`${track.album} cover`}
+                          className="w-12 h-12 rounded-md flex-shrink-0 object-cover"
+                        />
                         <div className="flex-1 min-w-0">
                           <h3 className="font-inter font-semibold text-foreground truncate text-sm">{track.title}</h3>
                           <p className="text-xs text-muted-foreground truncate font-inter">{track.artist}</p>
@@ -172,14 +266,16 @@ export default function HomePage() {
             isInline={isChatActive}
             onClose={isChatActive ? handleCloseChat : undefined}
             user={user}
+            onSelectTool={handleToolSelect}
+            showMusicDepthSlider={showMusicDepthSlider}
           />
         </main>
       </div>
 
       {/* Algorithm Sidebar */}
       <AlgorithmSidebar 
-        isOpen={isSidebarOpen} 
-        onClose={() => setIsSidebarOpen(false)} 
+        isOpen={isAlgorithmSidebarOpen} 
+        onClose={() => setIsAlgorithmSidebarOpen(false)} 
       />
     </div>
   )
