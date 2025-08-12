@@ -81,7 +81,7 @@ class SpotifySearchTool(BaseTool):
                 "duration_ms": track["duration_ms"],
                 "popularity": track["popularity"],
                 "preview_url": track.get("preview_url"),
-                "cover_art": track["album"]["images"][0]["url"] if track["album"]["images"] else None,
+                "artwork_url": track["album"]["images"][0]["url"] if track["album"]["images"] else None,
                 "spotify_url": track["external_urls"]["spotify"],
                 "release_date": track["album"]["release_date"],
                 "explicit": track["explicit"]
@@ -102,7 +102,7 @@ class SpotifySearchTool(BaseTool):
                 "artists": [artist["name"] for artist in album["artists"]],
                 "total_tracks": album["total_tracks"],
                 "release_date": album["release_date"],
-                "cover_art": album["images"][0]["url"] if album["images"] else None,
+                "artwork_url": album["images"][0]["url"] if album["images"] else None,
                 "spotify_url": album["external_urls"]["spotify"],
                 "album_type": album["album_type"]
             })

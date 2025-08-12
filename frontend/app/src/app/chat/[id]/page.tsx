@@ -6,7 +6,7 @@ import { useParams, useRouter } from 'next/navigation'
 import { Navbar } from '@/components/Navbar'
 import { AlgorithmSidebar } from '@/components/AlgorithmSidebar'
 import { AgentChat } from '@/components/AgentChat'
-import { ChatSidebar } from '@/components/ChatSidebar'
+import { NavigationSidebar } from '@/components/NavigationSidebar'
 import type { Track as AgentTrack } from '@/lib/agent'
 
 interface ChatSession {
@@ -24,7 +24,6 @@ export default function ChatSessionPage() {
   const chatId = params.id as string
   
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
-  const [isChatSidebarOpen, setIsChatSidebarOpen] = useState(true)
   const [agentRecommendations, setAgentRecommendations] = useState<AgentTrack[]>([])
   const [currentChat, setCurrentChat] = useState<ChatSession | null>(null)
 
@@ -35,7 +34,6 @@ export default function ChatSessionPage() {
   }, [user, chatId])
 
   const loadChatSession = () => {
-    // Load chat session from localStorage
     const savedSessions = localStorage.getItem(`timbre-chats-${user?.id}`)
     if (savedSessions) {
       const sessions: ChatSession[] = JSON.parse(savedSessions)
@@ -43,16 +41,13 @@ export default function ChatSessionPage() {
       if (chat) {
         setCurrentChat(chat)
       } else {
-        // Chat not found, redirect to main chat page
         router.push('/chat')
       }
     } else {
-      // No chats found, redirect to main chat page
       router.push('/chat')
     }
   }
 
-  // Show loading state while checking authentication
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -64,7 +59,6 @@ export default function ChatSessionPage() {
     )
   }
 
-  // Show auth page if no user
   if (!user) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -88,21 +82,16 @@ export default function ChatSessionPage() {
 
   return (
     <div className="flex h-screen bg-background">
-      {/* Chat Sidebar */}
-      <ChatSidebar 
-        isOpen={isChatSidebarOpen}
-        onToggle={() => setIsChatSidebarOpen(!isChatSidebarOpen)}
-        userId={user.id}
-      />
+      {/* Persistent Sidebar */}
+      <NavigationSidebar user={user} onSignOut={signOut} />
 
       {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col ml-16">
         {/* Navbar */}
         <Navbar 
           user={user} 
-          onOpenAlgorithmSidebar={() => setIsSidebarOpen(true)}
-          onOpenNavigationSidebar={() => {}} // Not used in chat page
           onSignOut={signOut}
+          onToggleAlgorithmSidebar={() => setIsSidebarOpen(true)}
         />
         
         {/* Chat Content */}

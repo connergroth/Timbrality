@@ -1,0 +1,295 @@
+# GitHub Actions Workflow for Timbre Data Ingestion Pipeline
+name: Timbre Data Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'backend/**'
+      - '.github/workflows/pipeline.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'backend/**'
+  schedule:
+    # Run nightly at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      max_songs:
+        description: 'Maximum number of songs to process'
+        required: false
+        default: '1000'
+        type: string
+      skip_aoty:
+        description: 'Skip AOTY scraping'
+        required: false
+        default: false
+        type: boolean
+      dry_run:
+        description: 'Dry run (no database writes)'
+        required: false
+        default: false
+        type: boolean
+
+env:
+  PYTHON_VERSION: '3.11'
+  POETRY_VERSION: '1.6.1'
+
+jobs:
+  # Code Quality and Testing
+  test:
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: timbre_test
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+      
+      redis:
+        image: redis:7
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Install Poetry
+      uses: snok/install-poetry@v1
+      with:
+        version: ${{ env.POETRY_VERSION }}
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+    
+    - name: Load cached venv
+      id: cached-poetry-dependencies
+      uses: actions/cache@v3
+      with:
+        path: backend/.venv
+        key: venv-${{ runner.os }}-${{ env.PYTHON_VERSION }}-${{ hashFiles('**/poetry.lock') }}
+    
+    - name: Install dependencies
+      if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+      working-directory: backend
+      run: poetry install --no-interaction --no-root
+    
+    - name: Install project
+      working-directory: backend
+      run: poetry install --no-interaction
+    
+    - name: Run code formatting check
+      working-directory: backend
+      run: poetry run black --check .
+    
+    - name: Run linting
+      working-directory: backend
+      run: poetry run flake8 .
+    
+    - name: Run type checking
+      working-directory: backend
+      run: poetry run mypy app/
+    
+    - name: Run tests
+      working-directory: backend
+      env:
+        SUPABASE_URL: http://localhost:5432
+        SUPABASE_SERVICE_ROLE_KEY: test_key
+        LASTFM_API_KEY: test_key
+        LASTFM_USERNAME: test_user
+        SPOTIFY_CLIENT_ID: test_id
+        SPOTIFY_CLIENT_SECRET: test_secret
+        REDIS_URL: redis://localhost:6379/0
+        LOG_LEVEL: DEBUG
+      run: poetry run pytest tests/ -v --cov=app --cov-report=xml
+    
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: backend/coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+
+  # Dry Run Pipeline Test
+  dry-run:
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.event_name == 'pull_request' || github.event_name == 'push'
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Install Poetry
+      uses: snok/install-poetry@v1
+      with:
+        version: ${{ env.POETRY_VERSION }}
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+    
+    - name: Install dependencies
+      working-directory: backend
+      run: poetry install --no-interaction
+    
+    - name: Run dry-run pipeline
+      working-directory: backend
+      env:
+        SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+        SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        LASTFM_API_KEY: ${{ secrets.LASTFM_API_KEY }}
+        LASTFM_USERNAME: ${{ secrets.LASTFM_USERNAME }}
+        SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
+        SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
+        REDIS_URL: redis://localhost:6379/0
+        MAX_SONGS: 100
+        LOG_LEVEL: INFO
+      run: |
+        poetry run python scripts/run_pipeline.py run \\
+          --max-songs 100 \\
+          --skip-aoty \\
+          --dry-run
+
+  # Production Pipeline Run
+  pipeline:
+    runs-on: ubuntu-latest
+    needs: test
+    if: |
+      (github.event_name == 'schedule') ||
+      (github.event_name == 'workflow_dispatch') ||
+      (github.ref == 'refs/heads/main' && github.event_name == 'push')
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Install Poetry
+      uses: snok/install-poetry@v1
+      with:
+        version: ${{ env.POETRY_VERSION }}
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+    
+    - name: Install dependencies
+      working-directory: backend
+      run: poetry install --no-interaction
+    
+    - name: Determine pipeline parameters
+      id: params
+      run: |
+        if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+          echo "max_songs=${{ github.event.inputs.max_songs }}" >> $GITHUB_OUTPUT
+          echo "skip_aoty=${{ github.event.inputs.skip_aoty }}" >> $GITHUB_OUTPUT
+          echo "dry_run=${{ github.event.inputs.dry_run }}" >> $GITHUB_OUTPUT
+        elif [ "${{ github.event_name }}" = "schedule" ]; then
+          echo "max_songs=5000" >> $GITHUB_OUTPUT
+          echo "skip_aoty=false" >> $GITHUB_OUTPUT
+          echo "dry_run=false" >> $GITHUB_OUTPUT
+        else
+          echo "max_songs=1000" >> $GITHUB_OUTPUT
+          echo "skip_aoty=true" >> $GITHUB_OUTPUT
+          echo "dry_run=false" >> $GITHUB_OUTPUT
+        fi
+    
+    - name: Run production pipeline
+      working-directory: backend
+      env:
+        SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+        SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        LASTFM_API_KEY: ${{ secrets.LASTFM_API_KEY }}
+        LASTFM_USERNAME: ${{ secrets.LASTFM_USERNAME }}
+        SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
+        SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
+        REDIS_URL: ${{ secrets.REDIS_URL }}
+        AOTY_PROXY_URL: ${{ secrets.AOTY_PROXY_URL }}
+        MAX_SONGS: ${{ steps.params.outputs.max_songs }}
+        LOG_LEVEL: INFO
+      run: |
+        ARGS="--max-songs ${{ steps.params.outputs.max_songs }}"
+        if [ "${{ steps.params.outputs.skip_aoty }}" = "true" ]; then
+          ARGS="$ARGS --skip-aoty"
+        fi
+        if [ "${{ steps.params.outputs.dry_run }}" = "true" ]; then
+          ARGS="$ARGS --dry-run"
+        fi
+        
+        poetry run python scripts/run_pipeline.py run $ARGS
+    
+    - name: Upload pipeline logs
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: pipeline-logs-${{ github.run_number }}
+        path: backend/logs/
+        retention-days: 7
+    
+    - name: Upload pipeline data
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: pipeline-data-${{ github.run_number }}
+        path: backend/data/
+        retention-days: 3
+
+  # Notify on Pipeline Completion
+  notify:
+    runs-on: ubuntu-latest
+    needs: [pipeline]
+    if: always() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
+    
+    steps:
+    - name: Send notification
+      env:
+        WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+      run: |
+        if [ "${{ needs.pipeline.result }}" = "success" ]; then
+          STATUS="✅ SUCCESS"
+          COLOR="3066993"
+        else
+          STATUS="❌ FAILED" 
+          COLOR="15158332"
+        fi
+        
+        if [ -n "$WEBHOOK_URL" ]; then
+          curl -H "Content-Type: application/json" \\
+            -d "{
+              \"embeds\": [{
+                \"title\": \"Timbre Pipeline $STATUS\",
+                \"description\": \"Pipeline run completed for commit ${{ github.sha }}\",
+                \"color\": $COLOR,
+                \"fields\": [
+                  {\"name\": \"Trigger\", \"value\": \"${{ github.event_name }}\", \"inline\": true},
+                  {\"name\": \"Branch\", \"value\": \"${{ github.ref_name }}\", \"inline\": true},
+                  {\"name\": \"Run\", \"value\": \"[${{ github.run_number }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})\", \"inline\": true}
+                ],
+                \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%S.000Z)\"
+              }]
+            }" \\
+            "$WEBHOOK_URL"
+        fi

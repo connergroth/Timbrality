@@ -1,0 +1,280 @@
+{
+  "username": "connergroth",
+  "total_albums": 1,
+  "total_tracks": 19,
+  "statistics": {
+    "albums_fetched": 1,
+    "albums_enriched": 1,
+    "aoty_albums_matched": 1,
+    "spotify_albums_matched": 1,
+    "total_tracks_found": 19,
+    "tracks_with_aoty_data": 19,
+    "tracks_with_spotify_data": 0,
+    "processing_time": 10.028713464736938,
+    "errors": []
+  },
+  "albums": [
+    {
+      "name": "UTOPIA",
+      "artist": "Travis Scott",
+      "year": null,
+      "lastfm_playcount": 882,
+      "album_rank": 1,
+      "lastfm_tags": [
+        "experimental hip hop",
+        "alternative rnb",
+        "cloud rap",
+        "neo-psychedelia",
+        "trap",
+        "southern hip hop",
+        "pop rap",
+        "platnum",
+        "industrial hip hop"
+      ],
+      "aoty_match_found": true,
+      "aoty_score": 78.5,
+      "aoty_num_ratings": 12,
+      "aoty_genres": [],
+      "spotify_match_found": true,
+      "total_tracks": 19,
+      "processing_time": 10.028713464736938,
+      "errors": [],
+      "tracks": [
+        {
+          "name": "HYAENA",
+          "track_number": 1,
+          "duration": "3:42",
+          "lastfm_tags": [
+            "hardcore hip hop",
+            "southern hip hop",
+            "boom bap",
+            "industrial hip hop",
+            "folkhop",
+            "experimental hip hop",
+            "trip hop",
+            "travis scott",
+            "intro",
+            "special"
+          ],
+          "aoty_match_found": true,
+          "aoty_track_rating": 90,
+          "spotify_match_found": true
+        },
+        {
+          "name": "THANK GOD",
+          "track_number": 2,
+          "duration": "3:04",
+          "lastfm_tags": [
+            "trap",
+            "christian hip hop",
+            "cloud rap",
+            "synthwave",
+            "experimental hip hop",
+            "southern hip hop",
+            "drumless",
+            "travis scott",
+            "special",
+            "vegas"
+          ],
+          "aoty_match_found": true,
+          "aoty_track_rating": 85,
+          "spotify_match_found": true
+        },
+        {
+          "name": "MODERN JAM",
+          "track_number": 3,
+          "duration": "4:15",
+          "lastfm_tags": [],
+          "aoty_match_found": true,
+          "aoty_track_rating": 84,
+          "spotify_match_found": true
+        },
+        {
+          "name": "MY EYES",
+          "track_number": 4,
+          "duration": "4:11",
+          "lastfm_tags": [
+            "chillwave",
+            "southern hip hop",
+            "cloud rap",
+            "neo-psychedelia",
+            "alternative rnb",
+            "wave",
+            "ambient pop",
+            "-1001703352985",
+            "trap"
+          ],
+          "aoty_match_found": true,
+          "aoty_track_rating": 91,
+          "spotify_match_found": true
+        },
+        {
+          "name": "GOD'S COUNTRY",
+          "track_number": 5,
+          "duration": "2:07",
+          "lastfm_tags": [
+            "travis scott",
+            "neo-psychedelia",
+            "kanye west",
+            "southern hip hop",
+            "trap",
+            "experimental hip hop",
+            "50 cent",
+            "dr dre",
+            "madagascar",
+            "special"
+          ],
+          "aoty_match_found": true,
+          "aoty_track_rating": 72,
+          "spotify_match_found": true
+        },
+        {
+          "name": "SIRENS",
+          "track_number": 6,
+          "duration": "3:24",
+          "lastfm_tags": [
+            "travis scott",
+            "spoken word",
+            "neo-psychedelia",
+            "southern hip hop",
+            "tribal house",
+            "experimental hip hop",
+            "uk bass",
+            "drake",
+            "special"
+          ],
+          "aoty_match_found": true,
+          "aoty_track_rating": 85,
+          "spotify_match_found": true
+        },
+        {
+          "name": "MELTDOWN",
+          "track_number": 7,
+          "duration": "4:06",
+          "lastfm_tags": [],
+          "aoty_match_found": true,
+          "aoty_track_rating": 85,
+          "spotify_match_found": true
+        },
+        {
+          "name": "FE!N",
+          "track_number": 8,
+          "duration": "3:11",
+          "lastfm_tags": [],
+          "aoty_match_found": true,
+          "aoty_track_rating": 82,
+          "spotify_match_found": true
+        },
+        {
+          "name": "DELRESTO (ECHOES)",
+          "track_number": 9,
+          "duration": "4:34",
+          "lastfm_tags": [],
+          "aoty_match_found": true,
+          "aoty_track_rating": 78,
+          "spotify_match_found": true
+        },
+        {
+          "name": "I KNOW ?",
+          "track_number": 10,
+          "duration": "3:31",
+          "lastfm_tags": [
+            "southern hip hop",
+            "trap",
+            "travis scott",
+            "pop rap",
+            "mobb music",
+            "-1001740215468",
+            "experimental hip hop",
+            "-1001703352985",
+            "treasure"
+          ],
+          "aoty_match_found": true,
+          "aoty_track_rating": 86,
+          "spotify_match_found": true
+        },
+        {
+          "name": "TOPIA TWINS",
+          "track_number": 11,
+          "duration": "3:43",
+          "lastfm_tags": [],
+          "aoty_match_found": true,
+          "aoty_track_rating": 75,
+          "spotify_match_found": true
+        },
+        {
+          "name": "CIRCUS MAXIMUS",
+          "track_number": 12,
+          "duration": "4:18",
+          "lastfm_tags": [],
+          "aoty_match_found": true,
+          "aoty_track_rating": 81,
+          "spotify_match_found": true
+        },
+        {
+          "name": "PARASAIL",
+          "track_number": 13,
+          "duration": "2:34",
+          "lastfm_tags": [],
+          "aoty_match_found": true,
+          "aoty_track_rating": 70,
+          "spotify_match_found": true
+        },
+        {
+          "name": "SKITZO",
+          "track_number": 14,
+          "duration": "6:06",
+          "lastfm_tags": [],
+          "aoty_match_found": true,
+          "aoty_track_rating": 82,
+          "spotify_match_found": true
+        },
+        {
+          "name": "LOST FOREVER",
+          "track_number": 15,
+          "duration": "2:43",
+          "lastfm_tags": [],
+          "aoty_match_found": true,
+          "aoty_track_rating": 84,
+          "spotify_match_found": true
+        },
+        {
+          "name": "LOOOVE",
+          "track_number": 16,
+          "duration": "3:46",
+          "lastfm_tags": [],
+          "aoty_match_found": true,
+          "aoty_track_rating": 82,
+          "spotify_match_found": true
+        },
+        {
+          "name": "K-POP",
+          "track_number": 17,
+          "duration": "3:05",
+          "lastfm_tags": [],
+          "aoty_match_found": true,
+          "aoty_track_rating": 59,
+          "spotify_match_found": true
+        },
+        {
+          "name": "TELEKINESIS",
+          "track_number": 18,
+          "duration": "5:53",
+          "lastfm_tags": [],
+          "aoty_match_found": true,
+          "aoty_track_rating": 89,
+          "spotify_match_found": true
+        },
+        {
+          "name": "TIL FURTHER NOTICE",
+          "track_number": 19,
+          "duration": "5:14",
+          "lastfm_tags": [],
+          "aoty_match_found": true,
+          "aoty_track_rating": 88,
+          "spotify_match_found": true
+        }
+      ]
+    }
+  ]
+}

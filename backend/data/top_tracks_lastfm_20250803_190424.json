@@ -1,0 +1,37 @@
+{
+  "metadata": {
+    "timestamp": "20250803_190424",
+    "username": "connergroth",
+    "track_count": 3,
+    "data_type": "top_tracks"
+  },
+  "tracks": [
+    {
+      "artist": "frank ocean",
+      "title": "pink + white",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 171,
+      "source": "lastfm",
+      "canonical_id": null
+    },
+    {
+      "artist": "frank ocean",
+      "title": "nights",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 135,
+      "source": "lastfm",
+      "canonical_id": null
+    },
+    {
+      "artist": "isaiah rashad",
+      "title": "west savannah (feat. sza)",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 133,
+      "source": "lastfm",
+      "canonical_id": null
+    }
+  ]
+}

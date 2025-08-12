@@ -1,0 +1,920 @@
+{
+  "username": "connergroth",
+  "total_albums": 3,
+  "total_tracks": 54,
+  "statistics": {
+    "albums_fetched": 3,
+    "albums_enriched": 3,
+    "aoty_albums_matched": 3,
+    "spotify_albums_matched": 3,
+    "total_tracks_found": 54,
+    "tracks_with_aoty_data": 54,
+    "tracks_with_spotify_data": 0,
+    "processing_time": 19.728657484054565,
+    "errors": []
+  },
+  "albums": [
+    {
+      "name": "UTOPIA",
+      "artist": "Travis Scott",
+      "year": null,
+      "lastfm_playcount": 882,
+      "album_rank": 1,
+      "lastfm_tags": [
+        "experimental hip hop",
+        "alternative rnb",
+        "cloud rap",
+        "neo-psychedelia",
+        "trap",
+        "southern hip hop",
+        "pop rap",
+        "platnum",
+        "industrial hip hop"
+      ],
+      "aoty_match_found": true,
+      "aoty_score": 78.5,
+      "aoty_num_ratings": 12,
+      "aoty_genres": [],
+      "spotify_match_found": true,
+      "total_tracks": 19,
+      "processing_time": 7.749654531478882,
+      "errors": [],
+      "tracks": [
+        {
+          "name": "HYAENA",
+          "track_number": 1,
+          "duration": "3:42",
+          "lastfm_tags": [
+            "hardcore hip hop",
+            "southern hip hop",
+            "boom bap",
+            "industrial hip hop",
+            "folkhop",
+            "experimental hip hop",
+            "trip hop",
+            "travis scott",
+            "intro",
+            "special"
+          ],
+          "aoty_match_found": true,
+          "aoty_track_rating": 90,
+          "spotify_match_found": false
+        },
+        {
+          "name": "THANK GOD",
+          "track_number": 2,
+          "duration": "3:04",
+          "lastfm_tags": [
+            "trap",
+            "christian hip hop",
+            "cloud rap",
+            "synthwave",
+            "experimental hip hop",
+            "southern hip hop",
+            "drumless",
+            "travis scott",
+            "special",
+            "vegas"
+          ],
+          "aoty_match_found": true,
+          "aoty_track_rating": 85,
+          "spotify_match_found": false
+        },
+        {
+          "name": "MODERN JAM",
+          "track_number": 3,
+          "duration": "4:15",
+          "lastfm_tags": [],
+          "aoty_match_found": true,
+          "aoty_track_rating": 84,
+          "spotify_match_found": false
+        },
+        {
+          "name": "MY EYES",
+          "track_number": 4,
+          "duration": "4:11",
+          "lastfm_tags": [
+            "chillwave",
+            "southern hip hop",
+            "cloud rap",
+            "neo-psychedelia",
+            "alternative rnb",
+            "wave",
+            "ambient pop",
+            "-1001703352985",
+            "trap"
+          ],
+          "aoty_match_found": true,
+          "aoty_track_rating": 91,
+          "spotify_match_found": false
+        },
+        {
+          "name": "GOD'S COUNTRY",
+          "track_number": 5,
+          "duration": "2:07",
+          "lastfm_tags": [
+            "travis scott",
+            "neo-psychedelia",
+            "kanye west",
+            "southern hip hop",
+            "trap",
+            "experimental hip hop",
+            "50 cent",
+            "dr dre",
+            "madagascar",
+            "special"
+          ],
+          "aoty_match_found": true,
+          "aoty_track_rating": 72,
+          "spotify_match_found": false
+        },
+        {
+          "name": "SIRENS",
+          "track_number": 6,
+          "duration": "3:24",
+          "lastfm_tags": [
+            "travis scott",
+            "spoken word",
+            "neo-psychedelia",
+            "southern hip hop",
+            "tribal house",
+            "experimental hip hop",
+            "uk bass",
+            "drake",
+            "special"
+          ],
+          "aoty_match_found": true,
+          "aoty_track_rating": 85,
+          "spotify_match_found": false
+        },
+        {
+          "name": "MELTDOWN",
+          "track_number": 7,
+          "duration": "4:06",
+          "lastfm_tags": [],
+          "aoty_match_found": true,
+          "aoty_track_rating": 85,
+          "spotify_match_found": false
+        },
+        {
+          "name": "FE!N",
+          "track_number": 8,
+          "duration": "3:11",
+          "lastfm_tags": [],
+          "aoty_match_found": true,
+          "aoty_track_rating": 82,
+          "spotify_match_found": false
+        },
+        {
+          "name": "DELRESTO (ECHOES)",
+          "track_number": 9,
+          "duration": "4:34",
+          "lastfm_tags": [],
+          "aoty_match_found": true,
+          "aoty_track_rating": 78,
+          "spotify_match_found": false
+        },
+        {
+          "name": "I KNOW ?",
+          "track_number": 10,
+          "duration": "3:31",
+          "lastfm_tags": [
+            "southern hip hop",
+            "trap",
+            "travis scott",
+            "pop rap",
+            "mobb music",
+            "-1001740215468",
+            "experimental hip hop",
+            "-1001703352985",
+            "treasure"
+          ],
+          "aoty_match_found": true,
+          "aoty_track_rating": 86,
+          "spotify_match_found": false
+        },
+        {
+          "name": "TOPIA TWINS",
+          "track_number": 11,
+          "duration": "3:43",
+          "lastfm_tags": [],
+          "aoty_match_found": true,
+          "aoty_track_rating": 75,
+          "spotify_match_found": false
+        },
+        {
+          "name": "CIRCUS MAXIMUS",
+          "track_number": 12,
+          "duration": "4:18",
+          "lastfm_tags": [],
+          "aoty_match_found": true,
+          "aoty_track_rating": 81,
+          "spotify_match_found": false
+        },
+        {
+          "name": "PARASAIL",
+          "track_number": 13,
+          "duration": "2:34",
+          "lastfm_tags": [],
+          "aoty_match_found": true,
+          "aoty_track_rating": 70,
+          "spotify_match_found": false
+        },
+        {
+          "name": "SKITZO",
+          "track_number": 14,
+          "duration": "6:06",
+          "lastfm_tags": [],
+          "aoty_match_found": true,
+          "aoty_track_rating": 82,
+          "spotify_match_found": false
+        },
+        {
+          "name": "LOST FOREVER",
+          "track_number": 15,
+          "duration": "2:43",
+          "lastfm_tags": [],
+          "aoty_match_found": true,
+          "aoty_track_rating": 84,
+          "spotify_match_found": false
+        },
+        {
+          "name": "LOOOVE",
+          "track_number": 16,
+          "duration": "3:46",
+          "lastfm_tags": [],
+          "aoty_match_found": true,
+          "aoty_track_rating": 82,
+          "spotify_match_found": false
+        },
+        {
+          "name": "K-POP",
+          "track_number": 17,
+          "duration": "3:05",
+          "lastfm_tags": [],
+          "aoty_match_found": true,
+          "aoty_track_rating": 59,
+          "spotify_match_found": false
+        },
+        {
+          "name": "TELEKINESIS",
+          "track_number": 18,
+          "duration": "5:53",
+          "lastfm_tags": [],
+          "aoty_match_found": true,
+          "aoty_track_rating": 89,
+          "spotify_match_found": false
+        },
+        {
+          "name": "TIL FURTHER NOTICE",
+          "track_number": 19,
+          "duration": "5:14",
+          "lastfm_tags": [],
+          "aoty_match_found": true,
+          "aoty_track_rating": 88,
+          "spotify_match_found": false
+        }
+      ]
+    },
+    {
+      "name": "Blonde",
+      "artist": "Frank Ocean",
+      "year": null,
+      "lastfm_playcount": 760,
+      "album_rank": 2,
+      "lastfm_tags": [
+        "alternative rnb",
+        "art pop",
+        "neo-soul",
+        "rnb",
+        "pop",
+        "ambient pop",
+        "soul",
+        "lgbt",
+        "alt-pop"
+      ],
+      "aoty_match_found": true,
+      "aoty_score": 89.4,
+      "aoty_num_ratings": 42,
+      "aoty_genres": [],
+      "spotify_match_found": true,
+      "total_tracks": 17,
+      "processing_time": 13.131219148635864,
+      "errors": [],
+      "tracks": [
+        {
+          "name": "Nikes",
+          "track_number": 1,
+          "duration": "5:14",
+          "lastfm_tags": [
+            "rnb",
+            "ambient pop",
+            "alternative rnb",
+            "frank ocean",
+            "derealizing",
+            "art pop",
+            "cloud rap",
+            "sick"
+          ],
+          "aoty_match_found": true,
+          "aoty_track_rating": 88,
+          "spotify_match_found": false
+        },
+        {
+          "name": "Ivy",
+          "track_number": 2,
+          "duration": "4:09",
+          "lastfm_tags": [
+            "dream pop",
+            "rnb",
+            "psychedelic soul",
+            "art pop",
+            "frank ocean",
+            "singer-songwriter",
+            "goat",
+            "indie pop",
+            "bedroom pop"
+          ],
+          "aoty_match_found": true,
+          "aoty_track_rating": 94,
+          "spotify_match_found": false
+        },
+        {
+          "name": "Pink + White",
+          "track_number": 3,
+          "duration": "3:04",
+          "lastfm_tags": [
+            "rnb",
+            "neo-soul",
+            "for our kids",
+            "soul",
+            "beyonce",
+            "olivia",
+            "i got olivia forever",
+            "malik and olivia"
+          ],
+          "aoty_match_found": true,
+          "aoty_track_rating": 95,
+          "spotify_match_found": false
+        },
+        {
+          "name": "Be Yourself",
+          "track_number": 4,
+          "duration": "1:26",
+          "lastfm_tags": [
+            "rnb",
+            "soul",
+            "frank ocean",
+            "skit",
+            "pointless",
+            "advice",
+            "soty",
+            "okay mom",
+            "advices"
+          ],
+          "aoty_match_found": true,
+          "aoty_track_rating": 81,
+          "spotify_match_found": false
+        },
+        {
+          "name": "Solo",
+          "track_number": 5,
+          "duration": "4:17",
+          "lastfm_tags": [
+            "rnb",
+            "art pop",
+            "soul",
+            "neo-soul",
+            "ambient pop",
+            "alternative rnb",
+            "ocean",
+            "singer-songwriter",
+            "pop"
+          ],
+          "aoty_match_found": true,
+          "aoty_track_rating": 92,
+          "spotify_match_found": false
+        },
+        {
+          "name": "Skyline To",
+          "track_number": 6,
+          "duration": "3:04",
+          "lastfm_tags": [
+            "alternative rnb",
+            "art pop",
+            "downtempo",
+            "rnb",
+            "ambient pop",
+            "pop",
+            "psychedelic pop",
+            "alt-pop",
+            "space age pop",
+            "perfection"
+          ],
+          "aoty_match_found": true,
+          "aoty_track_rating": 88,
+          "spotify_match_found": false
+        },
+        {
+          "name": "Self Control",
+          "track_number": 7,
+          "duration": "4:09",
+          "lastfm_tags": [
+            "rnb",
+            "soul",
+            "art pop",
+            "alternative rnb",
+            "frank ocean",
+            "sad",
+            "yung lean",
+            "music"
+          ],
+          "aoty_match_found": true,
+          "aoty_track_rating": 95,
+          "spotify_match_found": false
+        },
+        {
+          "name": "Good Guy",
+          "track_number": 8,
+          "duration": "1:06",
+          "lastfm_tags": [
+            "happy",
+            "frank ocean",
+            "best song ever",
+            "rnb",
+            "male vocalists",
+            "times",
+            "olivia",
+            "in love"
+          ],
+          "aoty_match_found": true,
+          "aoty_track_rating": 81,
+          "spotify_match_found": false
+        },
+        {
+          "name": "Nights",
+          "track_number": 9,
+          "duration": "5:07",
+          "lastfm_tags": [
+            "art pop",
+            "alternative rnb",
+            "alternative",
+            "neo-soul",
+            "rnb",
+            "hip-hop",
+            "frank ocean",
+            "downtempo",
+            "rap"
+          ],
+          "aoty_match_found": true,
+          "aoty_track_rating": 96,
+          "spotify_match_found": false
+        },
+        {
+          "name": "Solo (Reprise)",
+          "track_number": 10,
+          "duration": "1:18",
+          "lastfm_tags": [
+            "postmodern",
+            "experimental",
+            "andre 3000",
+            "experimental hip-hop",
+            "bars",
+            "andre",
+            "woooo",
+            "best verse of 2016",
+            "conscoius rap"
+          ],
+          "aoty_match_found": true,
+          "aoty_track_rating": 89,
+          "spotify_match_found": false
+        },
+        {
+          "name": "Pretty Sweet",
+          "track_number": 11,
+          "duration": "2:38",
+          "lastfm_tags": [
+            "neo-psychedelia",
+            "shoegaze",
+            "art pop",
+            "experimental",
+            "alternative rnb",
+            "drum and bass",
+            "neo-soul",
+            "hip-hop",
+            "rnb",
+            "noise"
+          ],
+          "aoty_match_found": true,
+          "aoty_track_rating": 87,
+          "spotify_match_found": false
+        },
+        {
+          "name": "Facebook Story",
+          "track_number": 12,
+          "duration": "1:08",
+          "lastfm_tags": [
+            "feyzbuk",
+            "relateable",
+            "facts",
+            "truth",
+            "bitch what",
+            "started 2 be crazy",
+            "frank ocean"
+          ],
+          "aoty_match_found": true,
+          "aoty_track_rating": 76,
+          "spotify_match_found": false
+        },
+        {
+          "name": "Close to You",
+          "track_number": 13,
+          "duration": "1:25",
+          "lastfm_tags": [
+            "alternative rnb",
+            "art pop",
+            "singer-songwriter",
+            "pop",
+            "electronic",
+            "experimental",
+            "alternative",
+            "ambient pop",
+            "stevie wonder",
+            "trip hop"
+          ],
+          "aoty_match_found": true,
+          "aoty_track_rating": 84,
+          "spotify_match_found": false
+        },
+        {
+          "name": "White Ferrari",
+          "track_number": 14,
+          "duration": "4:08",
+          "lastfm_tags": [
+            "rnb",
+            "singer-songwriter",
+            "dream pop",
+            "art pop",
+            "neo-soul",
+            "ambient pop",
+            "hip-hop",
+            "the beatles",
+            "sad",
+            "depression"
+          ],
+          "aoty_match_found": true,
+          "aoty_track_rating": 95,
+          "spotify_match_found": false
+        },
+        {
+          "name": "Seigfried",
+          "track_number": 15,
+          "duration": "5:34",
+          "lastfm_tags": [
+            "dream pop",
+            "art pop",
+            "ambient pop",
+            "neo-soul",
+            "rnb",
+            "spoken word",
+            "psychedelic soul",
+            "alternative rnb",
+            "frank ocean",
+            "4 stars"
+          ],
+          "aoty_match_found": true,
+          "aoty_track_rating": 93,
+          "spotify_match_found": false
+        },
+        {
+          "name": "Godspeed",
+          "track_number": 16,
+          "duration": "2:57",
+          "lastfm_tags": [
+            "rnb",
+            "soul",
+            "gospel",
+            "alternative rnb",
+            "art pop",
+            "ambient",
+            "singer-songwriter"
+          ],
+          "aoty_match_found": true,
+          "aoty_track_rating": 92,
+          "spotify_match_found": false
+        },
+        {
+          "name": "Futura Free",
+          "track_number": 17,
+          "duration": "9:24",
+          "lastfm_tags": [
+            "rnb",
+            "soul",
+            "hiphop",
+            "downtempo",
+            "experimental hip hop",
+            "ambient pop",
+            "art pop",
+            "outro",
+            "alternative rnb"
+          ],
+          "aoty_match_found": true,
+          "aoty_track_rating": 87,
+          "spotify_match_found": false
+        }
+      ]
+    },
+    {
+      "name": "Mr. Morale & the Big Steppers",
+      "artist": "Kendrick Lamar",
+      "year": null,
+      "lastfm_playcount": 748,
+      "album_rank": 3,
+      "lastfm_tags": [
+        "conscious hip hop",
+        "jazz rap",
+        "west coast hip hop",
+        "pop rap",
+        "trap",
+        "experimental hip hop",
+        "political hip hop",
+        "neo-soul",
+        "contemporary rnb"
+      ],
+      "aoty_match_found": true,
+      "aoty_score": 86.5,
+      "aoty_num_ratings": 36,
+      "aoty_genres": [],
+      "spotify_match_found": true,
+      "total_tracks": 18,
+      "processing_time": 11.978002309799194,
+      "errors": [],
+      "tracks": [
+        {
+          "name": "United in Grief",
+          "track_number": 1,
+          "duration": "4:15",
+          "lastfm_tags": [
+            "jazz rap",
+            "conscious hip hop",
+            "jazzstep",
+            "rap",
+            "experimental hip hop",
+            "broken beat",
+            "hip hop",
+            "kendrick lamar",
+            "west coast hip hop",
+            "hip-hop"
+          ],
+          "aoty_match_found": true,
+          "aoty_track_rating": 94,
+          "spotify_match_found": false
+        },
+        {
+          "name": "N95",
+          "track_number": 2,
+          "duration": "3:15",
+          "lastfm_tags": [
+            "rap",
+            "trap",
+            "hip-hop",
+            "conscious hip hop",
+            "pop rap",
+            "hip hop",
+            "hardcore hip hop",
+            "banger",
+            "west coast hip hop"
+          ],
+          "aoty_match_found": true,
+          "aoty_track_rating": 92,
+          "spotify_match_found": false
+        },
+        {
+          "name": "Worldwide Steppers",
+          "track_number": 3,
+          "duration": "3:23",
+          "lastfm_tags": [],
+          "aoty_match_found": true,
+          "aoty_track_rating": 86,
+          "spotify_match_found": false
+        },
+        {
+          "name": "Die Hard",
+          "track_number": 4,
+          "duration": "3:59",
+          "lastfm_tags": [
+            "rnb",
+            "rap",
+            "hip-hop",
+            "neo-soul",
+            "west coast hip hop",
+            "pop rap",
+            "amanda reifer",
+            "kendrick lamar",
+            "hip hop"
+          ],
+          "aoty_match_found": true,
+          "aoty_track_rating": 88,
+          "spotify_match_found": false
+        },
+        {
+          "name": "Father Time",
+          "track_number": 5,
+          "duration": "3:42",
+          "lastfm_tags": [],
+          "aoty_match_found": true,
+          "aoty_track_rating": 95,
+          "spotify_match_found": false
+        },
+        {
+          "name": "Rich (Interlude)",
+          "track_number": 6,
+          "duration": "1:43",
+          "lastfm_tags": [],
+          "aoty_match_found": true,
+          "aoty_track_rating": 76,
+          "spotify_match_found": false
+        },
+        {
+          "name": "Rich Spirit",
+          "track_number": 7,
+          "duration": "3:22",
+          "lastfm_tags": [
+            "pop rap",
+            "conscious hip hop",
+            "nervous music",
+            "ratchet music",
+            "cloud rap",
+            "trap",
+            "west coast hip hop",
+            "hip-hop",
+            "kendrick lamar"
+          ],
+          "aoty_match_found": true,
+          "aoty_track_rating": 85,
+          "spotify_match_found": false
+        },
+        {
+          "name": "We Cry Together",
+          "track_number": 8,
+          "duration": "5:41",
+          "lastfm_tags": [],
+          "aoty_match_found": true,
+          "aoty_track_rating": 90,
+          "spotify_match_found": false
+        },
+        {
+          "name": "Purple Hearts",
+          "track_number": 9,
+          "duration": "5:29",
+          "lastfm_tags": [
+            "conscious hip hop",
+            "neo-soul",
+            "summer walker",
+            "ghostface killah",
+            "rap",
+            "hip hop",
+            "hip-hop",
+            "alternative rnb",
+            "kendrick lamar",
+            "chillwave"
+          ],
+          "aoty_match_found": true,
+          "aoty_track_rating": 83,
+          "spotify_match_found": false
+        },
+        {
+          "name": "Count Me Out",
+          "track_number": 1,
+          "duration": "4:43",
+          "lastfm_tags": [
+            "pop rap",
+            "trap",
+            "conscious hip hop",
+            "rap",
+            "neo-soul",
+            "west coast hip hop",
+            "count me out",
+            "kendrick lamar",
+            "hip-hop"
+          ],
+          "aoty_match_found": true,
+          "aoty_track_rating": 93,
+          "spotify_match_found": false
+        },
+        {
+          "name": "Crown",
+          "track_number": 2,
+          "duration": "4:24",
+          "lastfm_tags": [],
+          "aoty_match_found": true,
+          "aoty_track_rating": 84,
+          "spotify_match_found": false
+        },
+        {
+          "name": "Silent Hill",
+          "track_number": 3,
+          "duration": "3:40",
+          "lastfm_tags": [
+            "kodak black",
+            "rap",
+            "hip-hop",
+            "trap",
+            "west coast hip hop",
+            "kendrick lamar",
+            "dance",
+            "conscious hip hop",
+            "pop rap"
+          ],
+          "aoty_match_found": true,
+          "aoty_track_rating": 83,
+          "spotify_match_found": false
+        },
+        {
+          "name": "Savior (Interlude)",
+          "track_number": 4,
+          "duration": "2:32",
+          "lastfm_tags": [],
+          "aoty_match_found": true,
+          "aoty_track_rating": 83,
+          "spotify_match_found": false
+        },
+        {
+          "name": "Savior",
+          "track_number": 5,
+          "duration": "3:44",
+          "lastfm_tags": [
+            "conscious hip hop",
+            "political hip hop",
+            "baby keem",
+            "neo-psychedelia",
+            "trap",
+            "sam dew",
+            "west coast hip hop",
+            "kendrick lamar",
+            "glitch hop",
+            "rap"
+          ],
+          "aoty_match_found": true,
+          "aoty_track_rating": 90,
+          "spotify_match_found": false
+        },
+        {
+          "name": "Auntie Diaries",
+          "track_number": 6,
+          "duration": "4:41",
+          "lastfm_tags": [],
+          "aoty_match_found": true,
+          "aoty_track_rating": 90,
+          "spotify_match_found": false
+        },
+        {
+          "name": "Mr. Morale",
+          "track_number": 7,
+          "duration": "3:30",
+          "lastfm_tags": [
+            "rap",
+            "hip-hop",
+            "west coast hip hop",
+            "trap",
+            "conscious hip hop",
+            "kendrick lamar",
+            "experimental",
+            "hip hop"
+          ],
+          "aoty_match_found": true,
+          "aoty_track_rating": 89,
+          "spotify_match_found": false
+        },
+        {
+          "name": "Mother I Sober",
+          "track_number": 8,
+          "duration": "6:46",
+          "lastfm_tags": [],
+          "aoty_match_found": true,
+          "aoty_track_rating": 95,
+          "spotify_match_found": false
+        },
+        {
+          "name": "Mirror",
+          "track_number": 9,
+          "duration": "4:16",
+          "lastfm_tags": [
+            "conscious hip hop",
+            "funk",
+            "neo-soul",
+            "chillwave",
+            "art pop",
+            "rnb",
+            "pop rap",
+            "kendrick lamar",
+            "west coast hip hop"
+          ],
+          "aoty_match_found": true,
+          "aoty_track_rating": 92,
+          "spotify_match_found": false
+        }
+      ]
+    }
+  ]
+}

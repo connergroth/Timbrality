@@ -1,89 +1,116 @@
-'use client'
+"use client"
 
-import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { 
-  Home, 
-  MessageSquare, 
-  Music, 
-  Settings, 
-  User
-} from 'lucide-react'
-import Link from 'next/link'
+import { User } from "@supabase/supabase-js"
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuLabel, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
+import {
+  Home,
+  MessageSquare,
+  Music,
+  Settings as SettingsIcon,
+  Sparkles,
+  BarChart3,
+  Search,
+  LogOut,
+  RefreshCw,
+  User as UserIcon,
+} from "lucide-react"
+import { forceSpotifyReauth, hasRequiredSpotifyScopes } from "@/lib/spotify-auth"
 
 interface NavigationSidebarProps {
-  isOpen: boolean
-  onClose: () => void
-  userId: string
+  user: User
+  onSignOut: () => Promise<void>
 }
 
-export function NavigationSidebar({ isOpen, onClose, userId }: NavigationSidebarProps) {
+export function NavigationSidebar({ user, onSignOut }: NavigationSidebarProps) {
   const navigationItems = [
-    {
-      icon: Home,
-      label: 'Home',
-      href: '/',
-      description: 'Your music dashboard'
-    },
-    {
-      icon: MessageSquare,
-      label: 'Chat',
-      href: '/chat',
-      description: 'AI music assistant'
-    },
-    {
-      icon: Music,
-      label: 'Recommendations',
-      href: '/recommend',
-      description: 'Discover new music'
-    },
-    {
-      icon: User,
-      label: 'Profile',
-      href: '/profile',
-      description: 'Your music profile'
-    },
-    {
-      icon: Settings,
-      label: 'Settings',
-      href: '/settings',
-      description: 'App preferences'
-    }
+    { icon: Home, href: "/", label: "Home" },
+    { icon: Search, href: "/explore", label: "Explore" },
+    { icon: MessageSquare, href: "/chat", label: "Chat" },
+    { icon: Music, href: "/recommend", label: "Recs" },
+    { icon: Sparkles, href: "/insights", label: "Insights" },
+    { icon: BarChart3, href: "/analytics", label: "Analytics" },
+    { icon: SettingsIcon, href: "/settings", label: "Settings" },
   ]
 
-  if (!isOpen) {
-    return null
+  const handleSpotifyReauth = async () => {
+    try {
+      await forceSpotifyReauth()
+    } catch (error) {
+      console.error("Error re-authenticating Spotify:", error)
+    }
   }
 
   return (
-    <div className="w-80 bg-sidebar flex flex-col">
-      {/* Navigation Items */}
-      <div className="flex-1 p-4">
-        <nav className="space-y-2">
-          {navigationItems.map((item) => {
-            const Icon = item.icon
-            return (
-              <Link key={item.href} href={item.href}>
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start h-12 px-4 hover:bg-sidebar-accent/50"
-                  onClick={onClose}
-                >
-                  <Icon className="h-5 w-5 mr-3" />
-                  <div className="flex flex-col items-start">
-                    <span className="font-inter font-medium text-sm">
-                      {item.label}
-                    </span>
-                    <span className="text-xs text-muted-foreground">
-                      {item.description}
-                    </span>
-                  </div>
-                </Button>
-              </Link>
-            )
-          })}
-        </nav>
-      </div>
-    </div>
+    <aside className="fixed inset-y-0 left-0 z-50 w-16 bg-sidebar border-r border-sidebar-border flex flex-col items-center justify-between py-4">
+      {/* Nav icons */}
+      <nav className="flex flex-col items-center gap-2">
+        {navigationItems.map(({ icon: Icon, href, label }) => (
+          <Link key={href} href={href} title={label}>
+            <Button
+              variant="ghost"
+              className="h-10 w-10 p-0 rounded-xl text-sidebar-foreground hover:bg-sidebar-accent/60 hover:text-sidebar-foreground"
+            >
+              <Icon className="h-5 w-5" />
+            </Button>
+          </Link>
+        ))}
+      </nav>
+
+      {/* Avatar dropdown */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="ghost"
+              className="h-9 w-9 p-0 rounded-md outline-none focus:outline-none focus-visible:outline-none active:outline-none ring-0 hover:ring-0 focus:ring-0 focus-visible:ring-0 active:ring-0 ring-offset-0 focus-visible:ring-offset-0 hover:bg-sidebar-accent/40 data-[state=open]:bg-sidebar-accent/60"
+            title={user.email || "Profile"}
+          >
+            <Avatar className="h-7 w-7">
+              <AvatarImage src={user.user_metadata?.avatar_url} alt={user.email || "User"} />
+              <AvatarFallback>
+                {user.email?.charAt(0).toUpperCase() || "U"}
+              </AvatarFallback>
+            </Avatar>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-60">
+          <DropdownMenuLabel className="flex items-center gap-2">
+            <UserIcon className="h-4 w-4" />
+            <div className="flex flex-col">
+              <span className="text-sm font-medium">{user.user_metadata?.full_name || user.email}</span>
+              {user.email && (
+                <span className="text-xs text-muted-foreground truncate max-w-[200px]">{user.email}</span>
+              )}
+            </div>
+          </DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem asChild>
+            <Link href="/profile" className="flex items-center gap-2">
+              <UserIcon className="h-4 w-4" />
+              <span>Profile</span>
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href="/settings" className="flex items-center gap-2">
+              <SettingsIcon className="h-4 w-4" />
+              <span>Settings</span>
+            </Link>
+          </DropdownMenuItem>
+          {!hasRequiredSpotifyScopes(user) && (
+            <DropdownMenuItem onClick={handleSpotifyReauth} className="flex items-center gap-2">
+              <RefreshCw className="h-4 w-4" />
+              <span>Re-authenticate Spotify</span>
+            </DropdownMenuItem>
+          )}
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={onSignOut} className="flex items-center gap-2">
+            <LogOut className="h-4 w-4" />
+            <span>Log out</span>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </aside>
   )
 } 

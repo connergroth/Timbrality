@@ -1,0 +1,14 @@
+{
+  "282f4d3009e45d0fd0f6e452e53628dc": {
+    "title": "Test Album",
+    "artist": "Test Artist",
+    "year": 2024,
+    "genres": [
+      "Test Genre"
+    ],
+    "rating": 7.5,
+    "url": null,
+    "source": "manual_entry",
+    "last_updated": "2025-08-09T21:17:42.608454"
+  }
+}

@@ -116,7 +116,7 @@ class SpotifyPlaylistTool(BaseTool):
                     "owner": playlist["owner"]["display_name"],
                     "owner_id": playlist["owner"]["id"],
                     "total_tracks": playlist["tracks"]["total"],
-                    "cover_art": playlist["images"][0]["url"] if playlist["images"] else None,
+                    "artwork_url": playlist["images"][0]["url"] if playlist["images"] else None,
                     "spotify_url": playlist["external_urls"]["spotify"]
                 })
             
@@ -154,7 +154,7 @@ class SpotifyPlaylistTool(BaseTool):
                         "duration_ms": track["duration_ms"],
                         "popularity": track["popularity"],
                         "preview_url": track.get("preview_url"),
-                        "cover_art": track["album"]["images"][0]["url"] if track["album"]["images"] else None,
+                        "artwork_url": track["album"]["images"][0]["url"] if track["album"]["images"] else None,
                         "spotify_url": track["external_urls"]["spotify"],
                         "added_at": item["added_at"],
                         "added_by": item["added_by"]["id"] if item["added_by"] else None,
@@ -210,7 +210,7 @@ class SpotifyPlaylistTool(BaseTool):
                 "owner": playlist["owner"]["display_name"],
                 "owner_id": playlist["owner"]["id"],
                 "total_tracks": 0,
-                "cover_art": playlist["images"][0]["url"] if playlist["images"] else None,
+                "artwork_url": playlist["images"][0]["url"] if playlist["images"] else None,
                 "spotify_url": playlist["external_urls"]["spotify"],
                 "created": True
             }

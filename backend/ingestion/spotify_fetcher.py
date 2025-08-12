@@ -71,6 +71,7 @@ def get_album_tracks(album_name: str, artist_name: str) -> List[Dict]:
                 'spotify_url': track['external_urls']['spotify'],
                 'release_date': album['release_date'],
                 'total_tracks': album['total_tracks'],
+                'artwork_url': album['images'][0]['url'] if album['images'] else None,
                 'popularity': None  # Will be fetched separately for individual tracks
             }
             
@@ -130,7 +131,8 @@ def get_track_metadata(track_name: str, artist_name: str) -> Optional[Dict]:
             'preview_url': track['preview_url'],
             'spotify_url': track['external_urls']['spotify'],
             'release_date': album['release_date'],
-            'total_tracks': album['total_tracks']
+            'total_tracks': album['total_tracks'],
+            'artwork_url': album['images'][0]['url'] if album['images'] else None
         }
         
         logger.info(f"Successfully fetched metadata for track '{track_name}' by {artist_name}")
@@ -167,6 +169,7 @@ def search_albums(query: str, limit: int = 10) -> List[Dict]:
                 'total_tracks': album['total_tracks'],
                 'spotify_url': album['external_urls']['spotify'],
                 'images': album['images'],
+                'artwork_url': album['images'][0]['url'] if album['images'] else None,
                 'album_type': album['album_type']
             }
             albums.append(album_data)
@@ -217,7 +220,8 @@ def get_artist_top_tracks(artist_name: str, country: str = 'US') -> List[Dict]:
                 'duration_ms': track['duration_ms'],
                 'explicit': track['explicit'],
                 'preview_url': track['preview_url'],
-                'spotify_url': track['external_urls']['spotify']
+                'spotify_url': track['external_urls']['spotify'],
+                'artwork_url': track['album']['images'][0]['url'] if track['album']['images'] else None
             }
             tracks.append(track_data)
             

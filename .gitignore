@@ -36,4 +36,4 @@ dist/
 .next/cache/
 
 # Claude 
-.claude/
+CLAUDE.md

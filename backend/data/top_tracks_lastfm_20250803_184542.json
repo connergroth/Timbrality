@@ -1,0 +1,550 @@
+{
+  "metadata": {
+    "timestamp": "20250803_184542",
+    "username": "connergroth",
+    "track_count": 60,
+    "data_type": "top_tracks"
+  },
+  "tracks": [
+    {
+      "artist": "frank ocean",
+      "title": "pink + white",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 171,
+      "source": "lastfm",
+      "canonical_id": null
+    },
+    {
+      "artist": "frank ocean",
+      "title": "nights",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 135,
+      "source": "lastfm",
+      "canonical_id": null
+    },
+    {
+      "artist": "isaiah rashad",
+      "title": "west savannah (feat. sza)",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 133,
+      "source": "lastfm",
+      "canonical_id": null
+    },
+    {
+      "artist": "sampha",
+      "title": "without",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 132,
+      "source": "lastfm",
+      "canonical_id": null
+    },
+    {
+      "artist": "kanye west",
+      "title": "no more parties in la",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 123,
+      "source": "lastfm",
+      "canonical_id": null
+    },
+    {
+      "artist": "kids see ghosts",
+      "title": "reborn",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 120,
+      "source": "lastfm",
+      "canonical_id": null
+    },
+    {
+      "artist": "kendrick lamar",
+      "title": "money trees",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 113,
+      "source": "lastfm",
+      "canonical_id": null
+    },
+    {
+      "artist": "jid",
+      "title": "stars (feat. yasiin bey)",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 111,
+      "source": "lastfm",
+      "canonical_id": null
+    },
+    {
+      "artist": "denzel curry",
+      "title": "melt session #1 [feat. robert glasper]",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 108,
+      "source": "lastfm",
+      "canonical_id": null
+    },
+    {
+      "artist": "baby keem",
+      "title": "16",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 107,
+      "source": "lastfm",
+      "canonical_id": null
+    },
+    {
+      "artist": "travis scott",
+      "title": "skeletons",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 103,
+      "source": "lastfm",
+      "canonical_id": null
+    },
+    {
+      "artist": "baby keem",
+      "title": "scars",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 102,
+      "source": "lastfm",
+      "canonical_id": null
+    },
+    {
+      "artist": "denzel curry",
+      "title": "sirens | z1renz [feat. j.i.d | j.1.d]",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 101,
+      "source": "lastfm",
+      "canonical_id": null
+    },
+    {
+      "artist": "denzel curry",
+      "title": "wish feat. kiddo marv",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 101,
+      "source": "lastfm",
+      "canonical_id": null
+    },
+    {
+      "artist": "frank ocean",
+      "title": "ivy",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 99,
+      "source": "lastfm",
+      "canonical_id": null
+    },
+    {
+      "artist": "jid",
+      "title": "sistanem",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 99,
+      "source": "lastfm",
+      "canonical_id": null
+    },
+    {
+      "artist": "baby keem",
+      "title": "honest",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 97,
+      "source": "lastfm",
+      "canonical_id": null
+    },
+    {
+      "artist": "denzel curry",
+      "title": "ain't no way [feat. 6lack, rico nasty, j.i.d, jasiah, kitty ca$h]",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 96,
+      "source": "lastfm",
+      "canonical_id": null
+    },
+    {
+      "artist": "kendrick lamar",
+      "title": "father time (feat. sampha)",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 91,
+      "source": "lastfm",
+      "canonical_id": null
+    },
+    {
+      "artist": "radiohead",
+      "title": "all i need",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 91,
+      "source": "lastfm",
+      "canonical_id": null
+    },
+    {
+      "artist": "playboi carti",
+      "title": "iloveuihateu",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 90,
+      "source": "lastfm",
+      "canonical_id": null
+    },
+    {
+      "artist": "kendrick lamar",
+      "title": "alright",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 89,
+      "source": "lastfm",
+      "canonical_id": null
+    },
+    {
+      "artist": "kendrick lamar",
+      "title": "wesley's theory",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 89,
+      "source": "lastfm",
+      "canonical_id": null
+    },
+    {
+      "artist": "daniel caesar",
+      "title": "cyanide",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 88,
+      "source": "lastfm",
+      "canonical_id": null
+    },
+    {
+      "artist": "jid",
+      "title": "kody blu 31",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 86,
+      "source": "lastfm",
+      "canonical_id": null
+    },
+    {
+      "artist": "childish gambino",
+      "title": "iii. telegraph ave. (\"oakland\" by lloyd)",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 85,
+      "source": "lastfm",
+      "canonical_id": null
+    },
+    {
+      "artist": "chance the rapper",
+      "title": "the highs & the lows",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 83,
+      "source": "lastfm",
+      "canonical_id": null
+    },
+    {
+      "artist": "kid cudi",
+      "title": "tequila shots",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 82,
+      "source": "lastfm",
+      "canonical_id": null
+    },
+    {
+      "artist": "kendrick lamar",
+      "title": "n95",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 81,
+      "source": "lastfm",
+      "canonical_id": null
+    },
+    {
+      "artist": "ludwig goransson",
+      "title": "can you hear the music",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 80,
+      "source": "lastfm",
+      "canonical_id": null
+    },
+    {
+      "artist": "jid",
+      "title": "raydar",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 79,
+      "source": "lastfm",
+      "canonical_id": null
+    },
+    {
+      "artist": "kendrick lamar",
+      "title": "sing about me, i'm dying of thirst",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 79,
+      "source": "lastfm",
+      "canonical_id": null
+    },
+    {
+      "artist": "kendrick lamar",
+      "title": "united in grief",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 79,
+      "source": "lastfm",
+      "canonical_id": null
+    },
+    {
+      "artist": "frank ocean",
+      "title": "pyramids",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 78,
+      "source": "lastfm",
+      "canonical_id": null
+    },
+    {
+      "artist": "tory lanez",
+      "title": "the color violet",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 78,
+      "source": "lastfm",
+      "canonical_id": null
+    },
+    {
+      "artist": "travis scott",
+      "title": "my eyes",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 78,
+      "source": "lastfm",
+      "canonical_id": null
+    },
+    {
+      "artist": "baby keem",
+      "title": "family ties (with kendrick lamar)",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 77,
+      "source": "lastfm",
+      "canonical_id": null
+    },
+    {
+      "artist": "daniel caesar",
+      "title": "let me go",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 77,
+      "source": "lastfm",
+      "canonical_id": null
+    },
+    {
+      "artist": "kendrick lamar",
+      "title": "the blacker the berry",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 77,
+      "source": "lastfm",
+      "canonical_id": null
+    },
+    {
+      "artist": "kid cudi",
+      "title": "mr. rager",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 77,
+      "source": "lastfm",
+      "canonical_id": null
+    },
+    {
+      "artist": "saba",
+      "title": "busy / sirens",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 77,
+      "source": "lastfm",
+      "canonical_id": null
+    },
+    {
+      "artist": "travis scott",
+      "title": "sirens",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 77,
+      "source": "lastfm",
+      "canonical_id": null
+    },
+    {
+      "artist": "denzel curry",
+      "title": "vengeance | vengeance [feat. jpegmafia & zillakami | jpegmaf1a + z1llakam1]",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 76,
+      "source": "lastfm",
+      "canonical_id": null
+    },
+    {
+      "artist": "isaiah rashad",
+      "title": "wat's wrong (feat. zacari & kendrick lamar)",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 76,
+      "source": "lastfm",
+      "canonical_id": null
+    },
+    {
+      "artist": "travis scott",
+      "title": "hyaena",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 76,
+      "source": "lastfm",
+      "canonical_id": null
+    },
+    {
+      "artist": "daniel caesar",
+      "title": "get you (feat. kali uchis)",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 75,
+      "source": "lastfm",
+      "canonical_id": null
+    },
+    {
+      "artist": "daniel caesar",
+      "title": "japanese denim",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 75,
+      "source": "lastfm",
+      "canonical_id": null
+    },
+    {
+      "artist": "kanye west",
+      "title": "moon",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 75,
+      "source": "lastfm",
+      "canonical_id": null
+    },
+    {
+      "artist": "kendrick lamar",
+      "title": "count me out",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 75,
+      "source": "lastfm",
+      "canonical_id": null
+    },
+    {
+      "artist": "sampha",
+      "title": "jonathan l. seagull",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 75,
+      "source": "lastfm",
+      "canonical_id": null
+    },
+    {
+      "artist": "drake",
+      "title": "buried alive interlude",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 74,
+      "source": "lastfm",
+      "canonical_id": null
+    },
+    {
+      "artist": "baby keem",
+      "title": "highway 95",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 73,
+      "source": "lastfm",
+      "canonical_id": null
+    },
+    {
+      "artist": "denzel curry",
+      "title": "black balloons | 13lack 13alloonz [feat. twelve'len & goldlink | twelve'len + goldl1nk]",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 72,
+      "source": "lastfm",
+      "canonical_id": null
+    },
+    {
+      "artist": "isaiah rashad",
+      "title": "headshots (4r da locals)",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 72,
+      "source": "lastfm",
+      "canonical_id": null
+    },
+    {
+      "artist": "jpegmafia",
+      "title": "kingdom hearts key (ft. redveil)",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 72,
+      "source": "lastfm",
+      "canonical_id": null
+    },
+    {
+      "artist": "kanye west",
+      "title": "guilt trip",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 72,
+      "source": "lastfm",
+      "canonical_id": null
+    },
+    {
+      "artist": "the weeknd",
+      "title": "i feel it coming",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 72,
+      "source": "lastfm",
+      "canonical_id": null
+    },
+    {
+      "artist": "isaiah rashad",
+      "title": "aa",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 71,
+      "source": "lastfm",
+      "canonical_id": null
+    },
+    {
+      "artist": "kid cudi",
+      "title": "just what i am",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 71,
+      "source": "lastfm",
+      "canonical_id": null
+    },
+    {
+      "artist": "sampha",
+      "title": "plastic 100°c",
+      "isrc": null,
+      "spotify_id": null,
+      "playcount": 71,
+      "source": "lastfm",
+      "canonical_id": null
+    }
+  ]
+}

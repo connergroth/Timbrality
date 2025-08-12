@@ -75,7 +75,7 @@ async def get_current_playing_track(username: str):
                         "artists": [artist["name"] for artist in track["artists"]],
                         "album": track["album"]["name"],
                         "album_id": track["album"]["id"],
-                        "cover_art": track["album"]["images"][0]["url"] if track["album"]["images"] else None,
+                        "artwork_url": track["album"]["images"][0]["url"] if track["album"]["images"] else None,
                         "preview_url": track.get("preview_url"),
                         "external_urls": track["external_urls"],
                         "duration_ms": track["duration_ms"],
@@ -162,6 +162,52 @@ async def search_album(q: str):
             "artist": album["artists"][0]["name"],
             "images": album["images"],
             "external_urls": album["external_urls"]
+        })
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/search-track")
+async def search_track(q: str):
+    """Search for a track by name and artist."""
+    try:
+        access_token = get_client_credentials_token()
+        
+        response = requests.get(
+            "https://api.spotify.com/v1/search",
+            headers={
+                "Authorization": f"Bearer {access_token}"
+            },
+            params={
+                "q": q,
+                "type": "track",
+                "limit": 1
+            }
+        )
+        
+        if response.status_code != 200:
+            raise HTTPException(status_code=500, detail="Search failed")
+        
+        search_data = response.json()
+        tracks = search_data["tracks"]["items"]
+        
+        if not tracks:
+            raise HTTPException(status_code=404, detail="Track not found")
+        
+        track = tracks[0]
+        
+        return JSONResponse(content={
+            "id": track["id"],
+            "name": track["name"],
+            "artist": track["artists"][0]["name"],
+            "artists": [artist["name"] for artist in track["artists"]],
+            "album": track["album"]["name"],
+            "album_id": track["album"]["id"],
+            "artwork_url": track["album"]["images"][0]["url"] if track["album"]["images"] else None,
+            "preview_url": track.get("preview_url"),
+            "external_urls": track["external_urls"],
+            "duration_ms": track["duration_ms"],
+            "popularity": track["popularity"]
         })
         
     except Exception as e:
