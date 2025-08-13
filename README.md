@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://github.com/user-attachments/assets/ff6a407e-cefa-4855-8a90-22ae328b8e95" alt="Timbrality" width="350px" />
+  <img src="https://github.com/user-attachments/assets/5498a533-8497-46e6-a4f5-46d8cfacd6f3" alt="Timbrality" width="350px" />
   <h1>Timbrality - AI Powered Music Discovery</h1>
 </div>
 
