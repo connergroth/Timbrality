@@ -1,25 +1,58 @@
 # Python
 __pycache__/
-__init__.py
+*.pyc
+*.pyo
+*.pyd
+.Python
+pip-log.txt
+pip-delete-this-directory.txt
 
 # Virtual Environment
 .venv/
 venv/
 env/
 ENV/
-.env
+environment/  # Fixed typo from "enviroment"
 sonance-env/
+
+# Environment files
+.env
+.env.local
+.env.production
+.env.staging
+
+# Data files (logs, cache, temporary data)
+backend/data/*.json
+backend/data/*.csv
+backend/logs/
+backend/music_matching_cache/
+backend/services/aoty_resilient_cache/
+logs/
+*.log
+
+# ML Models and Training Data
+ml/data/bronze/
+ml/data/silver/
+ml/data/gold/
+ml/models/
+*.pkl
+*.joblib
+*.h5
 
 # Cache
 .cache
+.pytest_cache/
 
 # Docker 
 docker-compose.yaml
 
-# Pytest
+# Testing
 .pytest_cache/
 .tests/
 .coverage
+htmlcov/
+.tox/
+.nox/
 
 # Alembic
 migrations/*.mako
@@ -27,13 +60,30 @@ migrations/*.mako
 # Dependencies
 node_modules/
 bun.lockb
+package-lock.json
 
 # Distribution
 dist/
+build/
+*.egg-info/
 
 # Next.js
 .next/
 .next/cache/
+.vercel/
+
+# Development artifacts
+*.orig
+*.bak
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
 
 # Claude 
 CLAUDE.md
+.claude/

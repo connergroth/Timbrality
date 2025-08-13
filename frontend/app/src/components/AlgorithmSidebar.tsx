@@ -194,7 +194,7 @@ export function AlgorithmSidebar({ isOpen, onClose }: AlgorithmSidebarProps) {
               </CardHeader>
               <CardContent className="space-y-3">
                 <p className="text-sm text-sidebar-foreground/70 leading-relaxed">
-                  Timbre uses a hybrid approach combining <strong>Non-negative Matrix Factorization (NMF)</strong> 
+                  Timbrality uses a hybrid approach combining <strong>Non-negative Matrix Factorization (NMF)</strong> 
                   for collaborative filtering and <strong>BERT embeddings</strong> for semantic understanding.
                 </p>
                 <p className="text-sm text-sidebar-foreground/70 leading-relaxed">

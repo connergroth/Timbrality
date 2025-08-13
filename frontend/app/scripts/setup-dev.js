@@ -3,7 +3,7 @@
 const fs = require("fs");
 const path = require("path");
 
-console.log("🔧 Timbre App Development Setup");
+console.log("🔧 Timbrality App Development Setup");
 console.log("===============================\n");
 
 // Check if .env.local exists

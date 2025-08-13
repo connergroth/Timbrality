@@ -1,6 +1,6 @@
-# Timbre App - Next.js OAuth Authentication
+# Timbrality App - Next.js OAuth Authentication
 
-This is the Next.js application for Timbre's authentication and recommendation interface. It handles OAuth flows for Spotify and Last.fm, and provides a user dashboard for managing connected services.
+This is the Next.js application for Timbrality's authentication and recommendation interface. It handles OAuth flows for Spotify and Last.fm, and provides a user dashboard for managing connected services.
 
 ## Features
 

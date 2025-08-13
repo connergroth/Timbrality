@@ -9,7 +9,7 @@ export const Footer = () => {
         <div className="grid md:grid-cols-4 gap-8">
           <div className="space-y-4">
             <div className="font-playfair text-2xl font-bold text-primary">
-              Timbre
+              Timbrality
             </div>
             <div className="flex space-x-3">
               <a 
@@ -105,7 +105,7 @@ export const Footer = () => {
 
         <div className="border-t border-border mt-8 pt-6 text-center space-y-1">
           <p className="text-muted-foreground text-sm">
-            © {new Date().getFullYear()} Timbre. All rights reserved.
+            © {new Date().getFullYear()} Timbrality. All rights reserved.
           </p>
           <div className="flex items-center justify-center space-x-2">
             <span className="text-muted-foreground text-sm">Made by Conner Groth:</span>

@@ -56,11 +56,11 @@ export function ChatModal({ isOpen, onClose, userId, chatId }: ChatModalProps) {
             <div className="w-8 h-8 flex items-center justify-center">
               <img 
                 src="/soundwhite.png" 
-                alt="Timbre" 
+                alt="Timbrality" 
                 className="w-5 h-5 object-contain"
               />
             </div>
-            <span className="font-playfair text-lg font-bold text-primary">Timbre Chat</span>
+            <span className="font-playfair text-lg font-bold text-primary">Timbrality Chat</span>
           </div>
           <button
             onClick={onClose}

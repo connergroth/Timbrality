@@ -139,7 +139,7 @@ export function PlaylistModal({
           action: 'create_playlist',
           user_id: userId,
           playlist_name: newPlaylistName.trim(),
-          description: `Created from Timbre recommendations`,
+          description: `Created from Timbrality recommendations`,
           public: false,
           track_ids: [trackId]
         }),

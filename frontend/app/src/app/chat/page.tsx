@@ -31,7 +31,7 @@ export default function ChatPage() {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-inter font-semibold mb-4 tracking-tight">Please sign in to continue</h1>
-          <p className="text-muted-foreground mb-4 font-inter">You need to authenticate to access Timbre.</p>
+          <p className="text-muted-foreground mb-4 font-inter">You need to authenticate to access Timbrality.</p>
           <button 
             onClick={() => window.location.href = '/auth'}
             className="bg-primary text-primary-foreground px-6 py-3 rounded-lg font-inter font-medium hover:bg-primary/90 transition-colors"

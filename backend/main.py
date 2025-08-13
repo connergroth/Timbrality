@@ -15,6 +15,7 @@ from routes.album_routes import router as album_router
 from routes.user_routes import router as user_router
 from routes.metrics_routes import router as metrics_router
 from routes.ml_routes import ml_router
+from routes.timbral_routes import timbral_router
 from routes.scraper_routes import router as scraper_router
 from routes.agent_routes import router as agent_router
 from routes.playlist_routes import router as playlist_router
@@ -25,10 +26,10 @@ from utils.metrics import metrics
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Initialize any resources on startup
-    print("🚀 Starting Timbre backend server...")
+    print("🚀 Starting Timbrality backend server...")
     yield
     # Clean up resources on shutdown
-    print("🛑 Shutting down Timbre backend server...")
+    print("🛑 Shutting down Timbrality backend server...")
     
     # Cancel any remaining tasks
     import asyncio
@@ -49,12 +50,13 @@ async def lifespan(app: FastAPI):
 
 # Initialize the FastAPI app
 app = FastAPI(
-    title="Tensoe Backend API",
+    title="Timbrality Backend API",
     description="""
     A comprehensive music discovery and recommendation platform backend.
     
     This API provides access to album information, user profiles, music recommendations,
     and more with advanced caching, rate limiting, and performance optimization.
+    Powered by the Timbral ML engine for intelligent music analysis.
     """,
     version="1.0.0",
     contact={
@@ -109,6 +111,7 @@ app.include_router(album_router, prefix="/album", tags=["Albums"])
 app.include_router(user_router, prefix="/user", tags=["Users"])
 app.include_router(metrics_router, prefix="/metrics", tags=["Metrics"])
 app.include_router(ml_router, tags=["Machine Learning"])
+app.include_router(timbral_router, tags=["Timbral ML Service"])
 app.include_router(scraper_router, prefix="/scraper", tags=["AOTY Scraper"])
 app.include_router(agent_router, prefix="/agent", tags=["AI Agent"])
 app.include_router(playlist_router, prefix="/playlist", tags=["Playlists"])
@@ -119,7 +122,8 @@ app.include_router(spotify_router, tags=["Spotify"])
 async def root():
     """Health check endpoint"""
     return {
-        "message": "Tensoe Backend API",
+        "message": "Timbrality Backend API",
         "status": "healthy",
-        "version": "1.0.0"
+        "version": "1.0.0",
+        "ml_engine": "Timbral"
     }

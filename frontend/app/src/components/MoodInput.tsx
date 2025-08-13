@@ -10,13 +10,13 @@ export function MoodInput() {
   const [moodText, setMoodText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleAskTimbre = async () => {
+  const handleAskTimbrality = async () => {
     if (!moodText.trim()) return;
     
     setIsLoading(true);
     try {
       // This would call your backend API to get mood-based recommendations
-      console.log('Asking Timbre for:', moodText);
+      console.log('Asking Timbrality for:', moodText);
       
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 200));
@@ -33,7 +33,7 @@ export function MoodInput() {
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      handleAskTimbre();
+      handleAskTimbrality();
     }
   };
 
@@ -56,7 +56,7 @@ export function MoodInput() {
             disabled={isLoading}
           />
           <Button
-            onClick={handleAskTimbre}
+            onClick={handleAskTimbrality}
             disabled={!moodText.trim() || isLoading}
             className="px-6 font-medium"
           >
@@ -66,13 +66,13 @@ export function MoodInput() {
                 <span>Asking...</span>
               </div>
             ) : (
-              <span>Ask Timbre →</span>
+              <span>Ask Timbrality →</span>
             )}
           </Button>
         </div>
         
         <p className="text-sm text-muted-foreground mt-3">
-          Describe your mood, energy level, or what you're looking for. Timbre will find the perfect music for you.
+          Describe your mood, energy level, or what you're looking for. Timbrality will find the perfect music for you.
         </p>
       </CardContent>
     </Card>
