@@ -79,7 +79,7 @@ export const TastePreview = () => {
     }
 
     try {
-      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000';
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
       const response = await fetch(
         `${backendUrl}/spotify/search-album?q=${encodeURIComponent(songQuery)}`
       );
