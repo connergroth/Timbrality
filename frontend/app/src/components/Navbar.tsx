@@ -28,11 +28,11 @@ export function Navbar({ user, onSignOut, onToggleAlgorithmSidebar }: NavbarProp
           <div className="w-8 h-8 flex items-center justify-center">
             <img 
               src="/soundwhite.png" 
-              alt="Timbre" 
+              alt="Timbrality" 
               className="w-5 h-5 object-contain"
             />
           </div>
-          <span className="font-playfair text-xl font-bold text-primary">Timbre</span>
+          <span className="font-playfair text-xl font-bold text-primary">Timbrality</span>
         </button>
 
         {/* Right: Brain icon only */}

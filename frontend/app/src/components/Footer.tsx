@@ -14,7 +14,7 @@ export function Footer() {
             <div className="w-6 h-6 bg-primary rounded flex items-center justify-center">
               <span className="text-primary-foreground font-bold text-sm">T</span>
             </div>
-            <span className="font-playfair font-semibold text-primary">Timbre</span>
+            <span className="font-playfair font-semibold text-primary">Timbrality</span>
           </div>
           
           <div className="flex items-center space-x-8 text-sm text-muted-foreground">
@@ -45,7 +45,7 @@ export function Footer() {
           </div>
           
           <div className="text-sm text-muted-foreground font-inter">
-            © {new Date().getFullYear()} Timbre. All rights reserved.
+            © {new Date().getFullYear()} Timbrality. All rights reserved.
           </div>
         </div>
       </div>

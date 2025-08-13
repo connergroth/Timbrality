@@ -11,7 +11,7 @@ const playfair = Playfair_Display({
 })
 
 export const metadata: Metadata = {
-  title: 'Timbre',
+  title: 'Timbrality',
   description: 'Connect your music profiles to discover your unique musical DNA',
 }
 

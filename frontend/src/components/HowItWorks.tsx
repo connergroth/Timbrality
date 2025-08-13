@@ -68,7 +68,7 @@ export const HowItWorks = () => {
           {isAlgorithmOpen && (
             <div className="mt-8 max-w-4xl mx-auto bg-card border border-border rounded-2xl p-8 text-left">
               <h3 className="font-playfair text-2xl font-semibold text-foreground mb-6">
-                How Timbre Generates Recommendations
+                How Timbrality Generates Recommendations
               </h3>
               
               <p className="text-muted-foreground mb-6 leading-relaxed">

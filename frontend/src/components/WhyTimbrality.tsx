@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-export const WhyTimbre = () => {
+export const WhyTimbrality = () => {
   const [currentExampleIndex, setCurrentExampleIndex] = useState(0);
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
   const [displayedMessages, setDisplayedMessages] = useState<{text: string, isUser: boolean}[]>([]);
@@ -92,7 +92,7 @@ export const WhyTimbre = () => {
                     <div className="w-10 h-10 flex items-center justify-center flex-shrink-0 mr-2 mt-1">
                       <img 
                         src="/soundwhite.png" 
-                        alt="Timbre Agent" 
+                        alt="Timbrality Agent" 
                         className="w-6 h-6 object-contain"
                       />
                     </div>
@@ -121,7 +121,7 @@ export const WhyTimbre = () => {
                     <div className="w-10 h-10 flex items-center justify-center flex-shrink-0 mr-2 mt-1">
                       <img 
                         src="/soundwhite.png" 
-                        alt="Timbre Agent" 
+                        alt="Timbrality Agent" 
                         className="w-6 h-6 object-contain"
                       />
                     </div>

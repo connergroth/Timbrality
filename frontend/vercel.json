@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/auth/:path*",
+      "destination": "https://tensoe.com/auth/:path*"
+    },
+    {
+      "source": "/home/:path*",
+      "destination": "https://tensoe.com/:path*"
+    }
+  ]
+}

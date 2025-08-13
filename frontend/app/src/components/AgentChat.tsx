@@ -160,7 +160,7 @@ export function AgentChat({
         <div className="w-10 h-10 flex items-center justify-center flex-shrink-0 mr-2 mt-1">
           <img 
             src="/soundwhite.png" 
-            alt="Timbre Agent" 
+            alt="Timbrality Agent" 
             className="w-6 h-6 object-contain opacity-50"
           />
         </div>
@@ -236,7 +236,7 @@ export function AgentChat({
               <div className="w-10 h-10 flex items-center justify-center flex-shrink-0 mr-2 mt-1">
                 <img 
                   src="/soundwhite.png" 
-                  alt="Timbre Agent" 
+                  alt="Timbrality Agent" 
                   className="w-6 h-6 object-contain"
                 />
               </div>
@@ -263,7 +263,7 @@ export function AgentChat({
                   <div className="w-10 h-10 flex items-center justify-center flex-shrink-0 mr-2 mt-1">
                     <img 
                       src="/soundwhite.png" 
-                      alt="Timbre Agent" 
+                      alt="Timbrality Agent" 
                       className="w-6 h-6 object-contain"
                     />
                   </div>

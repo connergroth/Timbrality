@@ -14,7 +14,7 @@ export const Navbar = () => {
         <div className="flex items-center justify-between space-x-8">
           {/* Logo */}
           <div className="font-playfair text-xl font-bold text-primary">
-            Timbre
+            Timbrality
           </div>
           
           {/* Desktop Navigation */}
@@ -50,13 +50,14 @@ export const Navbar = () => {
               className="text-muted-foreground hover:text-foreground hover:bg-background/50"
               asChild
             >
-              <Link to="/auth">Log in</Link>  
+              <a href="/auth">Log in</a>  
             </Button>
             <Button 
               size="sm"
               className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-6"
+              asChild
             >
-              Get Started
+              <a href="/auth">Get Started</a>
             </Button>
           </div>
 
@@ -119,14 +120,16 @@ export const Navbar = () => {
                   variant="ghost" 
                   size="sm"
                   className="w-full text-muted-foreground hover:text-foreground hover:bg-background/50"
+                  asChild
                 >
-                  Log in
+                  <a href="/auth">Log in</a>
                 </Button>
                 <Button 
                   size="sm"
                   className="w-full bg-primary hover:bg-primary/90 text-primary-foreground rounded-full"
+                  asChild
                 >
-                  Get Started
+                  <a href="/auth">Get Started</a>
                 </Button>
               </div>
             </div>

@@ -66,7 +66,7 @@ const Auth = () => {
         {/* Header */}
         <div className="text-center space-y-4">
           <h1 className="font-playfair text-4xl md:text-5xl font-bold text-primary tracking-tight">
-            Timbre
+            Timbrality
           </h1>
           <h2 className="font-playfair text-2xl font-medium text-foreground">
             Connect Your Music Profile
