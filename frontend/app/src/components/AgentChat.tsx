@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Send, Loader2, Music, User, Settings, X, ArrowUp, BarChart3, Tag, TrendingUp, Info, Activity, Target, Sliders } from 'lucide-react';
+import { Send, Loader2, Music, User, Settings, X, ArrowUp, BarChart3, Tag, TrendingUp, Info, Activity, Target, Sliders, Clock, Star, Zap, Plus } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
@@ -21,8 +21,10 @@ interface AgentChatProps {
   isInline?: boolean;
   onStartChat?: () => void;
   user?: any; // Add user prop for PlaylistModal
-  onSelectTool?: (tool: string) => void;
+  onSelectTool?: (tool: string | null) => void;
+  selectedTool?: string | null;
   showMusicDepthSlider?: boolean;
+  onGetClearFunction?: (clearFn: () => void) => void;
 }
 
 export function AgentChat({ 
@@ -36,7 +38,9 @@ export function AgentChat({
   onStartChat,
   user,
   onSelectTool,
-  showMusicDepthSlider = false
+  selectedTool,
+  showMusicDepthSlider = false,
+  onGetClearFunction
 }: AgentChatProps) {
   const [input, setInput] = useState('');
   const [hasStartedChat, setHasStartedChat] = useState(false);
@@ -69,6 +73,17 @@ export function AgentChat({
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages]);
+
+  // Provide clearConversation function to parent
+  useEffect(() => {
+    if (onGetClearFunction) {
+      onGetClearFunction(() => {
+        clearConversation();
+        setHasStartedChat(false);
+        setInput('');
+      });
+    }
+  }, [clearConversation, onGetClearFunction]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -365,45 +380,66 @@ export function AgentChat({
               
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
-                  <DropdownMenu>
+                  <DropdownMenu onOpenChange={(open) => {
+                    // Remove focus when dropdown closes
+                    if (!open) {
+                      setTimeout(() => {
+                        const activeElement = document.activeElement as HTMLElement;
+                        if (activeElement && activeElement.blur) {
+                          activeElement.blur();
+                        }
+                      }, 0);
+                    }
+                  }}>
                     <DropdownMenuTrigger asChild>
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors text-sm font-inter h-auto p-1"
+                        className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors text-sm font-inter h-auto p-1 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                       >
                         <Settings className="w-4 h-4" />
                         <span>Tools</span>
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-56" align="start">
-                      <DropdownMenuItem onClick={() => onSelectTool?.('nmf-weights')}>
+                      <DropdownMenuItem onClick={() => onSelectTool?.('nmf-weights')} className="relative">
                         <BarChart3 className="mr-2 h-4 w-4" />
                         <span className="font-inter text-sm">NMF Weights</span>
+                        {selectedTool === 'nmf-weights' && <div className="absolute right-2 w-2 h-2 bg-primary rounded-full" />}
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => onSelectTool?.('bert-tags')}>
+                      <DropdownMenuItem onClick={() => onSelectTool?.('bert-tags')} className="relative">
                         <Tag className="mr-2 h-4 w-4" />
                         <span className="font-inter text-sm">BERT Tag Similarities</span>
+                        {selectedTool === 'bert-tags' && <div className="absolute right-2 w-2 h-2 bg-primary rounded-full" />}
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => onSelectTool?.('tag-influences')}>
+                      <DropdownMenuItem onClick={() => onSelectTool?.('tag-influences')} className="relative">
                         <TrendingUp className="mr-2 h-4 w-4" />
                         <span className="font-inter text-sm">Tag Influences</span>
+                        {selectedTool === 'tag-influences' && <div className="absolute right-2 w-2 h-2 bg-primary rounded-full" />}
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => onSelectTool?.('aoty-influences')}>
+                      <DropdownMenuItem onClick={() => onSelectTool?.('aoty-influences')} className="relative">
                         <Target className="mr-2 h-4 w-4" />
                         <span className="font-inter text-sm">AOTY Influences</span>
+                        {selectedTool === 'aoty-influences' && <div className="absolute right-2 w-2 h-2 bg-primary rounded-full" />}
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => onSelectTool?.('lastfm-tags')}>
+                      <DropdownMenuItem onClick={() => onSelectTool?.('lastfm-tags')} className="relative">
                         <Activity className="mr-2 h-4 w-4" />
                         <span className="font-inter text-sm">Last.fm Tags</span>
+                        {selectedTool === 'lastfm-tags' && <div className="absolute right-2 w-2 h-2 bg-primary rounded-full" />}
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => onSelectTool?.('music-depth')}>
+                      <DropdownMenuItem onClick={() => onSelectTool?.('music-depth')} className="relative">
                         <Sliders className="mr-2 h-4 w-4" />
                         <span className="font-inter text-sm">Music Depth</span>
+                        {selectedTool === 'music-depth' && <div className="absolute right-2 w-2 h-2 bg-primary rounded-full" />}
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => onSelectTool?.('algorithm-info')}>
+                      <DropdownMenuItem onClick={() => onSelectTool?.('algorithm-info')} className="relative">
                         <Info className="mr-2 h-4 w-4" />
                         <span className="font-inter text-sm">How it works</span>
+                        {selectedTool === 'algorithm-info' && <div className="absolute right-2 w-2 h-2 bg-primary rounded-full" />}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => onSelectTool?.(null)} className="relative">
+                        <X className="mr-2 h-4 w-4" />
+                        <span className="font-inter text-sm">Clear selection</span>
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -439,21 +475,31 @@ export function AgentChat({
             <div className="mt-6 flex flex-wrap gap-3 justify-center">
               <button 
                 onClick={() => handleQuickModuleClick('continue-listening')}
-                className="bg-card hover:bg-card/80 transition-colors rounded-full px-4 py-2 text-sm font-inter font-medium text-foreground border border-border/50"
+                className="bg-card hover:bg-card/80 transition-colors rounded-full px-4 py-2 text-sm font-inter font-medium text-foreground border border-border/50 flex items-center gap-2"
               >
-                Continue Listening / Recently Liked
+                <Clock className="w-4 h-4" />
+                Based on Recent Listening
               </button>
               <button 
                 onClick={() => handleQuickModuleClick('because-you-played')}
-                className="bg-card hover:bg-card/80 transition-colors rounded-full px-4 py-2 text-sm font-inter font-medium text-foreground border border-border/50"
+                className="bg-card hover:bg-card/80 transition-colors rounded-full px-4 py-2 text-sm font-inter font-medium text-foreground border border-border/50 flex items-center gap-2"
               >
-                "Because you played X"
+                <Star className="w-4 h-4" />
+                Highly Rated
               </button>
               <button 
                 onClick={() => handleQuickModuleClick('fresh-for-you')}
-                className="bg-card hover:bg-card/80 transition-colors rounded-full px-4 py-2 text-sm font-inter font-medium text-foreground border border-border/50"
+                className="bg-card hover:bg-card/80 transition-colors rounded-full px-4 py-2 text-sm font-inter font-medium text-foreground border border-border/50 flex items-center gap-2"
               >
+                <Zap className="w-4 h-4" />
                 Fresh for You
+              </button>
+              <button 
+                onClick={() => handleQuickModuleClick('fresh-for-you')}
+                className="bg-card hover:bg-card/80 transition-colors rounded-full px-4 py-2 text-sm font-inter font-medium text-foreground border border-border/50 flex items-center gap-2"
+              >
+                <Plus className="w-4 h-4" />
+                New Playlist
               </button>
             </div>
           )}

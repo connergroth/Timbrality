@@ -21,10 +21,9 @@ interface Album {
 
 export default function ExplorePage() {
   const { user, loading, signOut } = useSupabase()
-  const [isNavigationSidebarOpen, setIsNavigationSidebarOpen] = useState(false)
   const [albums, setAlbums] = useState<Album[]>([])
   const [searchQuery, setSearchQuery] = useState('')
-  const [selectedTool, setSelectedTool] = useState<string | null>(null)
+  const [activeTab, setActiveTab] = useState('for-you')
 
   // Mock data for albums - in production, this would come from your API
   const mockAlbums: Album[] = [
@@ -179,85 +178,111 @@ export default function ExplorePage() {
     album.artist.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
-  const handleToolSelect = (tool: string) => {
-    setSelectedTool(tool)
-    console.log(`Selected tool: ${tool}`)
-  }
 
   return (
     <div className="flex min-h-screen bg-background">
       {/* Navigation Sidebar */}
       <NavigationSidebar 
-        isOpen={isNavigationSidebarOpen}
-        onClose={() => setIsNavigationSidebarOpen(false)}
-        userId={user.id}
+        user={user}
+        onSignOut={signOut}
       />
 
       {/* Main Content */}
-      <div className={`flex-1 flex flex-col transition-all duration-300 ${
-        isNavigationSidebarOpen ? 'ml-80' : 'ml-0'
-      }`}>
+      <div className="flex-1 flex flex-col ml-16">
         <Navbar 
           user={user} 
-          onOpenNavigationSidebar={() => setIsNavigationSidebarOpen(!isNavigationSidebarOpen)}
           onSignOut={signOut}
-          onSelectTool={handleToolSelect}
         />
         
-        <main className="flex-1 px-6 py-6">
-          {/* Search Bar */}
-          <div className="mb-8 max-w-md">
-            <Input
-              type="text"
-              placeholder="Search..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="h-12"
-            />
+        <main className="flex-1 container mx-auto px-4 py-8 max-w-7xl">
+          {/* Header with Tabs and Search */}
+          <div className="flex items-end justify-between mb-8">
+            {/* Navigation Tabs */}
+            <div className="flex-1">
+              <div className="bg-transparent border-b border-border pb-0 h-auto">
+                <div className="flex items-end justify-between">
+                  <div className="flex">
+                    <button 
+                      onClick={() => setActiveTab('for-you')}
+                      className={`bg-transparent px-0 mr-8 pb-3 font-medium transition-colors ${
+                        activeTab === 'for-you' 
+                          ? 'text-foreground border-b-2 border-primary' 
+                          : 'text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      For You
+                    </button>
+                    <button 
+                      onClick={() => setActiveTab('top-rated')}
+                      className={`bg-transparent px-0 mr-8 pb-3 font-medium transition-colors ${
+                        activeTab === 'top-rated' 
+                          ? 'text-foreground border-b-2 border-primary' 
+                          : 'text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      Top Rated
+                    </button>
+                    <button 
+                      onClick={() => setActiveTab('new')}
+                      className={`bg-transparent px-0 mr-8 pb-3 font-medium transition-colors ${
+                        activeTab === 'new' 
+                          ? 'text-foreground border-b-2 border-primary' 
+                          : 'text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      New
+                    </button>
+                    <button 
+                      onClick={() => setActiveTab('trending')}
+                      className={`bg-transparent px-0 mr-8 pb-3 font-medium transition-colors ${
+                        activeTab === 'trending' 
+                          ? 'text-foreground border-b-2 border-primary' 
+                          : 'text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      Trending
+                    </button>
+                    <button 
+                      onClick={() => setActiveTab('mood')}
+                      className={`bg-transparent px-0 mr-8 pb-3 font-medium transition-colors ${
+                        activeTab === 'mood' 
+                          ? 'text-foreground border-b-2 border-primary' 
+                          : 'text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      By Mood/Tag
+                    </button>
+                    <button 
+                      onClick={() => setActiveTab('decade')}
+                      className={`bg-transparent px-0 pb-3 font-medium transition-colors ${
+                        activeTab === 'decade' 
+                          ? 'text-foreground border-b-2 border-primary' 
+                          : 'text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      By Decade/Genre
+                    </button>
+                  </div>
+                  
+                  {/* Search Bar */}
+                  <div className="pb-3">
+                    <Input
+                      type="text"
+                      placeholder="Search albums or artists..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-80 h-10 rounded-full pl-4 pr-4 bg-card border border-border/50 focus:ring-0 focus:outline-none focus-visible:ring-0 focus-visible:outline-none focus:ring-offset-0 focus-visible:ring-offset-0 outline-none transition-colors text-sm font-inter placeholder:text-muted-foreground"
+                      style={{ outline: 'none', boxShadow: 'none' }}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* Navigation Tabs */}
-          <Tabs defaultValue="for-you" className="w-full">
-            <TabsList className="bg-transparent border-b border-border mb-8 p-0 h-auto">
-              <TabsTrigger 
-                value="for-you" 
-                className="bg-transparent text-foreground data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-0 mr-8 pb-3 font-medium"
-              >
-                For You
-              </TabsTrigger>
-              <TabsTrigger 
-                value="top-rated" 
-                className="bg-transparent text-muted-foreground data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-0 mr-8 pb-3 font-medium"
-              >
-                Top Rated
-              </TabsTrigger>
-              <TabsTrigger 
-                value="new" 
-                className="bg-transparent text-muted-foreground data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-0 mr-8 pb-3 font-medium"
-              >
-                New
-              </TabsTrigger>
-              <TabsTrigger 
-                value="trending" 
-                className="bg-transparent text-muted-foreground data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-0 mr-8 pb-3 font-medium"
-              >
-                Trending
-              </TabsTrigger>
-              <TabsTrigger 
-                value="mood" 
-                className="bg-transparent text-muted-foreground data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-0 mr-8 pb-3 font-medium"
-              >
-                By Mood/Tag
-              </TabsTrigger>
-              <TabsTrigger 
-                value="decade" 
-                className="bg-transparent text-muted-foreground data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-0 pb-3 font-medium"
-              >
-                By Decade/Genre
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="for-you">
+          {/* Content Area */}
+          <div className="w-full">
+            {activeTab === 'for-you' && (
               <div className="mb-6">
                 <h2 className="text-xl font-semibold text-foreground mb-6">Recommended for You</h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
@@ -290,9 +315,9 @@ export default function ExplorePage() {
                   ))}
                 </div>
               </div>
-            </TabsContent>
+            )}
 
-            <TabsContent value="top-rated">
+            {activeTab === 'top-rated' && (
               <div className="mb-6">
                 <h2 className="text-xl font-semibold text-foreground mb-6">Top Rated Albums</h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
@@ -327,9 +352,9 @@ export default function ExplorePage() {
                     ))}
                 </div>
               </div>
-            </TabsContent>
+            )}
 
-            <TabsContent value="new">
+            {activeTab === 'new' && (
               <div className="mb-6">
                 <h2 className="text-xl font-semibold text-foreground mb-6">New Releases</h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
@@ -364,9 +389,9 @@ export default function ExplorePage() {
                     ))}
                 </div>
               </div>
-            </TabsContent>
+            )}
 
-            <TabsContent value="trending">
+            {activeTab === 'trending' && (
               <div className="mb-6">
                 <h2 className="text-xl font-semibold text-foreground mb-6">Trending Now</h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
@@ -402,9 +427,9 @@ export default function ExplorePage() {
                     ))}
                 </div>
               </div>
-            </TabsContent>
+            )}
 
-            <TabsContent value="mood">
+            {activeTab === 'mood' && (
               <div className="mb-6">
                 <h2 className="text-xl font-semibold text-foreground mb-6">Browse by Mood & Tag</h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
@@ -442,9 +467,9 @@ export default function ExplorePage() {
                     ))}
                 </div>
               </div>
-            </TabsContent>
+            )}
 
-            <TabsContent value="decade">
+            {activeTab === 'decade' && (
               <div className="mb-6">
                 <h2 className="text-xl font-semibold text-foreground mb-6">Browse by Decade & Genre</h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
@@ -486,8 +511,8 @@ export default function ExplorePage() {
                     ))}
                 </div>
               </div>
-            </TabsContent>
-          </Tabs>
+            )}
+          </div>
         </main>
       </div>
     </div>

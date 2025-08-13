@@ -12,6 +12,7 @@ from ..models import (
     ProfileUserReview,
     UserProfile,
     BuyLink,
+    Artist,
 )
 from fastapi import HTTPException
 
@@ -69,9 +70,21 @@ def parse_tracks(soup: BeautifulSoup) -> list[Track]:
         title = row.select_one(".trackTitle a").text
         length = row.select_one(".length").text if row.select_one(".length") else ""
         rating = None
+        num_ratings = 0
 
         if rating_elem := row.select_one(".trackRating span"):
             rating = int(rating_elem.text)
+            
+            # Extract number of ratings from title attribute
+            # Format: title="3187 Ratings"
+            title_attr = rating_elem.get("title", "")
+            if title_attr and "Ratings" in title_attr:
+                try:
+                    # Extract number from "3187 Ratings" format
+                    rating_text = title_attr.replace("Ratings", "").strip()
+                    num_ratings = parse_number(rating_text)
+                except (ValueError, AttributeError):
+                    pass
 
         featured_artists = []
         if featured_elem := row.select_one(".featuredArtists"):
@@ -83,6 +96,7 @@ def parse_tracks(soup: BeautifulSoup) -> list[Track]:
                 title=title,
                 length=length,
                 rating=rating,
+                num_ratings=num_ratings,
                 featured_artists=featured_artists,
             )
         )
@@ -116,8 +130,102 @@ def parse_critic_reviews(soup: BeautifulSoup) -> list[CriticReview]:
     return reviews
 
 
+async def parse_user_reviews_full(album_url: str) -> list[AlbumUserReview]:
+    """Extract popular user reviews by fetching the full popular reviews page."""
+    all_reviews = []
+    
+    try:
+        # Construct the user reviews URL
+        # AOTY URL pattern: /album/{id}-{artist}-{name}/user-reviews/
+        if album_url.endswith('/'):
+            album_url = album_url[:-1]  # Remove trailing slash
+        popular_reviews_url = f"{album_url}/user-reviews/"
+        
+        # Fetch the popular reviews page
+        response_text = await asyncio.to_thread(
+            lambda: scraper.get(popular_reviews_url, headers=HEADERS).text
+        )
+        soup = BeautifulSoup(response_text, "html.parser")
+        
+        # Extract all reviews from the popular reviews page
+        for review in soup.select(".albumReviewRow"):
+            try:
+                author = review.select_one(".userReviewName a").text
+                rating = None
+
+                if rating_elem := review.select_one(".rating"):
+                    if rating_elem.text != "NR":
+                        rating = int(rating_elem.text)
+
+                text = review.select_one(".albumReviewText").text.strip()
+                likes = 0
+
+                if likes_elem := review.select_one(".review_likes"):
+                    # Try to get from <a> element first (some pages), then direct text
+                    if link_elem := likes_elem.select_one("a"):
+                        likes = int(link_elem.text)
+                    else:
+                        likes = int(likes_elem.text.strip())
+
+                # Skip very short reviews (likely spam/jokes)
+                if len(text.split()) < 5:  # Less than 5 words
+                    continue
+                    
+                all_reviews.append(
+                    AlbumUserReview(
+                        author=author,
+                        rating=rating,
+                        text=text[:2500],  # Truncate very long reviews at 2500 chars
+                        likes=likes,
+                    )
+                )
+            except (AttributeError, ValueError):
+                continue
+
+    except Exception as e:
+        # Fallback to regular review parsing if popular reviews page fails
+        return []
+
+    # Apply mixed selection strategy with all 25 popular reviews
+    selected_reviews = []
+    seen_authors = set()
+    
+    # 1. Top 5 by likes (most popular)
+    by_likes = sorted(all_reviews, key=lambda x: x.likes, reverse=True)
+    for review in by_likes[:5]:
+        if review.author not in seen_authors:
+            selected_reviews.append(review)
+            seen_authors.add(review.author)
+    
+    # 2. Top 5 by length (detailed reviews)  
+    # Filter for substantial reviews (30+ words) with decent engagement
+    detailed_reviews = [r for r in all_reviews 
+                       if len(r.text.split()) >= 30 and r.likes >= 5]
+    by_length = sorted(detailed_reviews, key=lambda x: len(x.text), reverse=True)
+    
+    for review in by_length[:5]:
+        if review.author not in seen_authors and len(selected_reviews) < 10:
+            selected_reviews.append(review)
+            seen_authors.add(review.author)
+    
+    # 3. Fill remaining slots with highest quality remaining reviews
+    remaining = [r for r in all_reviews if r.author not in seen_authors]
+    # Sort by combined score: likes + length bonus
+    remaining_scored = sorted(remaining, 
+                            key=lambda x: x.likes + (len(x.text.split()) / 10), 
+                            reverse=True)
+    
+    for review in remaining_scored:
+        if len(selected_reviews) >= 10:
+            break
+        selected_reviews.append(review)
+        seen_authors.add(review.author)
+
+    return selected_reviews
+
+
 def parse_user_reviews(soup: BeautifulSoup, section_id: str) -> list[AlbumUserReview]:
-    """Extract user reviews from the album page."""
+    """Fallback function for basic review parsing (kept for compatibility)."""
     reviews = []
     for review in soup.select(f"#{section_id} .albumReviewRow"):
         try:
@@ -131,21 +239,28 @@ def parse_user_reviews(soup: BeautifulSoup, section_id: str) -> list[AlbumUserRe
             text = review.select_one(".albumReviewText").text.strip()
             likes = 0
 
-            if likes_elem := review.select_one(".review_likes a"):
-                likes = int(likes_elem.text)
+            if likes_elem := review.select_one(".review_likes"):
+                # Try to get from <a> element first (some pages), then direct text
+                if link_elem := likes_elem.select_one("a"):
+                    likes = int(link_elem.text)
+                else:
+                    likes = int(likes_elem.text.strip())
 
+            if len(text.split()) < 5:  # Skip very short reviews
+                continue
+                
             reviews.append(
                 AlbumUserReview(
                     author=author,
                     rating=rating,
-                    text=text,
+                    text=text[:2500],
                     likes=likes,
                 )
             )
         except (AttributeError, ValueError):
             continue
 
-    return reviews
+    return reviews[:10]  # Limit to 10 reviews
 
 
 def parse_buy_links(soup: BeautifulSoup) -> list[BuyLink]:
@@ -179,9 +294,10 @@ async def scrape_album(url: str, artist: str, title: str) -> Album:
                 pass
 
         num_ratings = 0
-        if ratings_elem := soup.select_one(".numReviews strong"):
+        # Look for user ratings link pattern: <a href="...user-reviews/?type=ratings"><strong>10,522</strong>&nbsp;ratings</a>
+        if ratings_elem := soup.select_one('a[href*="user-reviews/?type=ratings"] strong'):
             try:
-                num_ratings = int(ratings_elem.text)
+                num_ratings = parse_number(ratings_elem.text)
             except ValueError:
                 pass
 
@@ -189,16 +305,19 @@ async def scrape_album(url: str, artist: str, title: str) -> Album:
         critic_reviews_task = asyncio.create_task(
             asyncio.to_thread(parse_critic_reviews, soup)
         )
-        popular_reviews_task = asyncio.create_task(
-            asyncio.to_thread(parse_user_reviews, soup, "users")
-        )
         buy_links_task = asyncio.create_task(asyncio.to_thread(parse_buy_links, soup))
+        
+        # Try to get full popular reviews, fallback to basic parsing
+        try:
+            popular_reviews = await parse_user_reviews_full(url)
+        except Exception:
+            # Fallback to basic review parsing
+            popular_reviews = await asyncio.to_thread(parse_user_reviews, soup, "users")
 
         # wait for all parsing tasks to complete
-        tracks, critic_reviews, popular_reviews, buy_links = await asyncio.gather(
+        tracks, critic_reviews, buy_links = await asyncio.gather(
             tracks_task,
             critic_reviews_task,
-            popular_reviews_task,
             buy_links_task,
         )
 
@@ -402,4 +521,95 @@ async def get_user_profile(username: str) -> Optional[UserProfile]:
     except Exception as e:
         raise HTTPException(
             status_code=503, detail=f"Error accessing user profile: {str(e)}"
+        )
+
+
+async def get_artist_url(artist_name: str) -> Optional[str]:
+    """
+    Search for an artist and return their AOTY URL.
+    """
+    search_query = urllib.parse.quote(artist_name)
+    url = f"{BASE_URL}/search/artists/?q={search_query}"
+
+    try:
+        response_text = await asyncio.to_thread(
+            lambda: scraper.get(url, headers=HEADERS).text
+        )
+
+        soup = BeautifulSoup(response_text, "html.parser")
+
+        if artist_block := soup.select_one(".artistBlock"):
+            if artist_link := artist_block.select_one("a"):
+                return f"{BASE_URL}{artist_link['href']}"
+    except Exception as e:
+        raise HTTPException(
+            status_code=503, detail=f"Error accessing artist search: {str(e)}"
+        )
+
+    return None
+
+
+async def scrape_artist(url: str, name: str) -> Artist:
+    """
+    Scrape artist information from albumoftheyear.org.
+    """
+    try:
+        response_text = await asyncio.to_thread(
+            lambda: scraper.get(url, headers=HEADERS).text
+        )
+
+        soup = BeautifulSoup(response_text, "html.parser")
+
+        user_score = None
+        if score_elem := soup.select_one(".artistUserScore"):
+            try:
+                user_score = float(score_elem.text.strip())
+            except (ValueError, TypeError):
+                pass
+
+        num_ratings = 0
+        # Extract number of ratings using pattern: <div class="text">Based on <strong>177,497</strong>&nbsp;ratings</div>
+        text_divs = soup.select(".text")
+        for text_elem in text_divs:
+            if "ratings" in text_elem.text and "Based on" in text_elem.text:
+                try:
+                    if strong_elem := text_elem.select_one("strong"):
+                        num_ratings = parse_number(strong_elem.text.strip())
+                        break
+                except (ValueError, AttributeError):
+                    continue
+
+        # Extract genre
+        genre = None
+        if genre_elem := soup.select_one(".artistGenre"):
+            genre = genre_elem.text.strip()
+
+        # Extract formed date
+        formed = None
+        if formed_elem := soup.select_one(".artistFormed"):
+            formed = formed_elem.text.strip()
+
+        # Extract location
+        location = None
+        if location_elem := soup.select_one(".artistLocation"):
+            location = location_elem.text.strip()
+
+        # Extract album titles
+        albums = []
+        for album_elem in soup.select(".albumBlock .albumTitle"):
+            albums.append(album_elem.text.strip())
+
+        return Artist(
+            name=name,
+            user_score=user_score,
+            num_ratings=num_ratings,
+            genre=genre,
+            formed=formed,
+            location=location,
+            albums=albums,
+        )
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=503, detail=f"Error accessing artist page: {str(e)}"
         )

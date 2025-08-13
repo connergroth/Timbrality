@@ -30,7 +30,7 @@ Timbrality is an intelligent music recommendation platform that combines data fr
   FastAPI-powered backend with multi-tier caching (Redis + in-memory), rate limiting, and async processing.
 
 - **📊 Rich Music Metadata**  
-  Enhanced with AOTY ratings, reviews, tags, and similar album data through custom web scraping pipeline.
+  Enhanced with AOTY ratings, reviews, tags, and similar album data through sophisticated CloudScraper-based pipeline with rating count extraction.
 
 ---
 
@@ -40,7 +40,7 @@ Timbrality is an intelligent music recommendation platform that combines data fr
 - **Multi-tier caching**: Redis primary + in-memory fallback
 - **Rate limiting**: 30 requests/minute via SlowAPI  
 - **Database**: PostgreSQL with SQLAlchemy ORM and Alembic migrations
-- **Web scraping**: Playwright browser automation for AOTY data
+- **Web scraping**: CloudScraper with async processing for comprehensive AOTY data extraction
 - **AI Agent**: NLP processor with tool registry for music recommendations
 
 ### ML Service (Timbral Engine)
@@ -71,14 +71,14 @@ Timbrality is an intelligent music recommendation platform that combines data fr
 - **FastAPI** – Async Python web framework with automatic OpenAPI docs
 - **PostgreSQL + SQLAlchemy** – Relational database with async ORM
 - **Redis** – High-performance caching layer
-- **Playwright** – Browser automation for AOTY web scraping
+- **CloudScraper** – Advanced web scraping with anti-bot protection bypass for AOTY data
 - **Pydantic** – Data validation and serialization
 
 ### 📊 Data Sources & APIs
 
 - **Spotify Web API** – User listening data, playlists, and audio features
 - **Last.fm API** – Scrobbling data and music discovery
-- **AOTY Custom Scraper** – Album ratings, reviews, and metadata
+- **AOTY Custom Scraper** – Album ratings, reviews, rating counts, and comprehensive metadata
 - **Supabase** – Authentication and user management
 
 ### 🤖 AI & Machine Learning
@@ -111,6 +111,112 @@ Timbrality is an intelligent music recommendation platform that combines data fr
 - Weighted blending of CF + CBF scores
 - Tunable or learnable fusion logic
 - Produces rich, explainable recs per user or seed
+
+---
+
+## AOTY Data Scraper
+
+Timbrality includes a sophisticated web scraper that extracts rich music metadata from **Album of the Year (AOTY)**, one of the most comprehensive music databases available. This custom scraper enhances the platform's recommendation capabilities with detailed album ratings, reviews, and metadata.
+
+### 🎯 What It Scrapes
+
+**Albums:**
+- User scores and rating counts (e.g., "Based on 37,040 ratings")
+- Critic reviews from major publications
+- Popular user reviews with like counts
+- Genre tags and metadata
+- Similar album recommendations
+- "Must Hear" designations
+
+**Artists:**
+- Overall user ratings and rating counts
+- Biography and formation details
+- Geographic location data
+- Complete discography listings
+- Genre classifications
+
+**Tracks:**
+- Individual track ratings and rating counts
+- Track-level metadata and features
+- Featured artist information
+- Track length and positioning data
+
+### 🛠 Technical Implementation
+
+**Web Scraping Engine:**
+- **CloudScraper** for bypassing anti-bot protection
+- **BeautifulSoup** for robust HTML parsing
+- **Async/await** processing for high performance
+- **Custom retry logic** with exponential backoff
+- **Rate limiting** to respect AOTY's servers
+
+**Data Models:**
+```python
+class Album(BaseModel):
+    title: str
+    artist: str
+    user_score: Optional[float]
+    num_ratings: int              
+    tracks: List[Track]
+    critic_reviews: List[CriticReview]
+    popular_reviews: List[AlbumUserReview]
+    
+class Track(BaseModel):
+    title: str
+    rating: Optional[int]
+    num_ratings: int              
+    featured_artists: List[str]
+```
+
+**API Endpoints:**
+```bash
+GET /scraper/album?artist=Radiohead&album=OK+Computer
+GET /scraper/similar?artist=Radiohead&album=OK+Computer
+GET /scraper/artist?name=Radiohead
+```
+
+### 🔄 Data Pipeline Integration
+
+**Automated Population:**
+```bash
+# Add rating count columns to existing tables
+psql $DATABASE_URL -f backend/add_aoty_rating_counts.sql
+
+# Populate rating counts for all entities
+python backend/populate_aoty_rating_counts.py --type all --batch-size 10
+```
+
+**Database Enhancement:**
+- Adds `aoty_num_ratings` columns to albums, artists, and tracks tables
+- Batch processing with configurable limits
+- Resume capability for interrupted runs
+- Error handling and logging for production use
+
+**Caching Strategy:**
+- **Redis caching** for scraped data with configurable TTL
+- **In-memory fallback** when Redis is unavailable
+- **Smart cache keys** based on artist/album combinations
+- **Cache warming** for popular albums and artists
+
+### 🎵 Use Cases
+
+**Recommendation Enhancement:**
+- Weight recommendations by AOTY rating popularity
+- Surface critically acclaimed but undiscovered albums
+- Filter by minimum rating thresholds
+- Include review-based reasoning in AI responses
+
+**Music Discovery:**
+- "Similar Albums" recommendations from AOTY's algorithm
+- Genre-based exploration using AOTY's tagging system
+- Critical consensus analysis for new releases
+- User review sentiment for recommendation explanations
+
+**Data Quality:**
+- Cross-reference Spotify/Last.fm data with AOTY metadata
+- Resolve artist/album name discrepancies
+- Enrich sparse metadata with comprehensive AOTY details
+- Validate music catalog completeness
 
 ---
 

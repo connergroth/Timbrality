@@ -10,6 +10,13 @@ import { AlgorithmSidebar } from '@/components/AlgorithmSidebar'
 import { SoundBar } from '@/components/SoundBar'
 import { VinylShader } from '@/components/VinylShader'
 import type { Track as AgentTrack } from '@/lib/agent'
+import { LandingNavbar } from "@/components/landing/LandingNavbar";
+import { Hero } from "@/components/landing/Hero";
+import { HowItWorks } from "@/components/landing/HowItWorks";
+import { WhyTimbrality } from "@/components/landing/WhyTimbrality";
+import { MusicalDNA } from "@/components/landing/MusicalDNA";
+import { TastePreview } from "@/components/landing/TastePreview";
+import { LandingFooter } from "@/components/landing/LandingFooter";
 
 // Define the track type to fix TypeScript error
 interface Track {
@@ -30,6 +37,7 @@ export default function HomePage() {
   const [isChatActive, setIsChatActive] = useState(false)
   const [selectedTool, setSelectedTool] = useState<string | null>(null)
   const [showMusicDepthSlider, setShowMusicDepthSlider] = useState(false)
+  const [clearChatFunction, setClearChatFunction] = useState<(() => void) | null>(null)
 
   useEffect(() => {
     if (user && !loading) {
@@ -150,11 +158,23 @@ export default function HomePage() {
     setIsChatActive(false)
   }
 
-  const handleToolSelect = (tool: string) => {
+  const handleToolSelect = (tool: string | null) => {
+    // If clicking the same tool, deselect it
+    if (tool === selectedTool) {
+      setSelectedTool(null)
+      if (tool === 'music-depth') {
+        setShowMusicDepthSlider(false)
+      }
+      return
+    }
+    
     setSelectedTool(tool)
     
     if (tool === 'music-depth') {
       setShowMusicDepthSlider(!showMusicDepthSlider)
+    } else if (tool === null) {
+      // Clear selection - hide any active tool UI
+      setShowMusicDepthSlider(false)
     } else {
       // For other tools, you could show a modal or inline component here
       console.log(`Selected tool: ${tool}`)
@@ -163,6 +183,17 @@ export default function HomePage() {
 
   const handleToggleAlgorithmSidebar = () => {
     setIsAlgorithmSidebarOpen(!isAlgorithmSidebarOpen)
+  }
+
+  const handleLogoClick = () => {
+    // Clear chat messages and internal state
+    if (clearChatFunction) {
+      clearChatFunction()
+    }
+    // Reset chat state to return to full home page
+    setIsChatActive(false)
+    setSelectedTool(null)
+    setShowMusicDepthSlider(false)
   }
 
   // Show loading state while checking authentication
@@ -179,20 +210,17 @@ export default function HomePage() {
     )
   }
 
-  // Show auth page if no user
+  // Show landing page if no user
   if (!user) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-inter font-semibold mb-4 tracking-tight">Please sign in to continue</h1>
-          <p className="text-muted-foreground mb-4 font-inter">You need to authenticate to access Timbrality.</p>
-          <button 
-            onClick={() => window.location.href = '/auth'}
-            className="bg-primary text-primary-foreground px-6 py-3 rounded-lg font-inter font-medium hover:bg-primary/90 transition-colors"
-          >
-            Go to Auth Page
-          </button>
-        </div>
+      <div className="min-h-screen">
+        <LandingNavbar />
+        <Hero />
+        <HowItWorks />
+        <WhyTimbrality />
+        <MusicalDNA />
+        <TastePreview />
+        <LandingFooter />
       </div>
     )
   }
@@ -212,6 +240,7 @@ export default function HomePage() {
           onOpenNavigationSidebar={() => setIsNavigationSidebarOpen(!isNavigationSidebarOpen)}
           onSignOut={signOut}
           onToggleAlgorithmSidebar={handleToggleAlgorithmSidebar}
+          onLogoClick={handleLogoClick}
         />
         
         <main className={`flex-1 container mx-auto px-4 py-8 max-w-7xl ${isChatActive ? 'pb-24' : ''}`}>
@@ -267,7 +296,9 @@ export default function HomePage() {
             onClose={isChatActive ? handleCloseChat : undefined}
             user={user}
             onSelectTool={handleToolSelect}
+            selectedTool={selectedTool}
             showMusicDepthSlider={showMusicDepthSlider}
+            onGetClearFunction={setClearChatFunction}
           />
         </main>
       </div>
