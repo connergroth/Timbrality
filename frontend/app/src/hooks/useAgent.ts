@@ -162,10 +162,12 @@ export function useAgent({ userId, onTrackRecommendations, onError }: UseAgentOp
             }
           }
         } catch (error) {
-          updateMessage(agentMessageId, {
-            content: 'Sorry, something went wrong. Please try again.',
-            isStreaming: false,
-          });
+          if (agentMessageId) {
+            updateMessage(agentMessageId, {
+              content: 'Sorry, something went wrong. Please try again.',
+              isStreaming: false,
+            });
+          }
           throw error;
         }
       } else {
@@ -265,17 +267,17 @@ export function useAgent({ userId, onTrackRecommendations, onError }: UseAgentOp
     }
   }, [userId, isLoading, addMessage, onTrackRecommendations, onError]);
 
-  const clearConversation = useCallback(() => {
-    setMessages([]);
-    setSessionId(undefined);
-  }, []);
-
   const cancelRequest = useCallback(() => {
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
       abortControllerRef.current = null;
+      setIsLoading(false);
     }
-    setIsLoading(false);
+  }, []);
+
+  const clearConversation = useCallback(() => {
+    setMessages([]);
+    setSessionId(undefined);
   }, []);
 
   return {
