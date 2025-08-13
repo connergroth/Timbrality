@@ -8,10 +8,11 @@ interface NavbarProps {
   user: User;
   onSignOut: () => Promise<void>;
   onToggleAlgorithmSidebar?: () => void;
+  onOpenNavigationSidebar?: () => void;
   onLogoClick?: () => void;
 }
 
-export function Navbar({ user, onSignOut, onToggleAlgorithmSidebar, onLogoClick }: NavbarProps) {
+export function Navbar({ user, onSignOut, onToggleAlgorithmSidebar, onOpenNavigationSidebar, onLogoClick }: NavbarProps) {
   const router = useRouter();
 
   const handleLogoClick = () => {
