@@ -72,7 +72,7 @@ const config: Config = {
         sm: 'calc(var(--radius) - 4px)',
       },
       keyframes: {
-        accordionDown: {
+        'accordion-down': {
           from: {
             height: '0'
           },
@@ -80,7 +80,7 @@ const config: Config = {
             height: 'var(--radix-accordion-content-height)'
           }
         },
-        accordionUp: {
+        'accordion-up': {
           from: {
             height: 'var(--radix-accordion-content-height)'
           },
@@ -88,25 +88,25 @@ const config: Config = {
             height: '0'
           }
         },
-        float: {
-          '0%, 10%': { transform: 'translateY(0px)' },
+        'float': {
+          '0%, 100%': { transform: 'translateY(0px)' },
           '50%': { transform: 'translateY(-20px)' }
         },
-        bounceGentle: {
-          '0%, 10%': { transform: 'translateY(0px)' },
+        'bounce-gentle': {
+          '0%, 100%': { transform: 'translateY(0px)' },
           '50%': { transform: 'translateY(-10px)' }
         },
-        drift: {
-          '0%': { transform: 'translateX(-10px) translateY(0px)' },
-          '10%': { transform: 'translateX(10vw) translateY(-50px)' }
+        'drift': {
+          '0%': { transform: 'translateX(-100px) translateY(0px)' },
+          '100%': { transform: 'translateX(100vw) translateY(-50px)' }
         }
       },
       animation: {
-        accordionDown: 'accordion-down 0.2s ease-out',
-        accordionUp: 'accordion-up 0.2s ease-out',
-        float: 'float 3s ease-in-out infinite',
-        bounceGentle: 'bounce-gentle 2s ease-in-out infinite',
-        drift: 'drift 15 linear infinite'
+        'accordion-down': 'accordion-down 0.2s ease-out',
+        'accordion-up': 'accordion-up 0.2s ease-out',
+        'float': 'float 3s ease-in-out infinite',
+        'bounce-gentle': 'bounce-gentle 2s ease-in-out infinite',
+        'drift': 'drift 15s linear infinite'
       }
     },
   },

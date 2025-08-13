@@ -9,8 +9,8 @@ CREATE TABLE public.album_compatibilities (
   user_id_2 uuid NOT NULL,
   CONSTRAINT album_compatibilities_pkey PRIMARY KEY (id),
   CONSTRAINT album_compatibilities_album_id_fkey FOREIGN KEY (album_id) REFERENCES public.albums(id),
-  CONSTRAINT album_compatibilities_user_id_1_fkey FOREIGN KEY (user_id_1) REFERENCES public.users(id),
-  CONSTRAINT album_compatibilities_user_id_2_fkey FOREIGN KEY (user_id_2) REFERENCES public.users(id)
+  CONSTRAINT album_compatibilities_user_id_2_fkey FOREIGN KEY (user_id_2) REFERENCES public.users(id),
+  CONSTRAINT album_compatibilities_user_id_1_fkey FOREIGN KEY (user_id_1) REFERENCES public.users(id)
 );
 CREATE TABLE public.albums (
   id character varying NOT NULL,
@@ -27,6 +27,7 @@ CREATE TABLE public.albums (
   explicit boolean DEFAULT false,
   created_at timestamp without time zone DEFAULT now(),
   updated_at timestamp without time zone DEFAULT now(),
+  aoty_num_ratings integer DEFAULT 0,
   CONSTRAINT albums_pkey PRIMARY KEY (id)
 );
 CREATE TABLE public.alembic_version (
@@ -45,6 +46,18 @@ CREATE TABLE public.aoty_attrs (
   CONSTRAINT aoty_attrs_pkey PRIMARY KEY (song_id),
   CONSTRAINT aoty_attrs_song_id_fkey FOREIGN KEY (song_id) REFERENCES public.tracks(id)
 );
+CREATE TABLE public.aoty_user_reviews (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  album_id character varying,
+  username character varying NOT NULL,
+  rating integer,
+  review_text text NOT NULL,
+  likes_count integer DEFAULT 0,
+  created_at timestamp without time zone DEFAULT now(),
+  updated_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT aoty_user_reviews_pkey PRIMARY KEY (id),
+  CONSTRAINT aoty_user_reviews_album_id_fkey FOREIGN KEY (album_id) REFERENCES public.albums(id)
+);
 CREATE TABLE public.artist_compatibilities (
   id character varying NOT NULL,
   artist_id character varying NOT NULL,
@@ -62,6 +75,7 @@ CREATE TABLE public.artists (
   genre character varying,
   popularity integer,
   aoty_score integer,
+  aoty_num_ratings integer DEFAULT 0,
   CONSTRAINT artists_pkey PRIMARY KEY (id)
 );
 CREATE TABLE public.collaborative_recommendations (
@@ -74,8 +88,8 @@ CREATE TABLE public.collaborative_recommendations (
   reason text,
   created_at timestamp without time zone DEFAULT now(),
   CONSTRAINT collaborative_recommendations_pkey PRIMARY KEY (id),
-  CONSTRAINT collaborative_recommendations_target_user_id_fkey FOREIGN KEY (target_user_id) REFERENCES public.lastfm_users(id),
-  CONSTRAINT collaborative_recommendations_track_id_fkey FOREIGN KEY (track_id) REFERENCES public.tracks(id)
+  CONSTRAINT collaborative_recommendations_track_id_fkey FOREIGN KEY (track_id) REFERENCES public.tracks(id),
+  CONSTRAINT collaborative_recommendations_target_user_id_fkey FOREIGN KEY (target_user_id) REFERENCES public.lastfm_users(id)
 );
 CREATE TABLE public.compatibilities (
   id character varying NOT NULL,
@@ -143,9 +157,9 @@ CREATE TABLE public.recommendations (
   recommendation_score integer NOT NULL,
   user_id uuid NOT NULL,
   CONSTRAINT recommendations_pkey PRIMARY KEY (id),
-  CONSTRAINT recommendations_album_fkey FOREIGN KEY (album) REFERENCES public.albums(id),
   CONSTRAINT recommendations_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id),
-  CONSTRAINT recommendations_track_id_fkey FOREIGN KEY (track_id) REFERENCES public.tracks(id)
+  CONSTRAINT recommendations_track_id_fkey FOREIGN KEY (track_id) REFERENCES public.tracks(id),
+  CONSTRAINT recommendations_album_fkey FOREIGN KEY (album) REFERENCES public.albums(id)
 );
 CREATE TABLE public.spotify_attrs (
   song_id character varying NOT NULL,
@@ -168,9 +182,9 @@ CREATE TABLE public.track_compatibilities (
   user_id_1 uuid NOT NULL,
   user_id_2 uuid NOT NULL,
   CONSTRAINT track_compatibilities_pkey PRIMARY KEY (id),
+  CONSTRAINT track_compatibilities_track_id_fkey FOREIGN KEY (track_id) REFERENCES public.tracks(id),
   CONSTRAINT track_compatibilities_user_id_2_fkey FOREIGN KEY (user_id_2) REFERENCES public.users(id),
-  CONSTRAINT track_compatibilities_user_id_1_fkey FOREIGN KEY (user_id_1) REFERENCES public.users(id),
-  CONSTRAINT track_compatibilities_track_id_fkey FOREIGN KEY (track_id) REFERENCES public.tracks(id)
+  CONSTRAINT track_compatibilities_user_id_1_fkey FOREIGN KEY (user_id_1) REFERENCES public.users(id)
 );
 CREATE TABLE public.track_listening_histories (
   id character varying NOT NULL,
@@ -178,8 +192,8 @@ CREATE TABLE public.track_listening_histories (
   play_count integer NOT NULL,
   user_id uuid NOT NULL,
   CONSTRAINT track_listening_histories_pkey PRIMARY KEY (id),
-  CONSTRAINT track_listening_histories_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id),
-  CONSTRAINT track_listening_histories_track_id_fkey FOREIGN KEY (track_id) REFERENCES public.tracks(id)
+  CONSTRAINT track_listening_histories_track_id_fkey FOREIGN KEY (track_id) REFERENCES public.tracks(id),
+  CONSTRAINT track_listening_histories_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id)
 );
 CREATE TABLE public.track_ml_features (
   track_id character varying NOT NULL,
@@ -203,7 +217,6 @@ CREATE TABLE public.tracks (
   title character varying NOT NULL,
   artist character varying NOT NULL,
   album character varying,
-  genre character varying,
   popularity integer,
   aoty_score real,
   cover_url character varying,
@@ -212,21 +225,18 @@ CREATE TABLE public.tracks (
   genres ARRAY DEFAULT '{}'::text[],
   moods ARRAY DEFAULT '{}'::text[],
   spotify_url text,
-  explicit boolean DEFAULT false,
+  explicit boolean,
   track_number integer,
   album_total_tracks integer,
   created_at timestamp without time zone DEFAULT now(),
   updated_at timestamp without time zone DEFAULT now(),
-  canonical_id text UNIQUE,
-  isrc text,
   spotify_id text,
-  mb_recording_id uuid UNIQUE,
-  mb_release_id uuid,
   pred_energy real,
   pred_valence real,
   mood_confidence real CHECK (mood_confidence >= 0::double precision AND mood_confidence <= 1::double precision),
   track_vector USER-DEFINED,
   data_source_mask smallint DEFAULT 0,
+  aoty_num_ratings integer DEFAULT 0,
   CONSTRAINT tracks_pkey PRIMARY KEY (id)
 );
 CREATE TABLE public.tracks_backup (
@@ -283,8 +293,8 @@ CREATE TABLE public.user_similarities (
   shared_artists_count integer DEFAULT 0,
   calculated_at timestamp without time zone DEFAULT now(),
   CONSTRAINT user_similarities_pkey PRIMARY KEY (id),
-  CONSTRAINT user_similarities_user_id_1_fkey FOREIGN KEY (user_id_1) REFERENCES public.lastfm_users(id),
-  CONSTRAINT user_similarities_user_id_2_fkey FOREIGN KEY (user_id_2) REFERENCES public.lastfm_users(id)
+  CONSTRAINT user_similarities_user_id_2_fkey FOREIGN KEY (user_id_2) REFERENCES public.lastfm_users(id),
+  CONSTRAINT user_similarities_user_id_1_fkey FOREIGN KEY (user_id_1) REFERENCES public.lastfm_users(id)
 );
 CREATE TABLE public.user_track_interactions (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
@@ -298,8 +308,8 @@ CREATE TABLE public.user_track_interactions (
   created_at timestamp without time zone DEFAULT now(),
   updated_at timestamp without time zone DEFAULT now(),
   CONSTRAINT user_track_interactions_pkey PRIMARY KEY (id),
-  CONSTRAINT user_track_interactions_lastfm_user_id_fkey FOREIGN KEY (lastfm_user_id) REFERENCES public.lastfm_users(id),
-  CONSTRAINT user_track_interactions_track_id_fkey FOREIGN KEY (track_id) REFERENCES public.tracks(id)
+  CONSTRAINT user_track_interactions_track_id_fkey FOREIGN KEY (track_id) REFERENCES public.tracks(id),
+  CONSTRAINT user_track_interactions_lastfm_user_id_fkey FOREIGN KEY (lastfm_user_id) REFERENCES public.lastfm_users(id)
 );
 CREATE TABLE public.users (
   id uuid NOT NULL DEFAULT gen_random_uuid(),

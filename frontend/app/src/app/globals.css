@@ -100,6 +100,29 @@ All colors MUST be HSL.
   }
 }
 
+@layer utilities {
+  .bg-gradient-radial {
+    background: radial-gradient(var(--tw-gradient-stops));
+  }
+  
+  .animate-scroll-left {
+    animation: scroll-left 40s linear infinite;
+  }
+  
+  .pause-animation {
+    animation-play-state: paused;
+  }
+}
+
+@keyframes scroll-left {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 12px;

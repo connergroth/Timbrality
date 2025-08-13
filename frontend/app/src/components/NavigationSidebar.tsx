@@ -20,11 +20,15 @@ import {
 import { forceSpotifyReauth, hasRequiredSpotifyScopes } from "@/lib/spotify-auth"
 
 interface NavigationSidebarProps {
-  user: User
+  user: User | null
   onSignOut: () => Promise<void>
 }
 
 export function NavigationSidebar({ user, onSignOut }: NavigationSidebarProps) {
+  if (!user) {
+    return null;
+  }
+
   const navigationItems = [
     { icon: Home, href: "/", label: "Home" },
     { icon: Search, href: "/explore", label: "Explore" },
@@ -65,12 +69,12 @@ export function NavigationSidebar({ user, onSignOut }: NavigationSidebarProps) {
           <Button
             variant="ghost"
               className="h-9 w-9 p-0 rounded-md outline-none focus:outline-none focus-visible:outline-none active:outline-none ring-0 hover:ring-0 focus:ring-0 focus-visible:ring-0 active:ring-0 ring-offset-0 focus-visible:ring-offset-0 hover:bg-sidebar-accent/40 data-[state=open]:bg-sidebar-accent/60"
-            title={user.email || "Profile"}
+            title={user?.email || "Profile"}
           >
             <Avatar className="h-7 w-7">
-              <AvatarImage src={user.user_metadata?.avatar_url} alt={user.email || "User"} />
+              <AvatarImage src={user?.user_metadata?.avatar_url} alt={user?.email || "User"} />
               <AvatarFallback>
-                {user.email?.charAt(0).toUpperCase() || "U"}
+                {user?.email?.charAt(0).toUpperCase() || "U"}
               </AvatarFallback>
             </Avatar>
           </Button>

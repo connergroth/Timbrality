@@ -7,6 +7,7 @@ class Track(BaseModel):
     title: str
     length: str
     rating: Optional[int] = None
+    num_ratings: int = 0
     featured_artists: List[str] = []
 
 
@@ -48,6 +49,16 @@ class Album(BaseModel):
     popular_reviews: List[AlbumUserReview]
     is_must_hear: bool
     buy_links: List[BuyLink] = []
+
+
+class Artist(BaseModel):
+    name: str
+    user_score: Optional[float] = None
+    num_ratings: int = 0
+    genre: Optional[str] = None
+    formed: Optional[str] = None
+    location: Optional[str] = None
+    albums: List[str] = []
 
 
 class UserProfile(BaseModel):
