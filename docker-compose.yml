@@ -1,0 +1,113 @@
+version: '3.8'
+
+services:
+  # Redis for caching (shared across services)
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - timbrality-network
+
+  # Main Timbrality Backend (FastAPI)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD}@db.wupfuagomvpnurlalvlp.supabase.co:5432/postgres
+      - UPSTASH_REDIS_REST_URL=${REDIS_URL}
+      - UPSTASH_REDIS_REST_TOKEN=${REDIS_REST_TOKEN}
+      - SPOTIFY_CLIENT_ID=${SPOTIFY_CLIENT_ID}
+      - SPOTIFY_CLIENT_SECRET=${SPOTIFY_CLIENT_SECRET}
+      - LASTFM_API_KEY=${LASTFM_API_KEY}
+      - LASTFM_API_SECRET=${LASTFM_API_SECRET}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ML_SERVICE_URL=http://ml-service:8001
+    depends_on:
+      redis:
+        condition: service_healthy
+      ml-service:
+        condition: service_started
+    restart: unless-stopped
+    networks:
+      - timbrality-network
+
+  # Timbral ML Service
+  ml-service:
+    build:
+      context: ./ml
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8001"
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL}
+      - SUPABASE_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+      - API_HOST=0.0.0.0
+      - API_PORT=8001
+      - DEBUG=false
+    volumes:
+      - ./ml/data:/app/data
+      - ml_models:/app/models
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - timbrality-network
+
+  # Frontend - Next.js Auth App
+  frontend-auth:
+    build:
+      context: ./frontend/app
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL}
+      - NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+      - NEXT_PUBLIC_AGENT_API_URL=http://backend:8000
+      - SPOTIFY_CLIENT_ID=${SPOTIFY_CLIENT_ID}
+      - SPOTIFY_CLIENT_SECRET=${SPOTIFY_CLIENT_SECRET}
+      - LASTFM_API_KEY=${LASTFM_API_KEY}
+      - LASTFM_API_SECRET=${LASTFM_API_SECRET}
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - timbrality-network
+
+  # Frontend - Main Landing Site
+  frontend-main:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3000"
+    environment:
+      - VITE_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL}
+      - VITE_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+      - VITE_API_URL=http://backend:8000
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - timbrality-network
+
+volumes:
+  redis_data:
+  ml_models:
+
+networks:
+  timbrality-network:
+    driver: bridge
