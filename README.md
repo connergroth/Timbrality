@@ -94,42 +94,6 @@ Timbrality is an intelligent music recommendation platform that combines data fr
 - **BERT Content-Based Filtering** – Semantic understanding of music metadata and genres
 - **Model Explainability** – Built-in recommendation reasoning and explanations
 
-#### AI Agent
-
-Timbrality features an advanced AI agent with **dual-store memory architecture** that combines fast Redis working memory with durable PostgreSQL long-term storage for intelligent, context-aware music recommendations.
-
-**Memory Architecture:**
-
-- **Redis Working Memory** – Sub-millisecond access to recent conversations (last 50-200 turns per chat)
-- **PostgreSQL + pgvector** – Semantic search and long-term memory with embeddings
-- **Context Assembly** – Intelligent retrieval combining recent turns, relevant memories, and user preferences
-- **Background Processing** – Async summarization, fact extraction, and topic analysis
-
-**Agent Capabilities:**
-
-- **Conversational Memory** – Remembers user preferences, music tastes, and conversation context
-- **Semantic Understanding** – Uses Sentence-BERT embeddings for natural language processing
-- **Tool Integration** – Access to music databases, recommendation engines, and analysis tools
-- **Streaming Responses** – Real-time interaction with memory context updates
-- **Automatic Learning** – Extracts user facts, preferences, and music patterns over time
-
-**Memory Features:**
-
-- **Working Memory** – Fast access to recent chat context with configurable TTL (24-72 hours)
-- **Long-term Memory** – Durable storage of important facts, preferences, and conversation summaries
-- **Semantic Search** – Vector similarity search for relevant context using pgvector
-- **Importance Scoring** – Memory prioritization based on user interaction patterns
-- **Topic Tracking** – Automatic extraction and trending of music-related topics
-
-**API Endpoints:**
-
-```bash
-POST /api/agent/chat          # Enhanced chat with memory integration
-POST /api/agent/chat/stream   # Streaming responses with context
-GET  /api/agent/memory/stats  # User memory statistics
-POST /api/agent/memory/process # Trigger background memory processing
-```
-
 ---
 
 ## Model Design
@@ -151,6 +115,44 @@ POST /api/agent/memory/process # Trigger background memory processing
 - Weighted blending of CF + CBF scores
 - Tunable or learnable fusion logic
 - Produces rich, explainable recs per user or seed
+
+---
+
+## AI Agent
+
+Timbrality features an advanced AI agent with **dual-store memory architecture** that combines fast Redis working memory with durable PostgreSQL long-term storage for intelligent, context-aware music recommendations.
+
+### **Memory Architecture:**
+
+- **Redis Working Memory** – Sub-millisecond access to recent conversations (last 50-200 turns per chat)
+- **PostgreSQL + pgvector** – Semantic search and long-term memory with embeddings
+- **Context Assembly** – Intelligent retrieval combining recent turns, relevant memories, and user preferences
+- **Background Processing** – Async summarization, fact extraction, and topic analysis
+
+### **Agent Capabilities:**
+
+- **Conversational Memory** – Remembers user preferences, music tastes, and conversation context
+- **Semantic Understanding** – Uses Sentence-BERT embeddings for natural language processing
+- **Tool Integration** – Access to music databases, recommendation engines, and analysis tools
+- **Streaming Responses** – Real-time interaction with memory context updates
+- **Automatic Learning** – Extracts user facts, preferences, and music patterns over time
+
+### **Memory Features:**
+
+- **Working Memory** – Fast access to recent chat context with configurable TTL (24-72 hours)
+- **Long-term Memory** – Durable storage of important facts, preferences, and conversation summaries
+- **Semantic Search** – Vector similarity search for relevant context using pgvector
+- **Importance Scoring** – Memory prioritization based on user interaction patterns
+- **Topic Tracking** – Automatic extraction and trending of music-related topics
+
+### **API Endpoints:**
+
+```bash
+POST /api/agent/chat          # Enhanced chat with memory integration
+POST /api/agent/chat/stream   # Streaming responses with context
+GET  /api/agent/memory/stats  # User memory statistics
+POST /api/agent/memory/process # Trigger background memory processing
+```
 
 ---
 
