@@ -11,6 +11,10 @@ from .embedding.engine import EmbeddingEngine
 from .llm.service import LLMService
 from .types import IntentType, ToolInput, ToolOutput, ToolChainResult, MockIntent
 
+# Memory system imports
+from services.memory_service import memory_service, ChatTurn
+from services.memory_processor import trigger_conversation_processing, process_and_diversify_recommendations
+
 
 @dataclass
 class AgentContext:
@@ -20,6 +24,11 @@ class AgentContext:
     user_preferences: Dict[str, Any]
     current_mood: Optional[str] = None
     timestamp: datetime = datetime.now()
+    
+    # Enhanced memory fields
+    chat_id: Optional[str] = None
+    assembled_context: Optional[Dict[str, Any]] = None
+    turn_count: int = 0
 
 
 @dataclass
@@ -39,6 +48,7 @@ class TimbreAgent:
     
     Orchestrates natural language understanding, tool selection,
     memory management, and personalized music discovery.
+    Enhanced with dual-store memory system (Redis + PostgreSQL).
     """
     
     def __init__(
@@ -52,6 +62,7 @@ class TimbreAgent:
         self.embedding_engine = embedding_engine
         self.llm_service = llm_service
         self.tool_registry = tool_registry
+        self.turn_counter = {}  # Track turns per chat for processing triggers
         
     async def process_query(
         self, 
@@ -970,3 +981,413 @@ class TimbreAgent:
         }
         
         return validated_track
+    
+    # ===== ENHANCED MEMORY INTEGRATION =====
+    
+    async def process_query_with_memory(
+        self, 
+        user_input: str, 
+        user_id: str,
+        chat_id: Optional[str] = None,
+        session_id: Optional[str] = None,
+        stream_callback=None
+    ) -> AgentResponse:
+        """
+        Enhanced query processing with dual-store memory integration.
+        
+        Args:
+            user_input: Natural language input from user
+            user_id: User identifier
+            chat_id: Chat/conversation identifier
+            session_id: Session identifier (fallback to chat_id)
+            stream_callback: Optional streaming callback
+            
+        Returns:
+            AgentResponse with recommendations and explanations
+        """
+        import uuid
+        
+        # Generate IDs if not provided
+        if not chat_id:
+            chat_id = str(uuid.uuid4())
+        if not session_id:
+            session_id = chat_id
+        
+        # 1. Store user turn in working memory
+        user_turn = ChatTurn(
+            message_type="user",
+            content=user_input,
+            metadata={"source": "chat_interface"},
+            timestamp=datetime.now()
+        )
+        
+        await memory_service.add_chat_turn(user_id, chat_id, user_turn)
+        
+        # 2. Assemble context from both memory stores
+        assembled_context = await memory_service.assemble_context(
+            user_id=user_id,
+            chat_id=chat_id,
+            query=user_input,
+            max_recent_turns=20,
+            max_memories=10
+        )
+        
+        # 3. Build enhanced context for agent
+        enhanced_context = AgentContext(
+            user_id=user_id,
+            session_id=session_id,
+            chat_id=chat_id,
+            conversation_history=assembled_context.get("recent_turns", []),
+            user_preferences=await self._extract_preferences_from_memories(
+                assembled_context.get("relevant_memories", []),
+                user_id
+            ),
+            current_mood=assembled_context.get("scratch_state", {}).get("current_mood"),
+            assembled_context=assembled_context,
+            turn_count=len(assembled_context.get("recent_turns", []))
+        )
+        
+        # 4. Process query using original logic with enhanced context
+        agent_response = await self.process_query(
+            user_input, 
+            enhanced_context, 
+            stream_callback
+        )
+        
+        # 4.5. Apply deduplication and diversity to track recommendations
+        if agent_response.tracks:
+            processed_tracks = await process_and_diversify_recommendations(
+                user_id=user_id,
+                raw_recommendations=agent_response.tracks,
+                diversity_lambda=0.3,
+                max_results=min(10, len(agent_response.tracks))
+            )
+            agent_response.tracks = processed_tracks
+        
+        # 5. Store agent response in working memory
+        agent_turn = ChatTurn(
+            message_type="agent",
+            content=agent_response.content,
+            metadata={
+                "tracks": agent_response.tracks,
+                "tools_used": agent_response.tools_used,
+                "confidence": agent_response.confidence
+            },
+            timestamp=datetime.now()
+        )
+        
+        await memory_service.add_chat_turn(user_id, chat_id, agent_turn)
+        
+        # 6. Update scratch state with any context updates
+        if agent_response.context_updates:
+            await memory_service.update_scratch_state(
+                user_id, chat_id, agent_response.context_updates
+            )
+        
+        # 7. Update recent topics based on conversation
+        await self._update_topics_from_response(user_id, user_input, agent_response)
+        
+        # 8. Track turns and trigger background processing if needed
+        await self._track_and_trigger_processing(user_id, chat_id)
+        
+        # 9. Enhance response with memory metadata
+        agent_response.metadata.update({
+            "chat_id": chat_id,
+            "context_stats": assembled_context.get("context_stats", {}),
+            "memory_insights": await self._generate_memory_insights(assembled_context)
+        })
+        
+        return agent_response
+    
+    async def _extract_preferences_from_memories(
+        self, 
+        memories: List[Dict[str, Any]],
+        user_id: str
+    ) -> Dict[str, Any]:
+        """Extract user preferences from relevant memories and database."""
+        # Get comprehensive taste profile from database
+        taste_profile = await memory_service.get_user_taste_profile(user_id)
+        
+        preferences = {
+            "genres": taste_profile.get("genres", []),
+            "moods": taste_profile.get("moods", []),
+            "artist_affinities": taste_profile.get("artist_affinities", {}),
+            "depth_weight": taste_profile.get("depth_weight", 0.5),
+            "novelty_weight": taste_profile.get("novelty_weight", 0.5),
+            "dislikes": [],
+            "discovery_preferences": {},
+            "recent_tracks": taste_profile.get("recent_tracks", []),
+            "blocked_tracks": taste_profile.get("blocked_tracks", [])
+        }
+        
+        # Enhance with memory-based preferences
+        for memory in memories:
+            if memory["kind"] == "preference":
+                content = memory["content"].lower()
+                
+                # Simple preference extraction
+                if "like" in content or "love" in content:
+                    if any(genre in content for genre in ["pop", "rock", "jazz", "electronic"]):
+                        # Extract genre mentions
+                        for genre in ["pop", "rock", "jazz", "electronic", "hip hop", "classical"]:
+                            if genre in content and genre not in preferences["genres"]:
+                                preferences["genres"].append(genre)
+                
+                elif "dislike" in content or "hate" in content:
+                    preferences["dislikes"].append(content[:100])
+            
+            elif memory["kind"] == "fact":
+                # Extract factual preferences
+                content = memory["content"]
+                preferences["discovery_preferences"]["last_updated"] = memory.get("created_at")
+        
+        return preferences
+    
+    async def _update_topics_from_response(
+        self, 
+        user_id: str, 
+        user_input: str, 
+        response: AgentResponse
+    ):
+        """Update recent topics based on user input and agent response."""
+        topics_to_update = []
+        
+        # Extract topics from user input
+        user_topics = await self._extract_topics_from_text(user_input)
+        topics_to_update.extend(user_topics)
+        
+        # Extract topics from recommended tracks
+        for track in response.tracks:
+            if "genre" in track:
+                topics_to_update.append(track["genre"])
+            if "artist" in track:
+                topics_to_update.append(f"artist:{track['artist']}")
+        
+        # Update topics in Redis
+        current_score = datetime.now().timestamp()
+        for topic in topics_to_update:
+            await memory_service.update_recent_topics(user_id, topic, current_score)
+    
+    async def _extract_topics_from_text(self, text: str) -> List[str]:
+        """Extract music-related topics from text."""
+        topics = []
+        text_lower = text.lower()
+        
+        # Music genre keywords
+        genres = [
+            "pop", "rock", "jazz", "classical", "hip hop", "r&b", "soul", "funk",
+            "electronic", "ambient", "house", "techno", "drum and bass",
+            "indie", "alternative", "punk", "metal", "country", "folk",
+            "reggae", "blues", "disco", "new wave", "shoegaze", "dream pop"
+        ]
+        
+        for genre in genres:
+            if genre in text_lower:
+                topics.append(genre)
+        
+        # Mood keywords
+        moods = ["chill", "upbeat", "sad", "happy", "energetic", "relaxing", "dark", "bright"]
+        for mood in moods:
+            if mood in text_lower:
+                topics.append(f"mood:{mood}")
+        
+        return topics
+    
+    async def _track_and_trigger_processing(self, user_id: str, chat_id: str):
+        """Track conversation turns and trigger background processing when needed."""
+        # Track turn count for this chat
+        chat_key = f"{user_id}:{chat_id}"
+        self.turn_counter[chat_key] = self.turn_counter.get(chat_key, 0) + 1
+        
+        # Trigger processing every 10 turns
+        if self.turn_counter[chat_key] % 10 == 0:
+            await trigger_conversation_processing(user_id, chat_id)
+        
+        # Trigger preference learning every 25 turns
+        if self.turn_counter[chat_key] % 25 == 0:
+            from services.memory_processor import memory_processor
+            await memory_processor.queue_preference_learning(user_id)
+    
+    async def _generate_memory_insights(
+        self, 
+        assembled_context: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Generate insights about the user's memory and conversation patterns."""
+        insights = {}
+        
+        # Context statistics
+        stats = assembled_context.get("context_stats", {})
+        insights["context_quality"] = {
+            "recent_turns": stats.get("recent_turn_count", 0),
+            "relevant_memories": stats.get("memory_count", 0),
+            "avg_memory_relevance": round(stats.get("avg_memory_similarity", 0), 3)
+        }
+        
+        # Memory patterns
+        memories = assembled_context.get("relevant_memories", [])
+        if memories:
+            memory_kinds = {}
+            for memory in memories:
+                kind = memory["kind"]
+                memory_kinds[kind] = memory_kinds.get(kind, 0) + 1
+            
+            insights["memory_patterns"] = memory_kinds
+        
+        # Topic diversity
+        topics = assembled_context.get("recent_topics", [])
+        insights["topic_diversity"] = {
+            "total_topics": len(topics),
+            "top_topics": topics[:5]
+        }
+        
+        return insights
+    
+    async def clear_chat_memory(self, user_id: str, chat_id: str):
+        """Clear working memory for a specific chat."""
+        await memory_service.clear_session_memory(user_id, chat_id)
+        
+        # Reset turn counter
+        chat_key = f"{user_id}:{chat_id}"
+        if chat_key in self.turn_counter:
+            del self.turn_counter[chat_key]
+    
+    async def get_chat_summary(self, user_id: str, chat_id: str) -> Optional[str]:
+        """Get a summary of the chat conversation."""
+        try:
+            # Get memories related to this chat
+            memories = await memory_service.retrieve_memories(
+                query="conversation summary",
+                user_id=user_id,
+                chat_id=chat_id,
+                match_count=1
+            )
+            
+            # Find the most recent summary
+            summaries = [m for m in memories if m.kind == "summary"]
+            if summaries:
+                return summaries[0].content
+            
+            # If no summary exists, create one from recent turns
+            recent_turns = await memory_service.get_recent_turns(user_id, chat_id, limit=20)
+            if len(recent_turns) >= 5:
+                summary = await memory_service.create_conversation_summary(
+                    user_id, chat_id, window_size=len(recent_turns)
+                )
+                return summary.content if summary else None
+            
+        except Exception as e:
+            print(f"Error getting chat summary: {e}")
+        
+        return None
+    
+    async def get_user_memory_stats(self, user_id: str) -> Dict[str, Any]:
+        """Get comprehensive memory statistics for a user."""
+        try:
+            # Get recent topics
+            topics = await memory_service.get_recent_topics(user_id)
+            
+            # Get turn counts for active chats
+            active_chats = {}
+            for chat_key, count in self.turn_counter.items():
+                if chat_key.startswith(f"{user_id}:"):
+                    chat_id = chat_key.split(":", 1)[1]
+                    active_chats[chat_id] = count
+            
+            return {
+                "recent_topics": topics[:10],
+                "active_chats": active_chats,
+                "total_active_chats": len(active_chats),
+                "total_turns_tracked": sum(active_chats.values())
+            }
+            
+        except Exception as e:
+            print(f"Error getting user memory stats: {e}")
+            return {}
+    
+    async def get_user_recommendation_stats(self, user_id: str) -> Dict[str, Any]:
+        """Get user recommendation statistics and patterns."""
+        try:
+            from datetime import timedelta
+            
+            # Get recent recommendation events
+            recent_recs = await memory_service.get_recent_recommendations(
+                user_id, days=30, limit=100
+            )
+            
+            # Get user preferences
+            prefs = await memory_service.get_cached_user_preferences(user_id)
+            
+            # Calculate stats
+            stats = {
+                "total_recommendations": len(recent_recs),
+                "recommendations_last_week": len([
+                    r for r in recent_recs 
+                    if r.created_at and r.created_at > datetime.now() - timedelta(days=7)
+                ]),
+                "unique_tracks": len(set(r.item_id for r in recent_recs)),
+                "recommendation_reasons": {},
+                "user_preferences": {
+                    "depth_weight": prefs.depth_weight if prefs else 0.5,
+                    "novelty_weight": prefs.novelty_weight if prefs else 0.5,
+                    "top_genres": prefs.top_genres if prefs else [],
+                    "top_moods": prefs.top_moods if prefs else []
+                }
+            }
+            
+            # Count recommendation reasons
+            for rec in recent_recs:
+                reason = rec.reason or "unknown"
+                stats["recommendation_reasons"][reason] = stats["recommendation_reasons"].get(reason, 0) + 1
+            
+            return stats
+            
+        except Exception as e:
+            print(f"Error getting recommendation stats: {e}")
+            return {}
+    
+    async def update_user_preference_weights(
+        self,
+        user_id: str,
+        depth_weight: Optional[float] = None,
+        novelty_weight: Optional[float] = None
+    ) -> bool:
+        """Update user preference weights based on feedback."""
+        try:
+            success = await memory_service.update_user_preferences(
+                user_id=user_id,
+                depth_weight=depth_weight,
+                novelty_weight=novelty_weight
+            )
+            
+            if success:
+                # Store preference change as a memory
+                from services.memory_service import MemoryEntry
+                change_memory = MemoryEntry(
+                    user_id=user_id,
+                    kind="preference",
+                    content=f"Updated preference weights - depth: {depth_weight}, novelty: {novelty_weight}",
+                    importance=2
+                )
+                await memory_service.store_memory(change_memory)
+            
+            return success
+            
+        except Exception as e:
+            print(f"Error updating preference weights: {e}")
+            return False
+
+
+# Convenience function to create enhanced agent (backward compatibility)
+def create_enhanced_agent(
+    memory_store: MemoryStore,
+    embedding_engine: EmbeddingEngine,
+    llm_service: LLMService,
+    tool_registry: ToolRegistry
+) -> TimbreAgent:
+    """Create an enhanced agent with dual-store memory."""
+    return TimbreAgent(
+        memory_store=memory_store,
+        embedding_engine=embedding_engine,
+        llm_service=llm_service,
+        tool_registry=tool_registry
+    )

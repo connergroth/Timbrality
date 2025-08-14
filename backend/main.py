@@ -18,6 +18,7 @@ from routes.ml_routes import ml_router
 from routes.timbral_routes import timbral_router
 from routes.scraper_routes import router as scraper_router
 from routes.agent_routes import router as agent_router
+from services.memory_processor import start_memory_processing
 from routes.playlist_routes import router as playlist_router
 from routes.spotify_routes import router as spotify_router
 from utils.metrics import metrics
@@ -127,3 +128,13 @@ async def root():
         "version": "1.0.0",
         "ml_engine": "Timbral"
     }
+
+
+@app.on_event("startup")
+async def startup_memory():
+    """Start background memory processing workers on app startup."""
+    try:
+        await start_memory_processing()
+        print("✅ Memory processing service started")
+    except Exception as e:
+        print(f"⚠️  Failed to start memory processing: {e}")

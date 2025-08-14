@@ -54,7 +54,7 @@ export const HowItWorks = () => {
         <div className="mt-16 text-center">
           <button
             onClick={() => setIsAlgorithmOpen(!isAlgorithmOpen)}
-            className="inline-flex items-center space-x-2 text-sm font-playfair text-muted-foreground hover:text-foreground transition-colors group"
+            className="inline-flex items-center space-x-1 text-sm font-playfair text-muted-foreground hover:text-foreground transition-colors group"
           >
             <Info className="w-4 h-4" />
             <span>Behind the Algorithm</span>

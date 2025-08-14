@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { Send, Loader2, Music, User, Settings, X, ArrowUp, BarChart3, Tag, TrendingUp, Info, Activity, Target, Sliders, Clock, Star, Zap, Plus } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
@@ -19,12 +19,15 @@ interface AgentChatProps {
   onOpenChat?: () => void;
   onClose?: () => void;
   isInline?: boolean;
-  onStartChat?: () => void;
+  onStartChat?: (message: string) => void;
   user?: any; // Add user prop for PlaylistModal
   onSelectTool?: (tool: string | null) => void;
   selectedTool?: string | null;
   showMusicDepthSlider?: boolean;
   onGetClearFunction?: (clearFn: () => void) => void;
+  onMessagesUpdate?: (messageCount: number, lastUserMessage?: string) => void;
+  onTitleGenerated?: (title: string) => void;
+  initialMessage?: string;
 }
 
 export function AgentChat({ 
@@ -40,10 +43,15 @@ export function AgentChat({
   onSelectTool,
   selectedTool,
   showMusicDepthSlider = false,
-  onGetClearFunction
+  onGetClearFunction,
+  onMessagesUpdate,
+  onTitleGenerated,
+  initialMessage
 }: AgentChatProps) {
   const [input, setInput] = useState('');
   const [hasStartedChat, setHasStartedChat] = useState(false);
+  const [showChatArea, setShowChatArea] = useState(false);
+  const hasProcessedInitialMessageRef = useRef<string | null>(null);
   const [playlistModalOpen, setPlaylistModalOpen] = useState(false);
   const [selectedTrack, setSelectedTrack] = useState<{ id: string; name: string; artist: string } | null>(null);
   const [feedTuning, setFeedTuning] = useState(50); // 0-100, 50 is center
@@ -61,7 +69,10 @@ export function AgentChat({
     cancelRequest
   } = useAgent({
     userId,
+    chatId,
     onTrackRecommendations,
+    onMessagesUpdate,
+    onTitleGenerated,
     onError: (error) => {
       console.error('Agent error:', error);
     },
@@ -74,28 +85,37 @@ export function AgentChat({
     }
   }, [messages]);
 
-  // Provide clearConversation function to parent
+  // Expose clear function through ref or imperative handle instead of callback
+  // This pattern was causing infinite re-renders
+
+  // Auto-submit initial message if provided (track by message content to prevent duplicates)
   useEffect(() => {
-    if (onGetClearFunction) {
-      onGetClearFunction(() => {
-        clearConversation();
-        setHasStartedChat(false);
-        setInput('');
-      });
+    if (initialMessage && hasProcessedInitialMessageRef.current !== initialMessage && !isLoading) {
+      hasProcessedInitialMessageRef.current = initialMessage;
+      setHasStartedChat(true);
+      setShowChatArea(true);
+      sendMessage(initialMessage, { streaming: true });
     }
-  }, [clearConversation, onGetClearFunction]);
+  }, [initialMessage, isLoading, isInline, sendMessage]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
 
+    const message = input.trim();
+
     // If this is the first message and we have onStartChat callback, trigger it
     if (!hasStartedChat && onStartChat) {
       setHasStartedChat(true);
-      onStartChat();
+      setShowChatArea(true);
+      onStartChat(message);
+      // Don't send message on home page - navigation will handle it
+      if (!isInline) {
+        setInput('');
+        return;
+      }
     }
 
-    const message = input.trim();
     setInput('');
 
     await sendMessage(message, { streaming: true });
@@ -161,7 +181,13 @@ export function AgentChat({
     if (promptText && !isLoading) {
       if (!hasStartedChat && onStartChat) {
         setHasStartedChat(true);
-        onStartChat();
+        setShowChatArea(true);
+        onStartChat(promptText);
+        // Don't send message on home page - navigation will handle it
+        if (!isInline) {
+          setInput('');
+          return;
+        }
       }
       setInput('');
       sendMessage(promptText, { streaming: true });
@@ -170,9 +196,9 @@ export function AgentChat({
 
   const ThinkingEffect = () => (
     <div className="flex justify-start mb-4">
-      <div className="flex items-start space-x-2">
+      <div className="flex items-center space-x-2">
         {/* Avatar space to align with agent messages */}
-        <div className="w-10 h-10 flex items-center justify-center flex-shrink-0 mr-2 mt-1">
+        <div className="w-6 h-6 flex items-center justify-center flex-shrink-0 mr-2">
           <img 
             src="/soundwhite.png" 
             alt="Timbrality Agent" 
@@ -180,21 +206,32 @@ export function AgentChat({
           />
         </div>
         {/* Thinking text */}
-        <div className="relative inline-block pt-2">
+        <div className="relative inline-block">
           <span className="text-lg font-inter text-muted-foreground">
             {'Thinking'.split('').map((char, i) => (
               <span
                 key={i}
-                className="inline-block animate-pulse"
+                className="inline-block"
                 style={{
-                  animationDelay: `${i * 0.2}s`,
-                  animationDuration: '2s'
+                  opacity: 0.3,
+                  animation: `thinking-wave 1.2s ease-in-out infinite`,
+                  animationDelay: `${0.1 + i * 0.08}s`
                 }}
               >
                 {char}
               </span>
             ))}
           </span>
+          <style jsx>{`
+            @keyframes thinking-wave {
+              0%, 70%, 100% {
+                opacity: 0.3;
+              }
+              35% {
+                opacity: 1;
+              }
+            }
+          `}</style>
           <span className="ml-1 text-lg font-inter text-muted-foreground animate-bounce">...</span>
         </div>
       </div>
@@ -218,7 +255,7 @@ export function AgentChat({
       <div className="flex justify-start py-1">
         <div className="flex items-center space-x-2">
           {/* Avatar space to align with agent messages */}
-          <div className="w-10 h-10 flex items-center justify-center flex-shrink-0 mr-2">
+          <div className="w-6 h-6 flex items-center justify-center flex-shrink-0 mr-2">
             <span className={`font-mono text-xs ${getColor()}`}>{getIcon()}</span>
           </div>
           {/* Tool message */}
@@ -245,27 +282,29 @@ export function AgentChat({
       <>
         {/* Text Message */}
         <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-4`}>
-          <div className={`flex max-w-[80%] ${isUser ? 'flex-row-reverse' : 'flex-row'} items-start space-x-2`}>
-            {/* Avatar - Only show for agent */}
-            {!isUser && (
-              <div className="w-10 h-10 flex items-center justify-center flex-shrink-0 mr-2 mt-1">
+          {isUser ? (
+            <div className="flex max-w-[80%] flex-row-reverse items-start space-x-2">
+              {/* Message Content for user - keep bubble */}
+              <div className="rounded-lg p-3 bg-muted text-foreground">
+                <p className="text-[15px] font-inter whitespace-pre-wrap">{message.content}</p>
+              </div>
+            </div>
+          ) : (
+            <div className="flex max-w-[80%] flex-row items-center space-x-2">
+              {/* Avatar for agent */}
+              <div className="w-6 h-6 flex items-center justify-center flex-shrink-0 mr-2">
                 <img 
                   src="/soundwhite.png" 
                   alt="Timbrality Agent" 
                   className="w-6 h-6 object-contain"
                 />
               </div>
-            )}
-
-            {/* Message Content */}
-            <div className={`rounded-lg p-3 ${
-              isUser 
-                ? 'bg-muted text-foreground' 
-                : 'bg-muted text-foreground'
-            }`}>
-              <p className="text-sm font-inter whitespace-pre-wrap">{message.content}</p>
+              {/* Message Content for agent - no bubble, just text */}
+              <div className="flex-1">
+                <p className="text-[15px] font-inter whitespace-pre-wrap text-foreground">{message.content}</p>
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
         {/* Track Recommendations - Show after agent messages that have tracks */}
@@ -275,7 +314,7 @@ export function AgentChat({
               <div key={`${message.id}-track-${index}`} className="flex justify-start mb-4">
                 <div className="flex max-w-[80%] flex-row items-start space-x-2">
                   {/* Avatar space to align with agent messages */}
-                  <div className="w-10 h-10 flex items-center justify-center flex-shrink-0 mr-2 mt-1">
+                  <div className="w-6 h-6 flex items-center justify-center flex-shrink-0 mr-2">
                     <img 
                       src="/soundwhite.png" 
                       alt="Timbrality Agent" 
@@ -308,28 +347,26 @@ export function AgentChat({
   return (
     <div className={className}>
       {/* Chat Messages Area - Show when chat is active or has messages */}
-      {(isInline || messages.length > 0) && (
-        <div className={`w-full ${isInline ? 'mb-20' : 'mb-6'}`}>
+      {(isInline || messages.length > 0 || showChatArea) && (
+        <div className={`w-full ${isInline ? 'pb-40' : 'mb-6'}`}>
           <div 
             ref={chatContainerRef}
-            className="space-y-4"
+            className={isInline ? "p-4 space-y-4" : "space-y-4"}
           >
-            <div className={isInline ? "max-w-2xl mx-auto" : "max-w-2xl"}>
+            <div className={isInline ? "max-w-2xl mx-auto px-4" : "max-w-2xl"}>
               {messages.map((message) => (
                 <MessageBubble key={message.id} message={message} />
               ))}
               
               <div ref={messagesEndRef} />
-              {/* Extra spacing at bottom for better scroll experience */}
-              {isInline && <div className="h-4"></div>}
             </div>
           </div>
         </div>
       )}
 
       {/* Main Input */}
-      <div className={isInline ? "fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm p-4 shadow-lg" : "mb-6"}>
-        {!isInline && (
+      <div className={isInline ? "fixed bottom-0 left-16 right-0 bg-background/95 backdrop-blur-sm p-4 shadow-lg transition-all duration-300 ease-in-out" : "mb-6"}>
+          {!isInline && (
           <h2 className="text-xl font-inter font-semibold mb-4 tracking-tight">
             What are you in the mood for?
           </h2>

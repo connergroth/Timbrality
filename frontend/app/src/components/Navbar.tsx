@@ -29,7 +29,7 @@ export function Navbar({ user, onSignOut, onToggleAlgorithmSidebar, onOpenNaviga
         {/* Left: Logo */}
         <button 
           onClick={handleLogoClick}
-          className="flex items-center space-x-2 hover:opacity-80 transition-opacity cursor-pointer"
+          className="flex items-center space-x-1 hover:opacity-80 transition-opacity cursor-pointer"
         >
           <div className="w-8 h-8 flex items-center justify-center">
             <img 

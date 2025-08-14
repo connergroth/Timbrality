@@ -4,6 +4,7 @@
       "Bash(npm install:*)",
       "Bash(python:*)"
     ],
-    "deny": []
+    "deny": [],
+    "defaultMode": "acceptEdits"
   }
 }

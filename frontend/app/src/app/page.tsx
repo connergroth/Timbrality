@@ -2,6 +2,7 @@
 
 import { useSupabase } from '@/components/SupabaseProvider'
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { Navbar } from '@/components/Navbar'
 import { Footer } from '@/components/Footer'
 import { AgentChat } from '@/components/AgentChat'
@@ -9,6 +10,8 @@ import { NavigationSidebar } from '@/components/NavigationSidebar'
 import { AlgorithmSidebar } from '@/components/AlgorithmSidebar'
 import { SoundBar } from '@/components/SoundBar'
 import { VinylShader } from '@/components/VinylShader'
+import { useSidebar } from '@/contexts/SidebarContext'
+import { supabase } from '@/lib/supabase'
 import type { Track as AgentTrack } from '@/lib/agent'
 import { LandingNavbar } from "@/components/landing/LandingNavbar";
 import { Hero } from "@/components/landing/Hero";
@@ -30,6 +33,8 @@ interface Track {
 
 export default function HomePage() {
   const { user, loading, signOut } = useSupabase();
+  const { isExpanded } = useSidebar();
+  const router = useRouter()
   const [userProfile, setUserProfile] = useState<any>(null)
   const [isNavigationSidebarOpen, setIsNavigationSidebarOpen] = useState(false)
   const [isAlgorithmSidebarOpen, setIsAlgorithmSidebarOpen] = useState(false)
@@ -37,113 +42,98 @@ export default function HomePage() {
   const [isChatActive, setIsChatActive] = useState(false)
   const [selectedTool, setSelectedTool] = useState<string | null>(null)
   const [showMusicDepthSlider, setShowMusicDepthSlider] = useState(false)
-  const [clearChatFunction, setClearChatFunction] = useState<(() => void) | null>(null)
+  // Removed clearChatFunction state as it was causing infinite re-renders
 
   useEffect(() => {
     if (user && !loading) {
+      // Try to load from cache first
+      const cachedProfile = localStorage.getItem(`user-profile-${user.id}`)
+      if (cachedProfile) {
+        try {
+          const parsedProfile = JSON.parse(cachedProfile)
+          setUserProfile(parsedProfile)
+        } catch (error) {
+          console.error('Error parsing cached profile:', error)
+        }
+      }
       // Fetch user profile data
       fetchUserProfile()
     }
   }, [user, loading])
 
   const fetchUserProfile = async () => {
+    if (!user) return
+    
     try {
-      // Define the tracks we want to fetch
-      const trackQueries = [
-        { query: 'Nights Frank Ocean', why: 'Atmospheric R&B production matches your dreamy soundscape preference' },
-        { query: 'THANK GOD Travis Scott', why: 'Experimental hip-hop production aligns with your taste for innovative sounds' },
-        { query: 'Sk8 JID', why: 'Creative lyricism and unique flow patterns match your preference for artistic expression' }
-      ];
-
-      // Fetch track data from backend
-      const trackPromises = trackQueries.map(async ({ query, why }, index) => {
-        try {
-          const response = await fetch(`/api/spotify/search-track?q=${encodeURIComponent(query)}`);
-          if (response.ok) {
-            const trackData = await response.json();
-            return {
-              id: index + 1,
-              title: trackData.name,
-              artist: trackData.artist,
-              album: trackData.album,
-              cover: trackData.artwork_url,
-              why
-            };
-          }
-        } catch (error) {
-          console.error(`Error fetching ${query}:`, error);
+      
+      // Try to get profile from database first
+      const { data, error } = await supabase
+        .from('users')
+        .select('display_name')
+        .eq('id', user.id)
+        .single()
+      
+      if (error && error.code === 'PGRST116') {
+        // User doesn't exist in our custom users table, create them
+        
+        const newUserData = {
+          id: user.id,
+          username: user.email?.split('@')[0] || 'user',
+          email: user.email,
+          display_name: user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0] || 'User',
+          provider: 'spotify',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
         }
-        return null;
-      });
-
-      const tracks = await Promise.all(trackPromises);
-      const validTracks = tracks.filter(track => track !== null);
-
-      // Use fetched tracks or fallback to hardcoded data
-      setUserProfile({
-        name: 'Conner',
-        taste: ['Atmospheric', 'Experimental', 'Lo-fi'],
-        recentTracks: validTracks.length > 0 ? validTracks : [
-          {
-            id: 1,
-            title: 'Nights',
-            artist: 'Frank Ocean',
-            album: 'Blonde',
-            cover: 'https://i.scdn.co/image/ab67616d0000b2738343d6fc2866e9e52acd74df',
-            why: 'Atmospheric R&B production matches your dreamy soundscape preference'
-          },
-          {
-            id: 2,
-            title: 'THANK GOD',
-            artist: 'Travis Scott',
-            album: 'UTOPIA',
-            cover: 'https://i.scdn.co/image/ab67616d0000b273881d8d8378cd01099babcd44',
-            why: 'Experimental hip-hop production aligns with your taste for innovative sounds'
-          },
-          {
-            id: 3,
-            title: 'Sk8',
-            artist: 'JID',
-            album: 'The Never Story',
-            cover: 'https://i.scdn.co/image/ab67616d0000b273230dde08404b4e4c3b5a3b13',
-            why: 'Creative lyricism and unique flow patterns match your preference for artistic expression'
-          }
-        ]
-      });
+        
+        const { data: insertData, error: insertError } = await supabase
+          .from('users')
+          .insert([newUserData])
+          .select('display_name')
+          .single()
+        
+        if (insertError) {
+          // Fallback to user metadata
+          setUserProfile({ 
+            display_name: user.user_metadata?.full_name || user.user_metadata?.name || null
+          })
+        } else {
+          setUserProfile(insertData)
+          // Cache the new profile
+          localStorage.setItem(`user-profile-${user.id}`, JSON.stringify(insertData))
+        }
+      } else if (error) {
+        // Fallback to user metadata if database query fails
+        setUserProfile({ 
+          display_name: user.user_metadata?.full_name || user.user_metadata?.name || null
+        })
+      } else {
+        setUserProfile(data)
+        // Cache the profile
+        localStorage.setItem(`user-profile-${user.id}`, JSON.stringify(data))
+      }
     } catch (error) {
-      console.error('Error fetching user profile:', error);
-      // Fallback to hardcoded data
-      setUserProfile({
-        name: 'Conner',
-        taste: ['Atmospheric', 'Experimental', 'Lo-fi'],
-        recentTracks: [
-          {
-            id: 1,
-            title: 'Nights',
-            artist: 'Frank Ocean',
-            album: 'Blonde',
-            cover: 'https://i.scdn.co/image/ab67616d0000b2738343d6fc2866e9e52acd74df',
-            why: 'Atmospheric R&B production matches your dreamy soundscape preference'
-          },
-          {
-            id: 2,
-            title: 'THANK GOD',
-            artist: 'Travis Scott',
-            album: 'UTOPIA',
-            cover: 'https://i.scdn.co/image/ab67616d0000b273881d8d8378cd01099babcd44',
-            why: 'Experimental hip-hop production aligns with your taste for innovative sounds'
-          },
-          {
-            id: 3,
-            title: 'Sk8 Head',
-            artist: 'JID',
-            album: 'The Never Story',
-            cover: 'https://i.scdn.co/image/ab67616d0000b273230dde08404b4e4c3b5a3b13',
-            why: 'Creative lyricism and unique flow patterns match your preference for artistic expression'
-          }
-        ]
-      });
+      // Fallback to user metadata if there's an exception
+      const fallbackProfile = { 
+        display_name: user.user_metadata?.full_name || user.user_metadata?.name || null
+      }
+      setUserProfile(fallbackProfile)
+      // Cache the fallback
+      localStorage.setItem(`user-profile-${user.id}`, JSON.stringify(fallbackProfile))
     }
+  }
+
+  // Extract first word from display_name for welcome message
+  const getUserDisplayName = () => {
+    if (userProfile?.display_name) {
+      return userProfile.display_name.split(' ')[0]
+    }
+    // Only show fallback if we've tried to load profile but it's null/empty
+    if (userProfile !== null) {
+      return user?.user_metadata?.full_name?.split(' ')[0] || user?.user_metadata?.name?.split(' ')[0] || user?.email?.split('@')[0] || 'there'
+    }
+    // While loading, show generic greeting
+    return 'there'
   }
 
   const handleAgentRecommendations = (tracks: AgentTrack[]) => {
@@ -177,7 +167,6 @@ export default function HomePage() {
       setShowMusicDepthSlider(false)
     } else {
       // For other tools, you could show a modal or inline component here
-      console.log(`Selected tool: ${tool}`)
     }
   }
 
@@ -186,14 +175,22 @@ export default function HomePage() {
   }
 
   const handleLogoClick = () => {
-    // Clear chat messages and internal state
-    if (clearChatFunction) {
-      clearChatFunction()
-    }
     // Reset chat state to return to full home page
     setIsChatActive(false)
     setSelectedTool(null)
     setShowMusicDepthSlider(false)
+    // Note: Chat clearing removed to fix infinite re-render issue
+  }
+
+  const handleStartChatWithNavigation = (firstMessage: string) => {
+    // Generate a unique chat ID
+    const chatId = `chat_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    
+    // Navigate to new chat page with the first message
+    router.push(`/chat/${chatId}?message=${encodeURIComponent(firstMessage)}`)
+    
+    // Dispatch custom event to notify sidebar to refresh chat history
+    window.dispatchEvent(new CustomEvent('chatHistoryUpdated'))
   }
 
   // Show loading state while checking authentication
@@ -234,7 +231,9 @@ export default function HomePage() {
       />
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col ml-16">
+      <div className={`flex-1 flex flex-col transition-all duration-300 ease-in-out ${
+        isExpanded ? 'ml-40' : 'ml-16'
+      }`}>
         <Navbar 
           user={user} 
           onOpenNavigationSidebar={() => setIsNavigationSidebarOpen(!isNavigationSidebarOpen)}
@@ -243,63 +242,64 @@ export default function HomePage() {
           onLogoClick={handleLogoClick}
         />
         
-        <main className={`flex-1 container mx-auto px-4 py-8 max-w-7xl ${isChatActive ? 'pb-24' : ''}`}>
-          {/* Welcome Section and Track Grid - Only show when chat is not active */}
-          {!isChatActive && (
-            <>
-              {/* Welcome Section */}
-              <div className="mb-8">
-                {/* Sound Bar aligned with text */}
-                <div className="mb-4 flex justify-start">
-                  <SoundBar className="" barCount={9} />
+        <main className={`flex-1 ${isChatActive ? 'pb-24' : 'px-6 py-8'}`}>
+          <div className={`max-w-2xl mx-auto transition-all duration-300 ease-in-out`}>
+            {/* Welcome Section and Track Grid - Only show when chat is not active */}
+            {!isChatActive && (
+              <>
+                {/* Welcome Section */}
+                <div className="mb-8">
+                  {/* Sound Bar aligned with text */}
+                  <div className="mb-4 flex justify-start">
+                    <SoundBar className="" barCount={9} />
+                  </div>
+                  
+                  <h1 className="text-3xl font-playfair font-semibold text-foreground mb-2 tracking-tight">
+                    Welcome back, {getUserDisplayName()}.
+                  </h1>
+                  <p className="text-base text-muted-foreground font-inter font-medium">
+                    Discovering your musical preferences...
+                  </p>
                 </div>
-                
-                <h1 className="text-3xl font-inter font-semibold text-foreground mb-2 tracking-tight">
-                  Welcome back, {userProfile?.name || user.email?.split('@')[0]}.
-                </h1>
-                <p className="text-base text-muted-foreground font-inter font-medium">
-                  Your taste leans: {userProfile?.taste?.join(' • ') || 'Loading...'}
-                </p>
-              </div>
 
-              {/* Track Grid */}
-              <div className="mb-8">
-                <h2 className="text-xl font-inter font-semibold mb-6 tracking-tight">Recent Recommendations</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {userProfile?.recentTracks?.map((track: Track) => (
-                    <div key={track.id} className="bg-card rounded-lg p-3 border border-border/50">
-                      <div className="flex items-center space-x-3">
-                        <img 
-                          src={track.cover} 
-                          alt={`${track.album} cover`}
-                          className="w-12 h-12 rounded-md flex-shrink-0 object-cover"
-                        />
-                        <div className="flex-1 min-w-0">
-                          <h3 className="font-inter font-semibold text-foreground truncate text-sm">{track.title}</h3>
-                          <p className="text-xs text-muted-foreground truncate font-inter">{track.artist}</p>
-                          <p className="text-xs text-muted-foreground/70 truncate font-inter">{track.album}</p>
+                {/* Track Grid */}
+                <div className="mb-8">
+                  <h2 className="text-xl font-inter font-semibold mb-6 tracking-tight">Recent Recommendations</h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {userProfile?.recentTracks?.map((track: Track) => (
+                      <div key={track.id} className="bg-card rounded-lg p-3 border border-border/50">
+                        <div className="flex items-center space-x-3">
+                          <img 
+                            src={track.cover} 
+                            alt={`${track.album} cover`}
+                            className="w-12 h-12 rounded-md flex-shrink-0 object-cover"
+                          />
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-inter font-semibold text-foreground truncate text-sm">{track.title}</h3>
+                            <p className="text-xs text-muted-foreground truncate font-inter">{track.artist}</p>
+                            <p className="text-xs text-muted-foreground/70 truncate font-inter">{track.album}</p>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
-              </div>
-            </>
-          )}
+              </>
+            )}
 
-          {/* AI Agent Chat */}
-          <AgentChat 
-            userId={user.id} 
-            onTrackRecommendations={handleAgentRecommendations}
-            onStartChat={handleStartChat}
-            isInline={isChatActive}
-            onClose={isChatActive ? handleCloseChat : undefined}
-            user={user}
-            onSelectTool={handleToolSelect}
-            selectedTool={selectedTool}
-            showMusicDepthSlider={showMusicDepthSlider}
-            onGetClearFunction={setClearChatFunction}
-          />
+            {/* AI Agent Chat */}
+            <AgentChat 
+              userId={user.id} 
+              onTrackRecommendations={handleAgentRecommendations}
+              onStartChat={handleStartChatWithNavigation}
+              isInline={isChatActive}
+              onClose={isChatActive ? handleCloseChat : undefined}
+              user={user}
+              onSelectTool={handleToolSelect}
+              selectedTool={selectedTool}
+              showMusicDepthSlider={showMusicDepthSlider}
+            />
+          </div>
         </main>
       </div>
 

@@ -2,16 +2,18 @@
 
 import { useSupabase } from '@/components/SupabaseProvider'
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { Navbar } from '@/components/Navbar'
 import { AlgorithmSidebar } from '@/components/AlgorithmSidebar'
-import { AgentChat } from '@/components/AgentChat'
 import { NavigationSidebar } from '@/components/NavigationSidebar'
-import type { Track as AgentTrack } from '@/lib/agent'
+import { ChatHistory } from '@/components/ChatHistory'
+import { useSidebar } from '@/contexts/SidebarContext'
 
 export default function ChatPage() {
   const { user, loading, signOut } = useSupabase();
+  const { isExpanded } = useSidebar();
+  const router = useRouter()
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
-  const [agentRecommendations, setAgentRecommendations] = useState<AgentTrack[]>([])
 
   // Show loading state while checking authentication
   if (loading) {
@@ -43,8 +45,13 @@ export default function ChatPage() {
     )
   }
 
-  const handleAgentRecommendations = (tracks: AgentTrack[]) => {
-    setAgentRecommendations(tracks)
+  const handleChatSelect = (chatId: string) => {
+    router.push(`/chat/${chatId}`)
+  }
+
+  const handleNewChat = () => {
+    const newChatId = `chat_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    router.push(`/chat/${newChatId}`)
   }
 
   return (
@@ -53,7 +60,9 @@ export default function ChatPage() {
       <NavigationSidebar user={user} onSignOut={signOut} />
 
       {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col ml-16">
+      <div className={`flex-1 flex flex-col transition-all duration-300 ease-in-out ${
+        isExpanded ? 'ml-40' : 'ml-16'
+      }`}>
         {/* Navbar */}
         <Navbar 
           user={user} 
@@ -61,14 +70,15 @@ export default function ChatPage() {
           onToggleAlgorithmSidebar={() => setIsSidebarOpen(true)}
         />
         
-        {/* Chat Content */}
-        <div className="flex-1 flex flex-col">
-          <AgentChat 
-            userId={user.id} 
-            onTrackRecommendations={handleAgentRecommendations}
+        {/* Chat History Content */}
+        <main className="flex-1 container mx-auto px-4 py-8 max-w-7xl">
+          <ChatHistory 
+            userId={user.id}
+            onChatSelect={handleChatSelect}
+            onNewChat={handleNewChat}
             className="flex-1 flex flex-col"
           />
-        </div>
+        </main>
       </div>
 
       {/* Algorithm Sidebar */}

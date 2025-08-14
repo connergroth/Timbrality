@@ -1,10 +1,13 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { agentService, type ChatRequest, type ChatResponse, type Track } from '@/lib/agent';
 
 interface UseAgentOptions {
   userId: string;
+  chatId?: string;
   onTrackRecommendations?: (tracks: Track[]) => void;
   onError?: (error: Error) => void;
+  onMessagesUpdate?: (messageCount: number, lastUserMessage?: string) => void;
+  onTitleGenerated?: (title: string) => void;
 }
 
 export interface AgentMessage {
@@ -20,11 +23,61 @@ export interface AgentMessage {
   toolInfo?: any;
 }
 
-export function useAgent({ userId, onTrackRecommendations, onError }: UseAgentOptions) {
+export function useAgent({ userId, chatId, onTrackRecommendations, onError, onMessagesUpdate, onTitleGenerated }: UseAgentOptions) {
   const [messages, setMessages] = useState<AgentMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [sessionId, setSessionId] = useState<string | undefined>();
   const abortControllerRef = useRef<AbortController | null>(null);
+
+  // Load messages from localStorage when chatId changes
+  useEffect(() => {
+    if (chatId && userId) {
+      loadChatMessages();
+    }
+  }, [chatId, userId]);
+
+  // Save messages to localStorage whenever messages change
+  useEffect(() => {
+    if (chatId && userId && messages.length > 0) {
+      saveChatMessages();
+      
+      // Call onMessagesUpdate callback with current message count and last user message
+      if (onMessagesUpdate) {
+        const userMessages = messages.filter(msg => msg.type === 'user');
+        const lastUserMessage = userMessages.length > 0 ? userMessages[userMessages.length - 1].content : undefined;
+        onMessagesUpdate(messages.length, lastUserMessage);
+      }
+    }
+  }, [messages, chatId, userId]); // Removed onMessagesUpdate from deps to prevent infinite loops
+
+  const loadChatMessages = () => {
+    if (!chatId || !userId) return;
+    
+    const savedMessages = localStorage.getItem(`timbre-chat-${chatId}-${userId}`);
+    if (savedMessages) {
+      try {
+        const parsedMessages = JSON.parse(savedMessages);
+        // Convert timestamp strings back to Date objects
+        const messagesWithDates = parsedMessages.map((msg: any) => ({
+          ...msg,
+          timestamp: new Date(msg.timestamp)
+        }));
+        setMessages(messagesWithDates);
+      } catch (error) {
+        console.error('Error loading chat messages:', error);
+      }
+    }
+  };
+
+  const saveChatMessages = () => {
+    if (!chatId || !userId || messages.length === 0) return;
+    
+    try {
+      localStorage.setItem(`timbre-chat-${chatId}-${userId}`, JSON.stringify(messages));
+    } catch (error) {
+      console.error('Error saving chat messages:', error);
+    }
+  };
 
   const addMessage = useCallback((message: Omit<AgentMessage, 'id'>) => {
     const newMessage: AgentMessage = {
@@ -157,6 +210,25 @@ export function useAgent({ userId, onTrackRecommendations, onError }: UseAgentOp
               if (tracks.length > 0 && onTrackRecommendations) {
                 onTrackRecommendations(tracks);
               }
+
+              // Generate title after agent responds (only for first exchange)
+              if (onTitleGenerated && messages.length === 0) {
+                // This is the first conversation exchange, generate a title
+                const userMessage = message;
+                const agentResponse = chunk.response;
+                
+                try {
+                  const titleData = await agentService.generateChatTitle(
+                    `User: ${userMessage}\nAgent: ${agentResponse}`, 
+                    userId
+                  );
+                  if (titleData.title) {
+                    onTitleGenerated(titleData.title);
+                  }
+                } catch (error) {
+                  console.error('Error generating chat title:', error);
+                }
+              }
             } else if (chunk.type === 'error') {
               throw new Error(chunk.error);
             }
@@ -278,7 +350,12 @@ export function useAgent({ userId, onTrackRecommendations, onError }: UseAgentOp
   const clearConversation = useCallback(() => {
     setMessages([]);
     setSessionId(undefined);
-  }, []);
+    
+    // Clear localStorage for this specific chat
+    if (chatId && userId) {
+      localStorage.removeItem(`timbre-chat-${chatId}-${userId}`);
+    }
+  }, [chatId, userId]);
 
   return {
     messages,

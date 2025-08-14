@@ -233,6 +233,32 @@ class AgentService {
 
     return response.json();
   }
+
+  /**
+   * Generate a chat title based on the first message
+   */
+  async generateChatTitle(message: string, userId: string): Promise<{ title: string }> {
+    if (typeof fetch === 'undefined') {
+      throw new Error('Fetch API not available');
+    }
+
+    const response = await fetch(`${this.baseUrl}/agent/generate-title`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        conversation_text: message,
+        user_id: userId,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Title generation failed: ${response.statusText}`);
+    }
+
+    return response.json();
+  }
 }
 
 export const agentService = new AgentService();

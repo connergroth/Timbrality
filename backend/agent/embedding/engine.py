@@ -332,3 +332,18 @@ class EmbeddingEngine:
             vector.extend(vector[:self.dimension - len(vector)])
         
         return vector[:self.dimension]
+
+
+# Convenience helper used by services that expect a simple embedding function
+async def get_embedding(text: str) -> List[float]:
+    """Return an embedding vector for the given text.
+
+    Creates a transient EmbeddingEngine instance and returns a list[float].
+    """
+    engine = EmbeddingEngine()
+    result = await engine.embed_user_input(text)
+    vector = result.vector
+    # Ensure plain list for downstream consumers
+    if hasattr(vector, 'tolist'):
+        vector = vector.tolist()
+    return vector

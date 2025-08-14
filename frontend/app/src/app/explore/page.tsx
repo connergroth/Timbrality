@@ -4,7 +4,9 @@ import { useSupabase } from '@/components/SupabaseProvider'
 import { useState, useEffect } from 'react'
 import { Navbar } from '@/components/Navbar'
 import { NavigationSidebar } from '@/components/NavigationSidebar'
-import { VinylShader } from '@/components/VinylShader'
+import { useSidebar } from '@/contexts/SidebarContext'
+import { AlbumCard } from '@/components/AlbumCard'
+import { Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -21,9 +23,10 @@ interface Album {
 
 export default function ExplorePage() {
   const { user, loading, signOut } = useSupabase()
-  const [albums, setAlbums] = useState<Album[]>([])
-  const [searchQuery, setSearchQuery] = useState('')
+  const { isExpanded } = useSidebar()
+  const [searchQuery, setSearchParams] = useState('')
   const [activeTab, setActiveTab] = useState('for-you')
+  const [albums, setAlbums] = useState<Album[]>([])
 
   // Mock data for albums - in production, this would come from your API
   const mockAlbums: Album[] = [
@@ -188,7 +191,9 @@ export default function ExplorePage() {
       />
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col ml-16">
+      <div className={`flex-1 flex flex-col transition-all duration-300 ease-in-out ${
+        isExpanded ? 'ml-40' : 'ml-16'
+      }`}>
         <Navbar 
           user={user} 
           onSignOut={signOut}
@@ -270,7 +275,7 @@ export default function ExplorePage() {
                       type="text"
                       placeholder="Search albums or artists..."
                       value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onChange={(e) => setSearchParams(e.target.value)}
                       className="w-80 h-10 rounded-full pl-4 pr-4 bg-card border border-border/50 focus:ring-0 focus:outline-none focus-visible:ring-0 focus-visible:outline-none focus:ring-offset-0 focus-visible:ring-offset-0 outline-none transition-colors text-sm font-inter placeholder:text-muted-foreground"
                       style={{ outline: 'none', boxShadow: 'none' }}
                     />

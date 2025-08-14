@@ -15,7 +15,7 @@ export const VinylShader = () => {
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
       {/* Main vinyl record with blue label */}
       <div 
-        className="absolute top-1/2 left-1/2 w-[800px] h-[800px] opacity-18"
+        className="absolute top-1/2 left-1/2 w-[1000px] h-[1000px] opacity-18"
         style={{ transform: `translate(-50%, -50%) rotate(${rotation}deg)` }}
       >
         <div className="absolute inset-0 rounded-full bg-gradient-radial from-slate-900/70 via-slate-800/60 to-slate-900/80 shadow-2xl">

@@ -1,11 +1,11 @@
 create table public.tracks (
-  id character varying not null default (gen_random_uuid ())::text,
-  title character varying not null,
-  artist character varying not null,
-  album character varying null,
+  id text not null default (gen_random_uuid ())::text,
+  title text not null,
+  artist text not null,
+  album text null,
   popularity integer null,
   aoty_score real null,
-  cover_url character varying null,
+  cover_url text null,
   release_date date null,
   duration_ms integer null,
   genres text[] null default '{}'::text[],
@@ -32,8 +32,6 @@ create table public.tracks (
   )
 ) TABLESPACE pg_default;
 
-create index IF not exists idx_tracks_artist_title on public.tracks using btree (artist, title) TABLESPACE pg_default;
-
 create index IF not exists idx_tracks_spotify_id on public.tracks using btree (spotify_id) TABLESPACE pg_default;
 
 create index IF not exists idx_tracks_vector_cosine on public.tracks using ivfflat (track_vector vector_cosine_ops)
@@ -44,11 +42,13 @@ create index IF not exists idx_tracks_moods_gin on public.tracks using gin (mood
 
 create index IF not exists idx_tracks_artist on public.tracks using btree (artist) TABLESPACE pg_default;
 
+create index IF not exists idx_tracks_artist_title on public.tracks using btree (artist, title) TABLESPACE pg_default;
+
+create index IF not exists idx_tracks_title_artist on public.tracks using btree (title, artist) TABLESPACE pg_default;
+
 create index IF not exists idx_tracks_album on public.tracks using btree (album) TABLESPACE pg_default;
 
 create index IF not exists idx_tracks_genres_gin on public.tracks using gin (genres) TABLESPACE pg_default;
-
-create index IF not exists idx_tracks_title_artist on public.tracks using btree (title, artist) TABLESPACE pg_default;
 
 create index IF not exists idx_tracks_aoty_num_ratings on public.tracks using btree (aoty_num_ratings) TABLESPACE pg_default;
 

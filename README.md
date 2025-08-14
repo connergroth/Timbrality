@@ -37,24 +37,28 @@ Timbrality is an intelligent music recommendation platform that combines data fr
 ## Architecture Overview
 
 ### Backend (FastAPI)
+
 - **Multi-tier caching**: Redis primary + in-memory fallback
-- **Rate limiting**: 30 requests/minute via SlowAPI  
+- **Rate limiting**: 30 requests/minute via SlowAPI
 - **Database**: PostgreSQL with SQLAlchemy ORM and Alembic migrations
 - **Web scraping**: CloudScraper with async processing for comprehensive AOTY data extraction
 - **AI Agent**: NLP processor with tool registry for music recommendations
 
 ### ML Service (Timbral Engine)
+
 - **Hybrid recommendation engine**: NMF collaborative + BERT content-based filtering
 - **Dedicated FastAPI service**: Port 8001 with ML-specific endpoints
 - **Model serving**: Redis-cached recommendations with explainability
 - **HTTP integration**: Proxied through main backend at `/timbral/*` routes
 
-### Frontend 
+### Frontend
+
 - **Main site**: Vite + React + shadcn/ui components
 - **Auth app**: Next.js application for OAuth flows
 - **State management**: React Context + Supabase auth
 
 ### Key Components
+
 - `/backend/agent/`: AI agent core, tools, and NLP processing
 - `/backend/routes/`: API endpoints (agent, albums, playlists, users, timbral)
 - `/backend/services/`: Business logic (Spotify, Last.fm, ML, AOTY)
@@ -90,6 +94,42 @@ Timbrality is an intelligent music recommendation platform that combines data fr
 - **BERT Content-Based Filtering** – Semantic understanding of music metadata and genres
 - **Model Explainability** – Built-in recommendation reasoning and explanations
 
+#### AI Agent
+
+Timbrality features an advanced AI agent with **dual-store memory architecture** that combines fast Redis working memory with durable PostgreSQL long-term storage for intelligent, context-aware music recommendations.
+
+**Memory Architecture:**
+
+- **Redis Working Memory** – Sub-millisecond access to recent conversations (last 50-200 turns per chat)
+- **PostgreSQL + pgvector** – Semantic search and long-term memory with embeddings
+- **Context Assembly** – Intelligent retrieval combining recent turns, relevant memories, and user preferences
+- **Background Processing** – Async summarization, fact extraction, and topic analysis
+
+**Agent Capabilities:**
+
+- **Conversational Memory** – Remembers user preferences, music tastes, and conversation context
+- **Semantic Understanding** – Uses Sentence-BERT embeddings for natural language processing
+- **Tool Integration** – Access to music databases, recommendation engines, and analysis tools
+- **Streaming Responses** – Real-time interaction with memory context updates
+- **Automatic Learning** – Extracts user facts, preferences, and music patterns over time
+
+**Memory Features:**
+
+- **Working Memory** – Fast access to recent chat context with configurable TTL (24-72 hours)
+- **Long-term Memory** – Durable storage of important facts, preferences, and conversation summaries
+- **Semantic Search** – Vector similarity search for relevant context using pgvector
+- **Importance Scoring** – Memory prioritization based on user interaction patterns
+- **Topic Tracking** – Automatic extraction and trending of music-related topics
+
+**API Endpoints:**
+
+```bash
+POST /api/agent/chat          # Enhanced chat with memory integration
+POST /api/agent/chat/stream   # Streaming responses with context
+GET  /api/agent/memory/stats  # User memory statistics
+POST /api/agent/memory/process # Trigger background memory processing
+```
+
 ---
 
 ## Model Design
@@ -121,6 +161,7 @@ Timbrality includes a sophisticated web scraper that extracts rich music metadat
 ### 🎯 What It Scrapes
 
 **Albums:**
+
 - User scores and rating counts (e.g., "Based on 37,040 ratings")
 - Critic reviews from major publications
 - Popular user reviews with like counts
@@ -129,6 +170,7 @@ Timbrality includes a sophisticated web scraper that extracts rich music metadat
 - "Must Hear" designations
 
 **Artists:**
+
 - Overall user ratings and rating counts
 - Biography and formation details
 - Geographic location data
@@ -136,6 +178,7 @@ Timbrality includes a sophisticated web scraper that extracts rich music metadat
 - Genre classifications
 
 **Tracks:**
+
 - Individual track ratings and rating counts
 - Track-level metadata and features
 - Featured artist information
@@ -144,6 +187,7 @@ Timbrality includes a sophisticated web scraper that extracts rich music metadat
 ### 🛠 Technical Implementation
 
 **Web Scraping Engine:**
+
 - **CloudScraper** for bypassing anti-bot protection
 - **BeautifulSoup** for robust HTML parsing
 - **Async/await** processing for high performance
@@ -151,24 +195,26 @@ Timbrality includes a sophisticated web scraper that extracts rich music metadat
 - **Rate limiting** to respect AOTY's servers
 
 **Data Models:**
+
 ```python
 class Album(BaseModel):
     title: str
     artist: str
     user_score: Optional[float]
-    num_ratings: int              
+    num_ratings: int
     tracks: List[Track]
     critic_reviews: List[CriticReview]
     popular_reviews: List[AlbumUserReview]
-    
+
 class Track(BaseModel):
     title: str
     rating: Optional[int]
-    num_ratings: int              
+    num_ratings: int
     featured_artists: List[str]
 ```
 
 **API Endpoints:**
+
 ```bash
 GET /scraper/album?artist=Radiohead&album=OK+Computer
 GET /scraper/similar?artist=Radiohead&album=OK+Computer
@@ -178,6 +224,7 @@ GET /scraper/artist?name=Radiohead
 ### 🔄 Data Pipeline Integration
 
 **Automated Population:**
+
 ```bash
 # Add rating count columns to existing tables
 psql $DATABASE_URL -f backend/add_aoty_rating_counts.sql
@@ -187,12 +234,14 @@ python backend/populate_aoty_rating_counts.py --type all --batch-size 10
 ```
 
 **Database Enhancement:**
+
 - Adds `aoty_num_ratings` columns to albums, artists, and tracks tables
 - Batch processing with configurable limits
 - Resume capability for interrupted runs
 - Error handling and logging for production use
 
 **Caching Strategy:**
+
 - **Redis caching** for scraped data with configurable TTL
 - **In-memory fallback** when Redis is unavailable
 - **Smart cache keys** based on artist/album combinations
@@ -201,18 +250,21 @@ python backend/populate_aoty_rating_counts.py --type all --batch-size 10
 ### 🎵 Use Cases
 
 **Recommendation Enhancement:**
+
 - Weight recommendations by AOTY rating popularity
 - Surface critically acclaimed but undiscovered albums
 - Filter by minimum rating thresholds
 - Include review-based reasoning in AI responses
 
 **Music Discovery:**
+
 - "Similar Albums" recommendations from AOTY's algorithm
 - Genre-based exploration using AOTY's tagging system
 - Critical consensus analysis for new releases
 - User review sentiment for recommendation explanations
 
 **Data Quality:**
+
 - Cross-reference Spotify/Last.fm data with AOTY metadata
 - Resolve artist/album name discrepancies
 - Enrich sparse metadata with comprehensive AOTY details
@@ -223,12 +275,14 @@ python backend/populate_aoty_rating_counts.py --type all --batch-size 10
 ## Getting Started
 
 ### Prerequisites
+
 - Python 3.8+
 - Node.js 18+
 - PostgreSQL
 - Redis (optional, falls back to in-memory cache)
 
 ### Full Stack Setup (Docker)
+
 ```bash
 docker-compose up
 ```
@@ -236,6 +290,7 @@ docker-compose up
 ### Manual Setup
 
 #### Backend
+
 ```bash
 cd backend
 pip install -r requirements.txt
@@ -243,6 +298,7 @@ uvicorn main:app --reload  # Port 8000
 ```
 
 #### ML Service
+
 ```bash
 cd ml
 pip install -r requirements.txt
@@ -250,15 +306,17 @@ python main.py  # Port 8001
 ```
 
 #### Frontend
+
 ```bash
 # Main site
 cd frontend && npm install && npm run dev  # Port 3001
 
-# Auth app  
+# Auth app
 cd frontend/app && npm install && npm run dev  # Port 3000
 ```
 
 ### Environment Variables
+
 Configure `.env` files in `backend/`, `ml/`, and `frontend/app/` directories with your API keys for Spotify, Last.fm, Supabase, and OpenAI.
 
 ---
@@ -266,12 +324,14 @@ Configure `.env` files in `backend/`, `ml/`, and `frontend/app/` directories wit
 ## Current Status
 
 ✅ **Completed:**
+
 - AI agent architecture with conversational interface
 - Multi-platform data integration (Spotify, Last.fm, AOTY)
 - Modern React/Next.js frontend with chat interface
 - FastAPI backend with caching and rate limiting
 
 🚧 **In Progress:**
+
 - Enhanced playlist management features
 - Performance optimizations and deployment preparation
 - Advanced ML model training and fine-tuning
