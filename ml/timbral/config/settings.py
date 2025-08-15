@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     DEBUG: bool = False
     
     # Redis Configuration (Upstash)
-    REDIS_URL: str
+    REDIS_URL: Optional[str] = None
     REDIS_PASSWORD: Optional[str] = None
     REDIS_DB: int = 0
     

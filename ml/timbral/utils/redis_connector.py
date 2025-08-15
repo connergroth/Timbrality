@@ -37,16 +37,33 @@ class RedisConnector:
         Establish connection to Redis (Upstash).
         """
         try:
-            # TODO: Implement Redis connection
-            # - Parse REDIS_URL from settings
-            # - Handle authentication
-            # - Set connection pool settings
-            # - Test connection
-            pass
+            # Connect to Redis using URL from settings
+            if hasattr(settings, 'REDIS_URL') and settings.REDIS_URL:
+                self.redis_client = redis.from_url(
+                    settings.REDIS_URL,
+                    decode_responses=True,
+                    socket_connect_timeout=5,
+                    socket_timeout=5
+                )
+            else:
+                # Fallback for local Redis
+                self.redis_client = redis.Redis(
+                    host='localhost',
+                    port=6379,
+                    db=settings.REDIS_DB,
+                    decode_responses=True,
+                    socket_connect_timeout=5,
+                    socket_timeout=5
+                )
+            
+            # Test connection
+            self.redis_client.ping()
+            logger.info("Successfully connected to Redis")
             
         except Exception as e:
             logger.error(f"Failed to connect to Redis: {e}")
-            raise
+            self.redis_client = None
+            # Don't raise - allow graceful degradation
     
     def set_recommendations(
         self,
@@ -65,12 +82,16 @@ class RedisConnector:
         Returns:
             Success status
         """
+        if not self.redis_client:
+            return False
+            
         try:
-            # TODO: Implement recommendation caching
-            # - Serialize recommendations
-            # - Set with TTL
-            # - Use appropriate key format
-            pass
+            key = f"recommendations:user:{user_id}"
+            value = json.dumps(recommendations)
+            
+            self.redis_client.setex(key, ttl, value)
+            logger.debug(f"Cached recommendations for user {user_id}")
+            return True
             
         except Exception as e:
             logger.error(f"Failed to cache recommendations for user {user_id}: {e}")
@@ -89,12 +110,19 @@ class RedisConnector:
         Returns:
             Cached recommendations or None
         """
+        if not self.redis_client:
+            return None
+            
         try:
-            # TODO: Implement recommendation retrieval
-            # - Get from Redis
-            # - Deserialize data
-            # - Check freshness
-            pass
+            key = f"recommendations:user:{user_id}"
+            value = self.redis_client.get(key)
+            
+            if value:
+                recommendations = json.loads(value)
+                logger.debug(f"Retrieved cached recommendations for user {user_id}")
+                return recommendations
+            
+            return None
             
         except Exception as e:
             logger.error(f"Failed to retrieve recommendations for user {user_id}: {e}")
@@ -117,12 +145,17 @@ class RedisConnector:
         Returns:
             Success status
         """
+        if not self.redis_client:
+            return False
+            
         try:
-            # TODO: Implement embedding caching
-            # - Serialize embeddings
-            # - Set with TTL
-            # - Handle large data efficiently
-            pass
+            cache_key = f"embeddings:{key}"
+            # Use pickle for numpy arrays
+            value = pickle.dumps(embeddings)
+            
+            self.redis_client.setex(cache_key, ttl, value)
+            logger.debug(f"Cached embeddings with key {key}")
+            return True
             
         except Exception as e:
             logger.error(f"Failed to cache embeddings with key {key}: {e}")
@@ -141,12 +174,19 @@ class RedisConnector:
         Returns:
             Cached embeddings or None
         """
+        if not self.redis_client:
+            return None
+            
         try:
-            # TODO: Implement embedding retrieval
-            # - Get from Redis
-            # - Deserialize data
-            # - Handle missing keys
-            pass
+            cache_key = f"embeddings:{key}"
+            value = self.redis_client.get(cache_key)
+            
+            if value:
+                embeddings = pickle.loads(value)
+                logger.debug(f"Retrieved cached embeddings with key {key}")
+                return embeddings
+            
+            return None
             
         except Exception as e:
             logger.error(f"Failed to retrieve embeddings with key {key}: {e}")
