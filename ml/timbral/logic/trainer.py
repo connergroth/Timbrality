@@ -60,13 +60,35 @@ class ModelTrainer:
             Trained NMF model
         """
         try:
-            # TODO: Implement NMF training
-            # - Initialize NMF model
-            # - Preprocess data (log transformation, etc.)
-            # - Fit model
-            # - Validate results
-            # - Save model
-            pass
+            logger.info("Starting NMF model training...")
+            
+            # Initialize NMF model with provided or default parameters
+            model = NMFModel(
+                n_components=n_components,
+                random_state=random_state,
+                max_iter=max_iter,
+                tol=tol
+            )
+            
+            # Convert to numpy array if needed
+            if hasattr(user_item_matrix, 'values'):
+                matrix = user_item_matrix.values
+            else:
+                matrix = user_item_matrix
+            
+            # Train the model
+            model.fit(matrix)
+            
+            # Store training info
+            self.training_history['nmf'] = {
+                'n_users': model.n_users,
+                'n_items': model.n_items,
+                'n_components': model.n_components,
+                'training_completed': True
+            }
+            
+            logger.info("NMF model training completed successfully")
+            return model
             
         except Exception as e:
             logger.error(f"Failed to train NMF model: {e}")

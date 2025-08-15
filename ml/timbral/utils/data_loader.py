@@ -12,7 +12,7 @@ import logging
 import os
 from pathlib import Path
 
-from ..config.settings import settings
+from ..config.settings import settings, Constants
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +29,7 @@ class DataLoader:
         """
         Initialize the data loader.
         """
-        self.supported_formats = settings.Constants.SUPPORTED_DATA_FORMATS
+        self.supported_formats = Constants.SUPPORTED_DATA_FORMATS
     
     def load_user_interactions(
         self,
@@ -47,11 +47,32 @@ class DataLoader:
             DataFrame with user interactions
         """
         try:
-            # TODO: Implement interaction data loading
-            # - Load based on format
-            # - Validate required columns
-            # - Apply data cleaning
-            pass
+            if format.lower() == "csv":
+                df = pd.read_csv(filepath)
+            elif format.lower() == "parquet":
+                df = pd.read_parquet(filepath)
+            elif format.lower() == "json":
+                df = pd.read_json(filepath)
+            else:
+                raise ValueError(f"Unsupported format: {format}")
+            
+            # Validate required columns
+            required_cols = ['user_id', 'item_id']
+            missing_cols = [col for col in required_cols if col not in df.columns]
+            if missing_cols:
+                raise ValueError(f"Missing required columns: {missing_cols}")
+            
+            # Basic data cleaning
+            df = df.dropna(subset=required_cols)
+            df['user_id'] = df['user_id'].astype(int)
+            df['item_id'] = df['item_id'].astype(int)
+            
+            # Add rating column if not present (implicit feedback)
+            if 'rating' not in df.columns:
+                df['rating'] = 1.0
+            
+            logger.info(f"Loaded {len(df)} interactions from {filepath}")
+            return df
             
         except Exception as e:
             logger.error(f"Failed to load user interactions from {filepath}: {e}")
@@ -129,11 +150,37 @@ class DataLoader:
             User-item matrix as DataFrame
         """
         try:
-            # TODO: Implement matrix creation
-            # - Pivot interactions to matrix format
-            # - Handle missing values
-            # - Return sparse or dense matrix
-            pass
+            # Create continuous indices for users and items
+            unique_users = sorted(interactions_df[user_col].unique())
+            unique_items = sorted(interactions_df[item_col].unique())
+            
+            # Create mapping dictionaries
+            user_to_idx = {user: idx for idx, user in enumerate(unique_users)}
+            item_to_idx = {item: idx for idx, item in enumerate(unique_items)}
+            
+            # Map to continuous indices
+            interactions_df = interactions_df.copy()
+            interactions_df['user_idx'] = interactions_df[user_col].map(user_to_idx)
+            interactions_df['item_idx'] = interactions_df[item_col].map(item_to_idx)
+            
+            # Aggregate ratings if there are duplicates
+            interactions_agg = interactions_df.groupby(['user_idx', 'item_idx'])[value_col].mean().reset_index()
+            
+            # Create pivot table
+            matrix = interactions_agg.pivot(
+                index='user_idx', 
+                columns='item_idx', 
+                values=value_col
+            ).fillna(0)
+            
+            # Store mappings as attributes
+            self.user_to_idx = user_to_idx
+            self.item_to_idx = item_to_idx
+            self.idx_to_user = {idx: user for user, idx in user_to_idx.items()}
+            self.idx_to_item = {idx: item for item, idx in item_to_idx.items()}
+            
+            logger.info(f"Created user-item matrix: {matrix.shape[0]} users x {matrix.shape[1]} items")
+            return matrix
             
         except Exception as e:
             logger.error(f"Failed to create user-item matrix: {e}")
