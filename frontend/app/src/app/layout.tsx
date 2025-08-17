@@ -28,7 +28,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
-      <body className={`${inter.className} ${playfair.variable} bg-background text-foreground`}>
+      <body className={`${inter.className} ${playfair.variable} bg-neutral-900 text-foreground`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"

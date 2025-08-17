@@ -1,0 +1,101 @@
+/* Premium Dark Theme Enhancements - Updated to match landing page */
+:root {
+  /* Enhanced Background Gradients - Neutral grays */
+  --gradient-primary: linear-gradient(135deg, hsl(0, 0%, 6%) 0%, hsl(0, 0%, 8%) 50%, hsl(0, 0%, 6%) 100%);
+  --gradient-secondary: linear-gradient(135deg, hsl(0, 0%, 8%) 0%, hsl(0, 0%, 10%) 100%);
+  --gradient-accent: linear-gradient(135deg, hsl(0, 0%, 12%) 0%, hsl(0, 0%, 15%) 100%);
+  
+  /* Glass Morphism - Matching landing page */
+  --glass-bg: rgba(38, 38, 38, 0.4); /* neutral-800/40 */
+  --glass-border: rgba(64, 64, 64, 0.3); /* neutral-700/30 */
+  --glass-blur: blur(24px);
+  
+  /* Premium Shadows */
+  --shadow-premium: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+  --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.3);
+  --shadow-subtle: 0 4px 16px rgba(0, 0, 0, 0.2);
+  
+  /* Sophisticated Neutral Colors */
+  --neutral-deep: hsl(0, 0%, 6%); /* neutral-900 */
+  --neutral-rich: hsl(0, 0%, 8%); /* neutral-800 */
+  --neutral-medium: hsl(0, 0%, 12%); /* neutral-700 */
+  --neutral-light: hsl(0, 0%, 15%); /* neutral-700 */
+  
+  /* Text with Better Contrast */
+  --text-primary: hsl(0, 0%, 95%);
+  --text-secondary: hsl(0, 0%, 75%);
+  --text-muted: hsl(0, 0%, 55%);
+}
+
+/* Premium Card Styles - Updated for neutral theme */
+.premium-card {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  box-shadow: var(--shadow-glass);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.premium-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-premium);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Premium Button Styles - Updated for neutral theme */
+.premium-button {
+  background: linear-gradient(135deg, hsl(0, 0%, 95%) 0%, hsl(0, 0%, 98%) 100%);
+  color: hsl(0, 0%, 6%);
+  border: none;
+  border-radius: 12px;
+  box-shadow: var(--shadow-subtle);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.premium-button:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-premium);
+  background: linear-gradient(135deg, hsl(0, 0%, 90%) 0%, hsl(0, 0%, 95%) 100%);
+}
+
+/* Premium Typography - Updated for neutral theme */
+.premium-heading {
+  background: linear-gradient(135deg, var(--text-primary), var(--text-secondary));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/* Premium Background - Updated for neutral theme */
+.premium-background {
+  background: var(--gradient-primary);
+  position: relative;
+}
+
+.premium-background::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+              radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.1) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+/* Additional utility classes for landing page consistency */
+.glass-morphism {
+  background: rgba(38, 38, 38, 0.4);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(64, 64, 64, 0.3);
+  border-radius: 16px;
+}
+
+.neutral-gradient {
+  background: linear-gradient(135deg, hsl(0, 0%, 6%) 0%, hsl(0, 0%, 8%) 50%, hsl(0, 0%, 6%) 100%);
+}
+
+.modern-transition {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}

@@ -70,8 +70,8 @@ export function ChatHistory({ userId, onChatSelect, onNewChat, className = '' }:
       {/* Header */}
       <div className="flex items-start justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-inter font-semibold tracking-tight mb-2">Chat History</h1>
-          <p className="text-muted-foreground font-inter">Your conversations with Timbrality</p>
+          <h1 className="text-4xl font-playfair font-semibold tracking-tight mb-2">Chat History</h1>
+          <p className="text-muted-foreground font-inter">Your conversations with Timbre</p>
         </div>
         <Button 
           onClick={onNewChat}

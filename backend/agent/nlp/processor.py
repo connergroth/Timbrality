@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from datetime import datetime
 
 from ..types import IntentType
+from ..llm.service import LLMService
 
 
 @dataclass
@@ -24,6 +25,7 @@ class NaturalLanguageProcessor:
     def __init__(self):
         self.intent_patterns = self._build_intent_patterns()
         self.entity_patterns = self._build_entity_patterns()
+        self.llm_service = LLMService()
     
     async def parse_intent(self, user_input: str, context) -> IntentResult:
         """Parse user input to detect intent and extract entities."""
@@ -68,7 +70,7 @@ class NaturalLanguageProcessor:
         elif intent_result.intent == IntentType.ANALYZE_PLAYLIST:
             return self._generate_playlist_analysis_response(tracks, explanations)
         elif intent_result.intent == IntentType.CONVERSATIONAL:
-            return self._generate_conversational_response(user_input, intent_result)
+            return await self._generate_conversational_response(user_input, intent_result)
         else:
             return self._generate_general_response(tracks, explanations)
     
@@ -447,37 +449,230 @@ class NaturalLanguageProcessor:
         else:
             return f"Here are {count} personalized recommendations based on your preferences."
     
-    def _generate_conversational_response(self, user_input: str, intent_result: IntentResult) -> str:
-        """Generate conversational response for greetings and general chat."""
+    async def _generate_conversational_response(self, user_input: str, intent_result: IntentResult) -> str:
+        """Generate conversational response for greetings and general chat using pre-chosen responses first, then LLM for unmatched inputs."""
         user_input_lower = user_input.lower().strip()
         
+        # Try pre-chosen responses first for common conversational patterns
         # Greetings
         if any(greeting in user_input_lower for greeting in ['hey', 'hi', 'hello', 'hiya', 'sup', 'yo']):
-            return "Hey! I'm Timbre, your AI music companion. I can help you discover new music, find similar tracks, analyze playlists, or explore different vibes. What kind of music are you in the mood for?"
+            return "**Hey there!** I'm **Timbre**, your AI music companion. I can help you discover new music, find similar tracks, analyze playlists, or explore different vibes. What kind of music are you in the mood for?"
         
         # Morning/evening greetings
         elif any(greeting in user_input_lower for greeting in ['good morning', 'good afternoon', 'good evening']):
-            return "Hello! Ready to discover some great music today? I can help you find tracks based on your mood, search for specific songs, or recommend similar music to what you love."
+            return "**Hello!** Ready to discover some great music today? I can help you find tracks based on your mood, search for specific songs, or recommend similar music to what you love."
         
         # How are you / what's up
         elif any(phrase in user_input_lower for phrase in ['how are you', 'whats up', "what's up", "how's it going"]):
-            return "I'm doing great, thanks for asking! I'm here and ready to help you explore music. What can I help you discover today?"
+            return "**I'm doing great, thanks for asking!** I'm here and ready to help you explore music. What can I help you discover today?"
         
         # Thanks
         elif any(thanks in user_input_lower for thanks in ['thanks', 'thank you', 'thx']):
-            return "You're welcome! Happy to help you discover amazing music. Anything else you'd like to explore?"
+            return "**You're welcome!** Happy to help you discover amazing music. Anything else you'd like to explore?"
         
         # Goodbye
         elif any(bye in user_input_lower for bye in ['bye', 'goodbye', 'see ya', 'later', 'cya']):
-            return "See you later! Thanks for exploring music with me. Come back anytime you want to discover something new!"
+            return "**See you later!** Thanks for exploring music with me. Come back anytime you want to discover something new!"
         
         # Help/capabilities
-        elif any(phrase in user_input_lower for phrase in ['what can you do', 'help', 'what are you']):
-            return "I'm Timbre, your AI music companion! I can help you:\n\n• Search for specific tracks or artists\n• Find music similar to songs you love\n• Discover music based on moods and vibes\n• Analyze your Spotify playlists\n• Get personalized recommendations\n\nJust tell me what you're looking for, like 'find me some chill indie music' or 'something similar to Radiohead'!"
+        elif any(phrase in user_input_lower for phrase in ['what can you do', 'help', 'what are you', 'what can you do for me', 'what do you do', 'tell me what you can do', 'show me what you can do', 'capabilities', 'features']):
+            return """**I'm Timbre, your AI music companion!**
+
+### What I can do for you:
+
+- **Search & Discover**: Find specific tracks, albums, or artists by name
+- **Similar Music**: Discover songs similar to tracks you already love
+- **Mood-Based Discovery**: Find music that matches specific vibes and feelings
+- **Playlist Analysis**: Analyze your Spotify playlists for insights and patterns
+- **Personalized Recommendations**: Get AI-powered suggestions based on your taste
+- **Music Exploration**: Help you discover new genres and artists
+
+### How to get started:
+
+Just tell me what you're looking for! For example:
+- *"Find me some chill indie music"*
+- *"Something similar to Radiohead"*
+- *"I need upbeat music for working out"*
+- *"Analyze my summer playlist"*
+
+What kind of music discovery would you like to explore today?"""
         
         # Default friendly response
+        elif any(phrase in user_input_lower for phrase in ['who are you', 'introduce yourself', 'tell me about yourself']):
+            return """**I'm Timbre, your music discovery companion!**
+
+I'm here to help you explore and discover amazing music! Here are some things you can try:
+
+- **Find similar songs** to tracks you already love
+- **Get mood-based recommendations** for different vibes and feelings  
+- **Search for specific tracks** or artists you're curious about
+- **Analyze your playlists** to discover patterns and insights
+
+What would you like to explore today? Just tell me what you're in the mood for!"""
+        
+        # For unmatched conversational inputs, always use LLM for natural responses
         else:
-            return "I'm Timbre, your music discovery companion! I'm here to help you explore and discover music. Try asking me to find similar songs, recommend music for a specific mood, or search for tracks by your favorite artists!"
+            # Always try to query OpenAI for unmatched inputs
+            if self.llm_service.client:
+                try:
+                    system_prompt = """You are Timbre, a friendly and enthusiastic AI music companion. You help users discover music and have natural conversations about music.
+
+Your personality:
+- Warm, enthusiastic, and knowledgeable about music
+- Always ready to help with music discovery
+- Conversational and engaging, not robotic
+- Can handle greetings, casual chat, and music-related questions
+
+Your capabilities:
+- **Search & Discover**: Find specific tracks, albums, or artists by name
+- **Similar Music**: Discover songs similar to tracks you already love
+- **Mood-Based Discovery**: Find music that matches specific vibes and feelings
+- **Playlist Analysis**: Analyze your Spotify playlists for insights and patterns
+- **Personalized Recommendations**: Get AI-powered suggestions based on your taste
+- **Music Exploration**: Help you discover new genres and artists
+
+RESPONSE GUIDELINES:
+1. **ALWAYS use proper markdown formatting** - this is mandatory
+2. Use **bold** for emphasis on key points and important information
+3. Use *italic* for song titles, album names, and artist names
+4. When listing capabilities or features, use proper markdown bullet points with `-` or `*`
+5. Use `###` for section headers when organizing information
+6. Use `>` for blockquotes when appropriate
+
+SPECIFIC INSTRUCTIONS FOR CAPABILITY QUESTIONS:
+When users ask about what you can do, your capabilities, or how you can help them:
+- **ALWAYS respond with the comprehensive capabilities list above**
+- Use the exact formatting shown above with **bold** headers and bullet points
+- Include the "How to get started" section with examples
+- Make it clear and organized with proper markdown structure
+
+GENERAL RESPONSE RULES:
+- Keep responses conversational, friendly, and varied
+- Don't repeat the exact same phrases
+- Be natural and engaging while staying helpful
+- Always maintain Timbre's enthusiastic personality
+- Focus on music discovery and helping users explore music
+
+Remember: Every response MUST use proper markdown formatting, and capability questions MUST show the full formatted list."""
+                    
+                    # Log what we're sending to OpenAI
+                    print(f"\n=== OPENAI REQUEST ===")
+                    print(f"User Input: {user_input}")
+                    print(f"System Prompt: {system_prompt}")
+                    print(f"Model: gpt-3.5-turbo")
+                    print(f"Max Tokens: 150")
+                    print(f"Temperature: 0.8")
+                    print(f"========================\n")
+                    
+                    response = await self.llm_service.client.chat.completions.create(
+                        model="gpt-3.5-turbo",
+                        messages=[
+                            {"role": "system", "content": system_prompt},
+                            {"role": "user", "content": user_input}
+                        ],
+                        max_tokens=150,
+                        temperature=0.8
+                    )
+                    
+                    # Log what we received from OpenAI
+                    print(f"\n=== OPENAI RESPONSE ===")
+                    print(f"Response Object: {response}")
+                    print(f"Choices Count: {len(response.choices) if response.choices else 0}")
+                    if response.choices and response.choices[0]:
+                        print(f"First Choice: {response.choices[0]}")
+                        print(f"Message Content: {response.choices[0].message.content if response.choices[0].message else 'No message'}")
+                    print(f"Usage: {response.usage if hasattr(response, 'usage') else 'No usage info'}")
+                    print(f"========================\n")
+                    
+                    if response.choices and response.choices[0].message.content:
+                        final_response = response.choices[0].message.content.strip()
+                        print(f"Final Response (trimmed): {final_response}")
+                        return final_response
+                    
+                except Exception as e:
+                    print(f"LLM response generation failed: {e}")
+                    print(f"Exception type: {type(e)}")
+                    import traceback
+                    print(f"Full traceback: {traceback.format_exc()}")
+            
+            # Only use static fallback if LLM service is completely unavailable
+            if not self.llm_service.client:
+                return """**I'm Timbre, your music discovery companion!**
+
+I'm here to help you explore and discover amazing music! Here are some things you can try:
+
+- **Find similar songs** to tracks you already love
+- **Get mood-based recommendations** for different vibes and feelings  
+- **Search for specific tracks** or artists you're curious about
+- **Analyze your playlists** to discover patterns and insights
+
+What would you like to explore today? Just tell me what you're in the mood for!"""
+            
+            # If LLM is available but failed, retry with a simpler prompt
+            try:
+                retry_system_prompt = """You are Timbre, a friendly AI music companion. 
+
+Your capabilities:
+- **Search & Discover**: Find specific tracks, albums, or artists
+- **Similar Music**: Discover songs similar to tracks you love
+- **Mood-Based Discovery**: Find music for specific vibes
+- **Playlist Analysis**: Analyze Spotify playlists
+- **Personalized Recommendations**: AI-powered suggestions
+- **Music Exploration**: Discover new genres
+
+IMPORTANT: Always use markdown formatting with **bold** for emphasis and bullet points for lists. For capability questions, show the full list above."""
+                
+                # Log retry attempt
+                print(f"\n=== OPENAI RETRY REQUEST ===")
+                print(f"User Input: {user_input}")
+                print(f"System Prompt: {retry_system_prompt}")
+                print(f"Model: gpt-3.5-turbo (retry)")
+                print(f"Max Tokens: 150")
+                print(f"Temperature: 0.7")
+                print(f"========================\n")
+                
+                response = await self.llm_service.client.chat.completions.create(
+                    model="gpt-3.5-turbo",
+                    messages=[
+                        {"role": "system", "content": retry_system_prompt},
+                        {"role": "user", "content": user_input}
+                    ],
+                    max_tokens=150,
+                    temperature=0.7
+                )
+                
+                # Log retry response
+                print(f"\n=== OPENAI RETRY RESPONSE ===")
+                print(f"Response Object: {response}")
+                print(f"Choices Count: {len(response.choices) if response.choices else 0}")
+                if response.choices and response.choices[0]:
+                    print(f"First Choice: {response.choices[0]}")
+                    print(f"Message Content: {response.choices[0].message.content if response.choices[0].message else 'No message'}")
+                print(f"Usage: {response.usage if hasattr(response, 'usage') else 'No usage info'}")
+                print(f"========================\n")
+                
+                if response.choices and response.choices[0].message.content:
+                    final_response = response.choices[0].message.content.strip()
+                    print(f"Final Retry Response (trimmed): {final_response}")
+                    return final_response
+                    
+            except Exception as e:
+                print(f"LLM retry failed: {e}")
+                print(f"Retry Exception type: {type(e)}")
+                import traceback
+                print(f"Retry Full traceback: {traceback.format_exc()}")
+            
+            # Ultimate fallback only if everything else fails
+            return """**I'm Timbre, your music discovery companion!**
+
+I'm here to help you explore and discover amazing music! Here are some things you can try:
+
+- **Find similar songs** to tracks you already love
+- **Get mood-based recommendations** for different vibes and feelings  
+- **Search for specific tracks** or artists you're curious about
+- **Analyze your playlists** to discover patterns and insights
+
+What would you like to explore today? Just tell me what you're in the mood for!"""
     
     def _generate_no_results_response(self, user_input: str, intent_result: IntentResult) -> str:
         """Generate response when no results are found."""

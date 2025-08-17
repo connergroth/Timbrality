@@ -5,7 +5,6 @@ import { useState, useEffect } from 'react'
 import { Navbar } from '@/components/Navbar'
 import { NavigationSidebar } from '@/components/NavigationSidebar'
 import { useSidebar } from '@/contexts/SidebarContext'
-import { AlbumCard } from '@/components/AlbumCard'
 import { Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -147,7 +146,7 @@ export default function ExplorePage() {
   // Show loading state while checking authentication
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-neutral-900 flex items-center justify-center">
         <div className="relative w-16 h-16">
           <div className="absolute inset-0 rounded-full border-4 border-white/20"></div>
           <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-white animate-spin"></div>
@@ -161,13 +160,13 @@ export default function ExplorePage() {
   // Show auth page if no user
   if (!user) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-neutral-900 flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-inter font-semibold mb-4 tracking-tight">Please sign in to continue</h1>
-          <p className="text-muted-foreground mb-4 font-inter">You need to authenticate to access Timbrality.</p>
+          <h1 className="text-2xl font-inter font-semibold mb-4 tracking-tight text-white">Please sign in to continue</h1>
+          <p className="text-neutral-300 mb-4 font-inter">You need to authenticate to access Timbrality.</p>
           <button 
             onClick={() => window.location.href = '/auth'}
-            className="bg-primary text-primary-foreground px-6 py-3 rounded-lg font-inter font-medium hover:bg-primary/90 transition-colors"
+            className="bg-neutral-800 text-white px-6 py-3 rounded-lg font-inter font-medium hover:bg-neutral-700 transition-colors"
           >
             Go to Auth Page
           </button>
@@ -183,7 +182,7 @@ export default function ExplorePage() {
 
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="flex min-h-screen bg-neutral-900">
       {/* Navigation Sidebar */}
       <NavigationSidebar 
         user={user}
@@ -204,65 +203,65 @@ export default function ExplorePage() {
           <div className="flex items-end justify-between mb-8">
             {/* Navigation Tabs */}
             <div className="flex-1">
-              <div className="bg-transparent border-b border-border pb-0 h-auto">
+              <div className="bg-transparent border-b border-neutral-700/50 pb-0 h-auto">
                 <div className="flex items-end justify-between">
-                  <div className="flex">
+                  <div className="flex gap-1">
                     <button 
                       onClick={() => setActiveTab('for-you')}
-                      className={`bg-transparent px-0 mr-8 pb-3 font-medium transition-colors ${
+                      className={`px-4 py-2 mb-1 font-medium transition-all duration-200 rounded-t-lg ${
                         activeTab === 'for-you' 
-                          ? 'text-foreground border-b-2 border-primary' 
-                          : 'text-muted-foreground hover:text-foreground'
+                          ? 'text-white bg-neutral-800 border-b-2 border-white' 
+                          : 'text-neutral-400 hover:text-white hover:bg-neutral-800/50'
                       }`}
                     >
                       For You
                     </button>
                     <button 
                       onClick={() => setActiveTab('top-rated')}
-                      className={`bg-transparent px-0 mr-8 pb-3 font-medium transition-colors ${
+                      className={`px-4 py-2 mb-1 font-medium transition-all duration-200 rounded-t-lg ${
                         activeTab === 'top-rated' 
-                          ? 'text-foreground border-b-2 border-primary' 
-                          : 'text-muted-foreground hover:text-foreground'
+                          ? 'text-white bg-neutral-800 border-b-2 border-white' 
+                          : 'text-neutral-400 hover:text-white hover:bg-neutral-800/50'
                       }`}
                     >
                       Top Rated
                     </button>
                     <button 
                       onClick={() => setActiveTab('new')}
-                      className={`bg-transparent px-0 mr-8 pb-3 font-medium transition-colors ${
+                      className={`px-4 py-2 mb-1 font-medium transition-all duration-200 rounded-t-lg ${
                         activeTab === 'new' 
-                          ? 'text-foreground border-b-2 border-primary' 
-                          : 'text-muted-foreground hover:text-foreground'
+                          ? 'text-white bg-neutral-800 border-b-2 border-white' 
+                          : 'text-neutral-400 hover:text-white hover:bg-neutral-800/50'
                       }`}
                     >
                       New
                     </button>
                     <button 
                       onClick={() => setActiveTab('trending')}
-                      className={`bg-transparent px-0 mr-8 pb-3 font-medium transition-colors ${
+                      className={`px-4 py-2 mb-1 font-medium transition-all duration-200 rounded-t-lg ${
                         activeTab === 'trending' 
-                          ? 'text-foreground border-b-2 border-primary' 
-                          : 'text-muted-foreground hover:text-foreground'
+                          ? 'text-white bg-neutral-800 border-b-2 border-white' 
+                          : 'text-neutral-400 hover:text-white hover:bg-neutral-800/50'
                       }`}
                     >
                       Trending
                     </button>
                     <button 
                       onClick={() => setActiveTab('mood')}
-                      className={`bg-transparent px-0 mr-8 pb-3 font-medium transition-colors ${
+                      className={`px-4 py-2 mb-1 font-medium transition-all duration-200 rounded-t-lg ${
                         activeTab === 'mood' 
-                          ? 'text-foreground border-b-2 border-primary' 
-                          : 'text-muted-foreground hover:text-foreground'
+                          ? 'text-white bg-neutral-800 border-b-2 border-white' 
+                          : 'text-neutral-400 hover:text-white hover:bg-neutral-800/50'
                       }`}
                     >
                       By Mood/Tag
                     </button>
                     <button 
                       onClick={() => setActiveTab('decade')}
-                      className={`bg-transparent px-0 pb-3 font-medium transition-colors ${
+                      className={`px-4 py-2 mb-1 font-medium transition-all duration-200 rounded-t-lg ${
                         activeTab === 'decade' 
-                          ? 'text-foreground border-b-2 border-primary' 
-                          : 'text-muted-foreground hover:text-foreground'
+                          ? 'text-white bg-neutral-800 border-b-2 border-white' 
+                          : 'text-neutral-400 hover:text-white hover:bg-neutral-800/50'
                       }`}
                     >
                       By Decade/Genre
@@ -270,13 +269,13 @@ export default function ExplorePage() {
                   </div>
                   
                   {/* Search Bar */}
-                  <div className="pb-3">
+                  <div className="pb-1">
                     <Input
                       type="text"
                       placeholder="Search albums or artists..."
                       value={searchQuery}
                       onChange={(e) => setSearchParams(e.target.value)}
-                      className="w-80 h-10 rounded-full pl-4 pr-4 bg-card border border-border/50 focus:ring-0 focus:outline-none focus-visible:ring-0 focus-visible:outline-none focus:ring-offset-0 focus-visible:ring-offset-0 outline-none transition-colors text-sm font-inter placeholder:text-muted-foreground"
+                      className="w-80 h-10 rounded-full pl-4 pr-4 bg-neutral-800 border border-neutral-700 focus:ring-0 focus:outline-none focus-visible:ring-0 focus-visible:outline-none focus:ring-offset-0 focus-visible:ring-offset-0 outline-none transition-colors text-sm text-white placeholder:text-neutral-400 focus:border-neutral-600"
                       style={{ outline: 'none', boxShadow: 'none' }}
                     />
                   </div>
@@ -289,7 +288,7 @@ export default function ExplorePage() {
           <div className="w-full">
             {activeTab === 'for-you' && (
               <div className="mb-6">
-                <h2 className="text-xl font-semibold text-foreground mb-6">Recommended for You</h2>
+                <h2 className="text-xl font-playfair text-white mb-6">Recommended for You</h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
                   {filteredAlbums.map((album) => (
                     <div key={album.id} className="group cursor-pointer">
@@ -303,7 +302,7 @@ export default function ExplorePage() {
                             target.src = 'https://via.placeholder.com/300x300/333/fff?text=No+Image'
                           }}
                         />
-                        <div className="absolute top-2 right-2 bg-primary/80 text-primary-foreground text-xs px-2 py-1 rounded-full">
+                        <div className="absolute top-2 right-2 bg-neutral-800/90 text-white text-xs px-2 py-1 rounded-full">
                           {album.rating}
                         </div>
                       </div>
@@ -324,7 +323,7 @@ export default function ExplorePage() {
 
             {activeTab === 'top-rated' && (
               <div className="mb-6">
-                <h2 className="text-xl font-semibold text-foreground mb-6">Top Rated Albums</h2>
+                <h2 className="text-xl font-playfair text-white mb-6">Top Rated Albums</h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
                   {filteredAlbums
                     .sort((a, b) => b.rating - a.rating)
@@ -340,17 +339,17 @@ export default function ExplorePage() {
                               target.src = 'https://via.placeholder.com/300x300/333/fff?text=No+Image'
                             }}
                           />
-                          <div className="absolute top-2 right-2 bg-primary/80 text-primary-foreground text-xs px-2 py-1 rounded-full">
+                          <div className="absolute top-2 right-2 bg-neutral-800/90 text-white text-xs px-2 py-1 rounded-full">
                             {album.rating}
                           </div>
                         </div>
-                        <h3 className="font-medium text-foreground text-sm mb-1 truncate group-hover:text-muted-foreground">
+                        <h3 className="font-medium text-white text-sm mb-1 truncate group-hover:text-neutral-300">
                           {album.title}
                         </h3>
-                        <p className="text-muted-foreground text-xs mb-1">
+                        <p className="text-neutral-400 text-xs mb-1">
                           {album.artist}
                         </p>
-                        <p className="text-muted-foreground/70 text-xs">
+                        <p className="text-neutral-500 text-xs">
                           {album.year}
                         </p>
                       </div>
@@ -361,7 +360,7 @@ export default function ExplorePage() {
 
             {activeTab === 'new' && (
               <div className="mb-6">
-                <h2 className="text-xl font-semibold text-foreground mb-6">New Releases</h2>
+                <h2 className="text-xl font-playfair text-white mb-6">New Releases</h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
                   {filteredAlbums
                     .sort((a, b) => b.year - a.year)
@@ -377,17 +376,17 @@ export default function ExplorePage() {
                               target.src = 'https://via.placeholder.com/300x300/333/fff?text=No+Image'
                             }}
                           />
-                          <div className="absolute top-2 right-2 bg-primary/80 text-primary-foreground text-xs px-2 py-1 rounded-full">
+                          <div className="absolute top-2 right-2 bg-neutral-800/90 text-white text-xs px-2 py-1 rounded-full">
                             {album.rating}
                           </div>
                         </div>
-                        <h3 className="font-medium text-foreground text-sm mb-1 truncate group-hover:text-muted-foreground">
+                        <h3 className="font-medium text-white text-sm mb-1 truncate group-hover:text-neutral-300">
                           {album.title}
                         </h3>
-                        <p className="text-muted-foreground text-xs mb-1">
+                        <p className="text-neutral-400 text-xs mb-1">
                           {album.artist}
                         </p>
-                        <p className="text-muted-foreground/70 text-xs">
+                        <p className="text-neutral-500 text-xs">
                           {album.year}
                         </p>
                       </div>
@@ -398,7 +397,7 @@ export default function ExplorePage() {
 
             {activeTab === 'trending' && (
               <div className="mb-6">
-                <h2 className="text-xl font-semibold text-foreground mb-6">Trending Now</h2>
+                <h2 className="text-xl font-playfair text-white mb-6">Trending Now</h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
                   {filteredAlbums
                     .sort(() => Math.random() - 0.5)
@@ -415,17 +414,17 @@ export default function ExplorePage() {
                               target.src = 'https://via.placeholder.com/300x300/333/fff?text=No+Image'
                             }}
                           />
-                          <div className="absolute top-2 right-2 bg-primary/80 text-primary-foreground text-xs px-2 py-1 rounded-full">
+                          <div className="absolute top-2 right-2 bg-neutral-800/90 text-white text-xs px-2 py-1 rounded-full">
                             {album.rating}
                           </div>
                         </div>
-                        <h3 className="font-medium text-foreground text-sm mb-1 truncate group-hover:text-muted-foreground">
+                        <h3 className="font-medium text-white text-sm mb-1 truncate group-hover:text-neutral-300">
                           {album.title}
                         </h3>
-                        <p className="text-muted-foreground text-xs mb-1">
+                        <p className="text-neutral-400 text-xs mb-1">
                           {album.artist}
                         </p>
-                        <p className="text-muted-foreground/70 text-xs">
+                        <p className="text-neutral-500 text-xs">
                           {album.year}
                         </p>
                       </div>
@@ -436,7 +435,7 @@ export default function ExplorePage() {
 
             {activeTab === 'mood' && (
               <div className="mb-6">
-                <h2 className="text-xl font-semibold text-foreground mb-6">Browse by Mood & Tag</h2>
+                <h2 className="text-xl font-playfair text-white mb-6">Browse by Mood & Tag</h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
                   {filteredAlbums
                     .filter(album => album.genre)
@@ -452,20 +451,20 @@ export default function ExplorePage() {
                               target.src = 'https://via.placeholder.com/300x300/333/fff?text=No+Image'
                             }}
                           />
-                          <div className="absolute top-2 right-2 bg-primary/80 text-primary-foreground text-xs px-2 py-1 rounded-full">
+                          <div className="absolute top-2 right-2 bg-neutral-800/90 text-white text-xs px-2 py-1 rounded-full">
                             {album.rating}
                           </div>
-                          <div className="absolute bottom-2 left-2 bg-secondary/80 text-secondary-foreground text-xs px-2 py-1 rounded-full">
+                          <div className="absolute bottom-2 left-2 bg-neutral-700/90 text-neutral-200 text-xs px-2 py-1 rounded-full">
                             {album.genre}
                           </div>
                         </div>
-                        <h3 className="font-medium text-foreground text-sm mb-1 truncate group-hover:text-muted-foreground">
+                        <h3 className="font-medium text-white text-sm mb-1 truncate group-hover:text-neutral-300">
                           {album.title}
                         </h3>
-                        <p className="text-muted-foreground text-xs mb-1">
+                        <p className="text-neutral-400 text-xs mb-1">
                           {album.artist}
                         </p>
-                        <p className="text-muted-foreground/70 text-xs">
+                        <p className="text-neutral-500 text-xs">
                           {album.year}
                         </p>
                       </div>
@@ -476,7 +475,7 @@ export default function ExplorePage() {
 
             {activeTab === 'decade' && (
               <div className="mb-6">
-                <h2 className="text-xl font-semibold text-foreground mb-6">Browse by Decade & Genre</h2>
+                <h2 className="text-xl font-playfair text-white mb-6">Browse by Decade & Genre</h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
                   {filteredAlbums
                     .sort((a, b) => {
@@ -496,20 +495,20 @@ export default function ExplorePage() {
                               target.src = 'https://via.placeholder.com/300x300/333/fff?text=No+Image'
                             }}
                           />
-                          <div className="absolute top-2 right-2 bg-primary/80 text-primary-foreground text-xs px-2 py-1 rounded-full">
+                          <div className="absolute top-2 right-2 bg-neutral-800/90 text-white text-xs px-2 py-1 rounded-full">
                             {album.rating}
                           </div>
-                          <div className="absolute bottom-2 left-2 bg-secondary/80 text-secondary-foreground text-xs px-2 py-1 rounded-full">
+                          <div className="absolute bottom-2 left-2 bg-neutral-700/90 text-neutral-200 text-xs px-2 py-1 rounded-full">
                             {Math.floor(album.year / 10) * 10}s
                           </div>
                         </div>
-                        <h3 className="font-medium text-foreground text-sm mb-1 truncate group-hover:text-muted-foreground">
+                        <h3 className="font-medium text-white text-sm mb-1 truncate group-hover:text-neutral-300">
                           {album.title}
                         </h3>
-                        <p className="text-muted-foreground text-xs mb-1">
+                        <p className="text-neutral-400 text-xs mb-1">
                           {album.artist}
                         </p>
-                        <p className="text-muted-foreground/70 text-xs">
+                        <p className="text-neutral-500 text-xs">
                           {album.year}
                         </p>
                       </div>

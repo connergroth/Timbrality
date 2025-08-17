@@ -141,7 +141,7 @@ export const TastePreview = () => {
           
           <div
             ref={carouselRef}
-            className={`flex gap-6 ${
+            className={`flex gap-8 ${
               isPaused ? '' : 'animate-scroll-left-smooth'
             } hover:pause-animation`}
             onMouseEnter={() => setIsPaused(true)}
@@ -170,9 +170,9 @@ export const TastePreview = () => {
                   ></div>
                 </div>
 
-                <div className="flex items-start space-x-3">
-                  {/* Album Cover with Play Button */}
-                  <div className="relative w-14 h-14 rounded-xl overflow-hidden bg-gradient-to-br from-neutral-700/50 to-neutral-800/50 flex items-center justify-center flex-shrink-0 border border-neutral-600/30 group-hover:border-neutral-500/50 transition-all duration-300">
+                <div className="flex items-start space-x-5">
+                  {/* Enhanced Album Cover with Play Button */}
+                  <div className="relative w-20 h-20 rounded-2xl overflow-hidden bg-gradient-to-br from-neutral-700/60 to-neutral-800/60 flex items-center justify-center flex-shrink-0 border border-neutral-600/40 group-hover:border-neutral-500/60 transition-all duration-300 shadow-lg group-hover:shadow-xl">
                     {track.cover_art ? (
                       <img
                         src={track.cover_art}
@@ -189,13 +189,13 @@ export const TastePreview = () => {
                       />
                     ) : null}
                     <span 
-                      className="text-xl font-playfair font-bold text-white"
+                      className="text-2xl font-playfair font-bold text-white"
                       style={{ display: track.cover_art ? 'none' : 'flex' }}
                     >
-                      <Music className="h-7 w-7" />
+                      <Music className="h-10 w-10" />
                     </span>
                     
-                    {/* Play button overlay */}
+                    {/* Enhanced Play button overlay */}
                     {hoveredTrack === track.id && (
                       <div 
                         className="absolute inset-0 bg-gradient-to-br from-black/70 to-black/50 flex items-center justify-center transition-all duration-300 backdrop-blur-sm"
@@ -204,45 +204,51 @@ export const TastePreview = () => {
                           handlePlayPause(track.id);
                         }}
                       >
-                        <div className="bg-white/20 backdrop-blur-md rounded-full p-2 border border-white/30 transition-all duration-300 hover:scale-110">
+                        <div className="bg-white/20 backdrop-blur-md rounded-full p-3 border border-white/30 transition-all duration-300 hover:scale-110">
                           {playingTrack === track.id ? (
-                            <Pause className="h-4 w-4 text-white" />
+                            <Pause className="h-6 w-6 text-white" />
                           ) : (
-                            <Play className="h-4 w-4 text-white ml-0.5" />
+                            <Play className="h-6 w-6 text-white ml-0.5" />
                           )}
                         </div>
                       </div>
                     )}
                   </div>
 
-                  {/* Track Info */}
-                  <div className="flex-1 space-y-2 min-w-0">
-                    <h3 className="font-playfair text-base font-bold text-white leading-tight group-hover:text-neutral-100 transition-colors truncate">
-                      {track.name}
-                    </h3>
-                    <p className="font-inter text-sm text-neutral-300 leading-tight">
-                      {track.artist}
+                  {/* Enhanced Track Info */}
+                  <div className="flex-1 space-y-3 min-w-0">
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-playfair text-lg font-bold text-white leading-tight group-hover:text-neutral-100 transition-colors truncate">
+                        {track.name}
+                      </h3>
+                      <span className="text-sm text-neutral-400 font-mono bg-neutral-800/60 px-2 py-1 rounded-md border border-neutral-700/40">{track.duration}</span>
+                    </div>
+                    <p className="font-inter text-base text-neutral-300 leading-tight font-medium">
+                      {track.artist} • {track.year}
                     </p>
-                    <p className="text-neutral-400 text-xs leading-relaxed line-clamp-2 font-inter">
+                    <p className="text-neutral-400 italic text-sm leading-relaxed line-clamp-2 font-inter bg-neutral-800/30 px-3 py-2 rounded-lg border border-neutral-700/20">
                       "{track.explanation}"
                     </p>
                   </div>
                 </div>
 
-                {/* AI Reasoning */}
-                <div className="bg-gradient-to-br from-neutral-700/20 to-neutral-800/20 rounded-xl p-3 border border-neutral-600/20">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-xs font-semibold text-indigo-400 font-inter">{track.confidence}% Match</span>
-                    <span className="text-xs text-neutral-400 font-inter">• {track.reason}</span>
+                {/* Enhanced AI Reasoning */}
+                <div className="bg-gradient-to-br from-neutral-700/30 to-neutral-800/30 rounded-2xl p-4 border border-neutral-600/30 backdrop-blur-sm">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="p-2 bg-green-500/20 rounded-lg border border-green-500/30">
+                      <BarChart3 className="h-4 w-4 text-green-400" />
+                    </div>
+                    <span className="text-sm font-bold text-green-400 font-inter">{track.confidence}% Match</span>
+                    <span className="text-sm text-neutral-400 font-inter">• {track.reason}</span>
                   </div>
                   
-                  {/* Tags */}
-                  <div className="flex flex-wrap gap-1">
-                    {track.tags.slice(0, 2).map((tag) => (
+                  {/* Enhanced Tags */}
+                  <div className="flex flex-wrap gap-2">
+                    {track.tags.slice(0, 3).map((tag) => (
                       <Badge 
                         key={tag} 
                         variant="secondary" 
-                        className="font-inter text-xs px-2 py-1 bg-gradient-to-r from-neutral-700/40 to-neutral-800/40 border-neutral-600/30 text-neutral-300 transition-all duration-200"
+                        className="font-inter text-xs px-3 py-1.5 bg-gradient-to-r from-neutral-700/60 to-neutral-800/60 border-neutral-600/40 text-neutral-200 hover:from-neutral-700/80 hover:to-neutral-800/80 hover:border-neutral-500/60 transition-all duration-300 hover:scale-105"
                       >
                         {tag}
                       </Badge>
@@ -250,13 +256,16 @@ export const TastePreview = () => {
                   </div>
                 </div>
 
-                {/* Bottom info */}
-                <div className="flex items-center justify-between text-xs text-neutral-400">
-                  <span className="font-inter">{track.year} • {track.duration}</span>
+                {/* Enhanced Popularity indicator */}
+                <div className="flex items-center justify-between text-sm text-neutral-400">
+                  <div className="flex items-center gap-2 bg-neutral-800/40 px-3 py-2 rounded-lg border border-neutral-700/30">
+                    <TrendingUp className="h-4 w-4 text-blue-400" />
+                    <span className="font-inter font-medium">Popularity: {track.popularity}/100</span>
+                  </div>
                   {playingTrack === track.id && (
-                    <div className="flex items-center gap-1">
-                      <div className="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-pulse"></div>
-                      <span className="text-indigo-400 font-inter font-medium">Playing</span>
+                    <div className="flex items-center gap-2 bg-green-500/20 px-3 py-2 rounded-lg border border-green-500/30">
+                      <div className="w-2.5 h-2.5 bg-green-400 rounded-full animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)]"></div>
+                      <span className="text-green-400 font-inter font-medium">Playing</span>
                     </div>
                   )}
                 </div>
@@ -267,14 +276,14 @@ export const TastePreview = () => {
             {tracks.length > 0 && !loading && tracks.map((track, index) => (
               <div
                 key={`second-${track.id}-${index}`}
-                className="flex-shrink-0 w-[260px] bg-gradient-to-br from-neutral-800/50 to-neutral-900/60 backdrop-blur-xl border border-neutral-700/30 rounded-2xl p-4 space-y-3 shadow-xl transition-all duration-300 hover:scale-[1.02] hover:bg-neutral-800/70 hover:border-neutral-600/50 cursor-pointer group relative overflow-hidden"
+                className="flex-shrink-0 w-[380px] bg-gradient-to-br from-neutral-800/60 via-neutral-800/40 to-neutral-900/60 backdrop-blur-2xl border border-neutral-700/40 rounded-3xl p-6 space-y-5 shadow-2xl transition-all duration-500 hover:scale-105 hover:bg-neutral-800/80 hover:border-neutral-600/60 cursor-pointer group relative overflow-hidden hover:shadow-[0_25px_50px_-12px_rgba(0,0,0,0.8)] hover-lift hover-glow"
               >
                 {/* Animated background gradient */}
-                <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/3 via-transparent to-violet-500/3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-transparent to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
                 
-                <div className="flex items-start space-x-3">
-                  {/* Album Cover */}
-                  <div className="w-14 h-14 rounded-xl overflow-hidden bg-gradient-to-br from-neutral-700/50 to-neutral-800/50 flex items-center justify-center flex-shrink-0 border border-neutral-600/30 group-hover:border-neutral-500/50 transition-all duration-300">
+                <div className="flex items-start space-x-5">
+                  {/* Enhanced Album Cover */}
+                  <div className="w-20 h-20 rounded-2xl overflow-hidden bg-gradient-to-br from-neutral-700/60 to-neutral-800/60 flex items-center justify-center flex-shrink-0 border border-neutral-600/40 group-hover:border-neutral-500/60 transition-all duration-300 shadow-lg group-hover:shadow-xl">
                     {track.cover_art ? (
                       <img
                         src={track.cover_art}
@@ -291,34 +300,34 @@ export const TastePreview = () => {
                       />
                     ) : null}
                     <span 
-                      className="text-xl font-playfair font-bold text-white"
+                      className="text-2xl font-playfair font-bold text-white"
                       style={{ display: track.cover_art ? 'none' : 'flex' }}
                     >
-                      <Music className="h-7 w-7" />
+                      <Music className="h-10 w-10" />
                     </span>
                   </div>
 
-                  {/* Track Info */}
-                  <div className="flex-1 space-y-2 min-w-0">
-                    <h3 className="font-playfair text-base font-bold text-white leading-tight group-hover:text-neutral-100 transition-colors">
+                  {/* Enhanced Track Info */}
+                  <div className="flex-1 space-y-3 min-w-0">
+                    <h3 className="font-playfair text-lg font-bold text-white leading-tight group-hover:text-neutral-100 transition-colors">
                       {track.name}
                     </h3>
-                    <p className="font-inter text-sm text-neutral-300 leading-tight">
+                    <p className="font-inter text-base text-neutral-300 leading-tight font-medium">
                       {track.artist}
                     </p>
-                    <p className="text-neutral-400 text-xs leading-relaxed line-clamp-2">
+                    <p className="text-neutral-400 italic text-sm leading-relaxed line-clamp-2 bg-neutral-800/30 px-3 py-2 rounded-lg border border-neutral-700/20">
                       "{track.explanation}"
                     </p>
                   </div>
                 </div>
 
-                {/* Tags */}
-                <div className="flex flex-wrap gap-1">
-                  {track.tags.slice(0, 2).map((tag) => (
+                {/* Enhanced Tags */}
+                <div className="flex flex-wrap gap-2">
+                  {track.tags.slice(0, 3).map((tag) => (
                     <Badge 
                       key={tag} 
                       variant="secondary" 
-                      className="font-inter text-xs px-2 py-1 bg-gradient-to-r from-neutral-700/40 to-neutral-800/40 border-neutral-600/30 text-neutral-300 transition-all duration-200"
+                      className="font-inter text-xs px-3 py-1.5 bg-gradient-to-r from-neutral-700/60 to-neutral-800/60 border-neutral-600/40 text-neutral-200 hover:from-neutral-700/80 hover:to-neutral-800/80 hover:border-neutral-500/60 transition-all duration-300 hover:scale-105"
                     >
                       {tag}
                     </Badge>
@@ -327,25 +336,26 @@ export const TastePreview = () => {
               </div>
             ))}
 
-            {/* Loading state */}
+            {/* Enhanced Loading state */}
             {loading && (
               <>
                 {[...Array(5)].map((_, index) => (
                   <div
                     key={`loading-${index}`}
-                    className="flex-shrink-0 w-[260px] bg-gradient-to-br from-neutral-800/50 to-neutral-900/60 backdrop-blur-xl border border-neutral-700/30 rounded-2xl p-4 space-y-3 shadow-xl animate-pulse"
+                    className="flex-shrink-0 w-[380px] bg-gradient-to-br from-neutral-800/60 via-neutral-800/40 to-neutral-900/60 backdrop-blur-2xl border border-neutral-700/40 rounded-3xl p-6 space-y-5 shadow-2xl animate-pulse"
                   >
-                    <div className="flex items-start space-x-3">
-                      <div className="w-14 h-14 rounded-xl bg-neutral-700/40 flex-shrink-0"></div>
-                      <div className="flex-1 space-y-2">
-                        <div className="h-4 bg-neutral-700/40 rounded w-3/4"></div>
-                        <div className="h-3 bg-neutral-700/40 rounded w-1/2"></div>
-                        <div className="h-8 bg-neutral-700/40 rounded w-full"></div>
+                    <div className="flex items-start space-x-5">
+                      <div className="w-20 h-20 rounded-2xl bg-neutral-700/40 flex-shrink-0"></div>
+                      <div className="flex-1 space-y-3">
+                        <div className="h-6 bg-neutral-700/40 rounded w-3/4"></div>
+                        <div className="h-5 bg-neutral-700/40 rounded w-1/2"></div>
+                        <div className="h-16 bg-neutral-700/40 rounded w-full"></div>
                       </div>
                     </div>
-                    <div className="flex gap-1">
-                      <div className="h-6 bg-neutral-700/40 rounded w-16"></div>
-                      <div className="h-6 bg-neutral-700/40 rounded w-20"></div>
+                    <div className="flex gap-2">
+                      <div className="h-8 bg-neutral-700/40 rounded w-20"></div>
+                      <div className="h-8 bg-neutral-700/40 rounded w-24"></div>
+                      <div className="h-8 bg-neutral-700/40 rounded w-16"></div>
                     </div>
                   </div>
                 ))}
@@ -356,9 +366,9 @@ export const TastePreview = () => {
 
         {/* Bottom CTA */}
         <div className="text-center mt-16">
-          <div className="bg-gradient-to-br from-neutral-800/60 to-neutral-900/80 backdrop-blur-xl border border-white/20 rounded-2xl p-8 shadow-2xl border-glow-animation inline-block relative overflow-hidden max-w-3xl">
+          <div className="bg-gradient-to-br from-neutral-800/60 to-neutral-900/80 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl inline-block border-glow-animation relative overflow-hidden max-w-2xl">
             {/* Gradient overlay */}
-            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-transparent to-blue-500/10 pointer-events-none rounded-2xl"></div>
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-transparent to-blue-500/10 pointer-events-none rounded-3xl"></div>
             
             <div className="relative z-10">
               <h3 className="text-2xl font-playfair font-bold text-white mb-3">

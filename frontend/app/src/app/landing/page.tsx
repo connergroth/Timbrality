@@ -3,7 +3,7 @@
 import { LandingNavbar } from "@/components/landing/LandingNavbar";
 import { Hero } from "@/components/landing/Hero";
 import { HowItWorks } from "@/components/landing/HowItWorks";
-import { WhyTimbrality } from "@/components/landing/WhyTimbrality";
+import { Features } from "@/components/landing/Features";
 import { MusicalDNA } from "@/components/landing/MusicalDNA";
 import { TastePreview } from "@/components/landing/TastePreview";
 import { LandingFooter } from "@/components/landing/LandingFooter";
@@ -14,7 +14,7 @@ const LandingPage = () => {
       <LandingNavbar />
       <Hero />
       <HowItWorks />
-      <WhyTimbrality />
+      <Features />
       <MusicalDNA />
       <TastePreview />
       <LandingFooter />

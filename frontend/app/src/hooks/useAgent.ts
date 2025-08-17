@@ -121,6 +121,10 @@ export function useAgent({ userId, chatId, onTrackRecommendations, onError, onMe
 
     setIsLoading(true);
 
+    // Declare thinkingMessageId in outer scope so it can be accessed in catch blocks
+    let thinkingMessageId: string | null = null;
+    let agentMessageId: string | null = null;
+
     try {
       const request: ChatRequest = {
         message: message.trim(),
@@ -131,7 +135,7 @@ export function useAgent({ userId, chatId, onTrackRecommendations, onError, onMe
 
       if (options.streaming) {
         // Streaming response - start with thinking state
-        const thinkingMessageId = addMessage({
+        thinkingMessageId = addMessage({
           type: 'system',
           content: 'Thinking',
           timestamp: new Date(),
@@ -140,7 +144,6 @@ export function useAgent({ userId, chatId, onTrackRecommendations, onError, onMe
 
         let fullResponse = '';
         let tracks: Track[] = [];
-        let agentMessageId: string | null = null;
 
         try {
           for await (const chunk of agentService.chatStream(request)) {
@@ -234,6 +237,11 @@ export function useAgent({ userId, chatId, onTrackRecommendations, onError, onMe
             }
           }
         } catch (error) {
+          // Remove thinking message on error
+          if (thinkingMessageId) {
+            removeMessage(thinkingMessageId);
+          }
+          
           if (agentMessageId) {
             updateMessage(agentMessageId, {
               content: 'Sorry, something went wrong. Please try again.',
@@ -263,6 +271,11 @@ export function useAgent({ userId, chatId, onTrackRecommendations, onError, onMe
       }
     } catch (error) {
       console.error('Agent chat error:', error);
+      
+      // Remove thinking message if it exists
+      if (thinkingMessageId) {
+        removeMessage(thinkingMessageId);
+      }
       
       addMessage({
         type: 'agent',

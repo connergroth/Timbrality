@@ -173,16 +173,16 @@ export function NavigationSidebar({ user, onSignOut }: NavigationSidebarProps) {
   ]
 
   return (
-    <aside className={`fixed inset-y-0 left-0 z-50 bg-sidebar border-r border-sidebar-border flex flex-col py-4 transition-all duration-300 ease-in-out ${
-      isExpanded ? 'w-40' : 'w-16'
-    }`}>
+         <aside className={`fixed inset-y-0 left-0 z-50 bg-neutral-800 border-r border-neutral-700 flex flex-col py-4 transition-all duration-300 ease-in-out ${
+       isExpanded ? 'w-40' : 'w-16'
+     }`}>
       {/* Nav icons */}
       <nav className={`flex flex-col gap-2 ${isExpanded ? 'w-full px-3' : 'items-center'}`}>
         {/* Toggle Button and Navigation Header Row */}
         <div className={`flex items-center gap-2 mb-2 ${isExpanded ? 'w-full' : 'justify-center'}`}>
           <Button
             variant="ghost"
-            className="p-0 rounded-xl text-sidebar-foreground hover:bg-sidebar-accent/60 hover:text-sidebar-foreground h-8 w-8"
+                         className="p-0 rounded-xl text-neutral-300 hover:bg-neutral-700/60 hover:text-white h-8 w-8"
             onClick={() => setIsExpanded(!isExpanded)}
             title={isExpanded ? "Collapse Sidebar" : "Expand Sidebar"}
           >
@@ -195,9 +195,9 @@ export function NavigationSidebar({ user, onSignOut }: NavigationSidebarProps) {
           <Link key={href} href={href} className={isExpanded ? 'w-full' : ''}>
             <Button
               variant="ghost"
-              className={`p-0 rounded-xl text-sidebar-foreground hover:bg-sidebar-accent/60 hover:text-sidebar-foreground ${
-                isExpanded ? 'w-full h-7 justify-start px-2' : 'h-8 w-8'
-              }`}
+                             className={`p-0 rounded-xl text-neutral-300 hover:bg-neutral-700/60 hover:text-white ${
+                 isExpanded ? 'w-full h-7 justify-start px-2' : 'h-8 w-8'
+               }`}
             >
               <Icon className="h-5 w-5" />
               {isExpanded && <span className="ml-1 text-xs font-medium">{label}</span>}
@@ -210,7 +210,7 @@ export function NavigationSidebar({ user, onSignOut }: NavigationSidebarProps) {
       {isExpanded && (
         <div className="flex flex-col gap-2 w-full px-3">
           <div className="w-full mb-1 mt-6">
-            <h3 className="text-[11px] font-medium text-sidebar-foreground/60 uppercase tracking-wider pl-2">
+            <h3 className="text-[11px] font-medium text-neutral-400 uppercase tracking-wider pl-2">
               Chats
             </h3>
           </div>
@@ -219,7 +219,7 @@ export function NavigationSidebar({ user, onSignOut }: NavigationSidebarProps) {
             <Link key={chat.id} href={`/chat/${chat.id}`} className="w-full">
               <Button
                 variant="ghost"
-                className="p-0 rounded-lg text-sidebar-foreground/70 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground w-full h-6 justify-start px-2"
+                className="p-0 rounded-lg text-neutral-300/70 hover:bg-neutral-700/60 hover:text-white w-full h-6 justify-start px-2"
                 title={chat.title || 'Untitled Chat'}
               >
                 <span className="text-xs truncate max-w-[140px]">
@@ -233,7 +233,7 @@ export function NavigationSidebar({ user, onSignOut }: NavigationSidebarProps) {
           <Link href="/chat" className="w-full">
             <Button
               variant="ghost"
-              className="p-0 rounded-xl text-sidebar-foreground hover:bg-sidebar-accent/60 hover:text-sidebar-foreground w-full h-7 justify-start px-2"
+              className="p-0 rounded-xl text-neutral-300 hover:bg-neutral-700/60 hover:text-white w-full h-7 justify-start px-2"
               title="Chat History"
             >
               <History className="h-5 w-5" />
@@ -252,7 +252,7 @@ export function NavigationSidebar({ user, onSignOut }: NavigationSidebarProps) {
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
-              className={`p-0 rounded-md outline-none focus:outline-none focus-visible:outline-none active:outline-none ring-0 hover:ring-0 focus:ring-0 focus-visible:ring-0 active:ring-0 ring-offset-0 focus-visible:ring-offset-0 hover:bg-sidebar-accent/40 data-[state=open]:bg-sidebar-accent/60 ${
+              className={`p-0 rounded-md outline-none focus:outline-none focus-visible:outline-none active:outline-none ring-0 hover:ring-0 focus:ring-0 focus-visible:ring-0 active:ring-0 ring-offset-0 focus-visible:ring-offset-0 hover:bg-neutral-700/40 data-[state=open]:bg-neutral-700/60 ${
                 isExpanded ? 'w-full h-7 justify-start px-2' : 'h-7 w-7'
               }`}
               title={user?.email || "Profile"}
@@ -264,32 +264,32 @@ export function NavigationSidebar({ user, onSignOut }: NavigationSidebarProps) {
                 </AvatarFallback>
               </Avatar>
               {isExpanded && (
-                <span className="ml-2 text-sm font-medium text-sidebar-foreground truncate">
+                <span className="ml-2 text-sm font-medium text-white truncate">
                   {userProfile?.display_name || user?.email?.split('@')[0] || 'User'}
                 </span>
               )}
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-60 bg-sidebar border-sidebar-border">
-            <DropdownMenuLabel className="flex items-center gap-2 text-sidebar-foreground">
+          <DropdownMenuContent align="end" className="w-60 bg-neutral-800 border-neutral-700">
+            <DropdownMenuLabel className="flex items-center gap-2 text-white">
               <UserIcon className="h-4 w-4" />
               <div className="flex flex-col">
                 <span className="text-sm font-medium">{userProfile?.display_name || user?.email}</span>
                 {user?.email && (
-                  <span className="text-xs text-sidebar-foreground/70 truncate max-w-[200px]">{user?.email}</span>
+                  <span className="text-xs text-neutral-300 truncate max-w-[200px]">{user?.email}</span>
                 )}
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={() => setIsSettingsModalOpen(true)}
-              className="flex items-center gap-2 cursor-pointer text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground"
+              className="flex items-center gap-2 cursor-pointer text-white hover:bg-neutral-700 hover:text-white"
             >
               <SettingsIcon className="h-4 w-4" />
               <span>Settings</span>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={onSignOut} className="flex items-center gap-2 text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground">
+            <DropdownMenuItem onClick={onSignOut} className="flex items-center gap-2 text-white hover:bg-neutral-700 hover:text-white">
               <LogOut className="h-4 w-4" />
               <span>Log out</span>
             </DropdownMenuItem>

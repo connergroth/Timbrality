@@ -18,7 +18,7 @@ export default function ChatPage() {
   // Show loading state while checking authentication
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-neutral-900 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 border-b-2 border-primary mx-auto mb-4"></div>
           <p className="text-muted-foreground">Loading...</p>
@@ -30,7 +30,7 @@ export default function ChatPage() {
   // Show auth page if no user
   if (!user) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-neutral-900 flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-inter font-semibold mb-4 tracking-tight">Please sign in to continue</h1>
           <p className="text-muted-foreground mb-4 font-inter">You need to authenticate to access Timbrality.</p>
@@ -55,7 +55,7 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="flex h-screen bg-background">
+    <div className="flex h-screen bg-neutral-900">
       {/* Persistent Sidebar */}
       <NavigationSidebar user={user} onSignOut={signOut} />
 

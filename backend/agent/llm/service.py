@@ -182,7 +182,7 @@ Your personality:
 - Knowledgeable about music across all genres
 - Enthusiastic about helping users discover new music
 - Natural and human-like in responses
-- Brief but informative
+- Engaging and personable
 
 Background Information:
 - Timbrality uses Hybrid Fusion of Collaborative Filtering and Content-Based Filtering to recommend music.
@@ -191,14 +191,53 @@ Background Information:
 - You have memory of all the user's past chats and can use this to recommend music.
 - You can also use the user's Spotify/Last.fm listening history to recommend music.
 
-Guidelines:
+Your capabilities:
+- **Search & Discover**: Find specific tracks, albums, or artists by name
+- **Similar Music**: Discover songs similar to tracks you already love
+- **Mood-Based Discovery**: Find music that matches specific vibes and feelings
+- **Playlist Analysis**: Analyze Spotify playlists for insights and patterns
+- **Personalized Recommendations**: Get AI-powered suggestions based on taste
+- **Music Exploration**: Help discover new genres and artists
+
+FORMATTING REQUIREMENTS:
+- **ALWAYS use proper markdown formatting** in your responses
+- Use **bold** for emphasis on key points and important information
+- Use *italic* for song titles, album names, and artist names
+- When listing capabilities or features, use proper markdown bullet points with `-` or `*`
+- Use `###` for section headers when organizing information
+- **DO NOT use emojis** - keep responses clean and professional
+
+CONVERSATION GUIDELINES:
 1. If tools were used, incorporate their results naturally into your response
 2. For pure conversation (no tools), be friendly and guide toward music discovery
 3. Always stay in character as Timbre
-4. Keep responses concise but helpful
+4. Keep responses engaging but helpful
 5. When recommending music, be enthusiastic but not overwhelming
 6. When spotify_search returns multiple tracks from an album, pick ONE specific track to recommend and mention it by name
-7. Format your recommendation as: "I recommend '[song name]' by [artist] from the album [album name]"
+7. Format your recommendation as: "I recommend *'[song name]'* by **[artist]** from the album *[album name]*"
+8. Use the user's context (preferences, history, mood) to personalize responses
+9. Be conversational and adapt your tone based on the user's input
+10. When asked about capabilities, present them in a clear, formatted list
+
+CAPABILITY RESPONSES:
+When users ask about what you can do, your capabilities, or how you can help them, respond with this structure:
+
+Here are my capabilities to help you discover music:
+
+- **Search & Discover**: Find specific tracks, albums, or artists by name
+- **Similar Music**: Discover songs similar to tracks you already love
+- **Mood-Based Discovery**: Find music that matches specific vibes and feelings
+- **Playlist Analysis**: Analyze Spotify playlists for insights and patterns
+- **Personalized Recommendations**: Get AI-powered suggestions based on taste
+- **Music Exploration**: Help discover new genres and artists
+
+### How to get started:
+Just tell me what you're looking for! For example:
+- "Find me some chill indie music"
+- "Something similar to Radiohead"
+- "I need upbeat music for working out"
+
+What would you like to explore today?
 
 CRITICAL DATA ACCURACY RULES:
 - ONLY use song names, artist names, and album names that appear EXACTLY in the tool results
@@ -209,7 +248,7 @@ CRITICAL DATA ACCURACY RULES:
 
 Respond in JSON format:
 {
-    "content": "your response to the user",
+    "content": "your response to the user (with proper markdown formatting)",
     "reasoning": "brief explanation of your response approach",
     "confidence": 0.85
 }"""
@@ -255,6 +294,19 @@ Generate an appropriate response as Timbre."""
                     confidence=0.6
                 )
 
+        # Log what we're sending to OpenAI
+        print(f"\n=== LLM SERVICE REQUEST ===")
+        print(f"User Input: {user_input}")
+        print(f"Tools Used: {tools_used}")
+        print(f"Has Tool Results: {bool(tool_results)}")
+        print(f"Has Context: {bool(context)}")
+        print(f"System Prompt Length: {len(system_prompt)} chars")
+        print(f"User Prompt: {user_prompt}")
+        print(f"Model: gpt-3.5-turbo")
+        print(f"Temperature: 0.7")
+        print(f"Max Tokens: 1200")
+        print(f"============================\n")
+
         try:
             response = await self.client.chat.completions.create(
                 model="gpt-3.5-turbo",
@@ -263,31 +315,102 @@ Generate an appropriate response as Timbre."""
                     {"role": "user", "content": user_prompt}
                 ],
                 temperature=0.7,
-                max_tokens=500
+                max_tokens=1200
             )
             
-            result = json.loads(response.choices[0].message.content)
-            return LLMResponse(
+            # Log what we received from OpenAI
+            print(f"\n=== LLM SERVICE RESPONSE ===")
+            print(f"Response Object: {response}")
+            print(f"Choices Count: {len(response.choices) if response.choices else 0}")
+            if response.choices and response.choices[0]:
+                print(f"First Choice: {response.choices[0]}")
+                print(f"Message Content: {response.choices[0].message.content if response.choices[0].message else 'No message'}")
+            print(f"Usage: {response.usage if hasattr(response, 'usage') else 'No usage info'}")
+            print(f"=============================\n")
+            
+            raw_response = response.choices[0].message.content
+            print(f"Raw Response Content: {raw_response}")
+            print(f"Raw Response Length: {len(raw_response)} characters")
+            
+            # Check if response might be truncated
+            if not raw_response.strip().endswith('}'):
+                print("WARNING: Response might be truncated - doesn't end with '}'")
+            
+            try:
+                result = json.loads(raw_response)
+            except json.JSONDecodeError as json_error:
+                print(f"JSON Parse Error: {json_error}")
+                print(f"Attempting to fix JSON formatting issues...")
+                
+                # Try to fix common JSON formatting issues
+                try:
+                    # First, try to fix unescaped newlines and quotes
+                    import re
+                    fixed_response = raw_response
+                    
+                    # Fix unescaped newlines in the content field
+                    fixed_response = re.sub(r'"content":\s*"([^"]*(?:\n[^"]*)*)"', 
+                                          lambda m: f'"content": {json.dumps(m.group(1))}', 
+                                          fixed_response)
+                    
+                    print(f"Attempting with fixed JSON: {fixed_response}")
+                    result = json.loads(fixed_response)
+                    
+                except Exception as fix_error:
+                    print(f"JSON fix attempt failed: {fix_error}")
+                    # If fixing fails, try to extract the content manually
+                    try:
+                        # Manual extraction as last resort
+                        content_match = re.search(r'"content":\s*"([^"]*(?:\n[^"]*)*)"', raw_response, re.DOTALL)
+                        reasoning_match = re.search(r'"reasoning":\s*"([^"]*)"', raw_response)
+                        confidence_match = re.search(r'"confidence":\s*([\d.]+)', raw_response)
+                        
+                        if content_match:
+                            result = {
+                                "content": content_match.group(1).replace('\n', '\n'),
+                                "reasoning": reasoning_match.group(1) if reasoning_match else "Manual extraction",
+                                "confidence": float(confidence_match.group(1)) if confidence_match else 0.8
+                            }
+                            print(f"Manual extraction successful: {result}")
+                        else:
+                            raise json_error
+                    except Exception as manual_error:
+                        print(f"Manual extraction failed: {manual_error}")
+                        raise json_error
+            final_response = LLMResponse(
                 content=result["content"],
                 reasoning=result["reasoning"],
                 confidence=result["confidence"]
             )
             
+            print(f"Parsed LLM Response - Content: {final_response.content}")
+            print(f"Parsed LLM Response - Reasoning: {final_response.reasoning}")
+            print(f"Parsed LLM Response - Confidence: {final_response.confidence}")
+            
+            return final_response
+            
         except Exception as e:
             # Fallback response
             print(f"LLM response generation error: {e}")
+            print(f"Exception type: {type(e)}")
+            import traceback
+            print(f"Full traceback: {traceback.format_exc()}")
+            
             if not tool_results or tools_used == ["none"]:
-                return LLMResponse(
-                    content="Hey! I'm Timbre, your AI music companion. I can help you discover new music, find similar tracks, or explore different vibes. What kind of music are you in the mood for?",
+                fallback_response = LLMResponse(
+                    content="**Hey! I'm Timbre, your AI music companion.** I can help you discover new music, find similar tracks, or explore different vibes. What kind of music are you in the mood for?",
                     reasoning="Fallback conversational response",
                     confidence=0.7
                 )
             else:
-                return LLMResponse(
+                fallback_response = LLMResponse(
                     content="I found some music recommendations for you! Let me know what you think or if you'd like to explore something different.",
                     reasoning="Fallback with results",
                     confidence=0.6
                 )
+            
+            print(f"Using fallback response: {fallback_response.content}")
+            return fallback_response
     
     async def extract_music_intent(self, user_query: str) -> Dict[str, Any]:
         """
