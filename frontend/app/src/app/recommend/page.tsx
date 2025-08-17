@@ -1,168 +1,161 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { useSupabase } from '@/components/SupabaseProvider'
-import { supabase } from '@/lib/supabase'
-import { ConnectSpotifyButton } from '@/components/ConnectSpotifyButton'
-import { ConnectLastfmButton } from '@/components/ConnectLastfmButton'
+import { useState } from 'react'
+import { Navbar } from '@/components/Navbar'
 import { NavigationSidebar } from '@/components/NavigationSidebar'
 import { useSidebar } from '@/contexts/SidebarContext'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { Shuffle, Sparkles, RefreshCw, Music } from 'lucide-react'
 
-type UserProfile = {
-  id: string
-  email: string
-  username: string
-  display_name: string | null
-  avatar_url: string | null
-  spotify_id: string | null
-  lastfm_username: string | null
-  spotify_access_token: string | null
-  lastfm_session_key: string | null
-}
+// Custom hooks
+import { useRecommendations } from '@/hooks/useRecommendations'
+import { useLastfmConnection } from '@/hooks/useLastfmConnection'
+
+// Components
+import { LastfmBanner } from '@/components/recommend/LastfmBanner'
+import { AlgorithmSelector } from '@/components/recommend/AlgorithmSelector'
+import { AdvancedFiltersModal } from '@/components/recommend/AdvancedFiltersModal'
+import { RecommendationCard } from '@/components/recommend/RecommendationCard'
+import { GenerationOverlay } from '@/components/recommend/GenerationOverlay'
+import { MLAnimationCard } from '@/components/recommend/MLAnimationCard'
+import { FullScreenMLGeneration } from '@/components/recommend/FullScreenMLGeneration'
 
 export default function RecommendPage() {
-  const { user, signOut } = useSupabase()
+  const { user, loading, signOut } = useSupabase()
   const { isExpanded } = useSidebar()
-  const router = useRouter()
-  const [profile, setProfile] = useState<UserProfile | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [showFiltersModal, setShowFiltersModal] = useState(false)
 
-  useEffect(() => {
-    if (!user) {
-      router.push('/auth')
-      return
-    }
+  // Custom hooks
+  const {
+    recommendations,
+    isGenerating,
+    generationStage,
+    filters,
+    setFilters,
+    activeAlgorithm,
+    setActiveAlgorithm,
+    generateRecommendations,
+    submitFeedback
+  } = useRecommendations(user)
 
-    fetchUserProfile()
-  }, [user, router])
+  const {
+    lastfmConnected,
+    showBanner,
+    connectLastfm,
+    dismissBanner
+  } = useLastfmConnection(user)
 
-  const fetchUserProfile = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('users')
-        .select('*')
-        .eq('id', user?.id)
-        .single()
-
-      if (error) {
-        console.error('Error fetching profile:', error)
-      } else {
-        setProfile(data)
-      }
-    } catch (error) {
-      console.error('Error fetching profile:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const handleSignOut = async () => {
-    await signOut()
-    router.push('/auth')
-  }
-
+  // Loading state
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+      <div className="min-h-screen bg-neutral-900 flex items-center justify-center">
+        <div className="relative w-16 h-16">
+          <div className="absolute inset-0 rounded-full border-4 border-white/20"></div>
+          <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-white animate-spin"></div>
+          <div className="absolute inset-2 rounded-full border-2 border-transparent border-t-white/60 animate-spin" style={{animationDirection: 'reverse', animationDuration: '0.8s'}}></div>
+          <div className="absolute top-1/2 left-1/2 w-2 h-2 bg-white rounded-full transform -translate-x-1/2 -translate-y-1/2 animate-pulse"></div>
+        </div>
+      </div>
+    )
+  }
+
+  // Auth check
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-neutral-900 flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-inter font-semibold mb-4 tracking-tight text-white">Please sign in to continue</h1>
+          <p className="text-neutral-300 mb-4 font-inter">You need to authenticate to access personalized recommendations.</p>
+          <button 
+            onClick={() => window.location.href = '/auth'}
+            className="bg-neutral-800 text-white px-6 py-3 rounded-lg font-inter font-medium hover:bg-neutral-700 transition-colors"
+          >
+            Go to Auth Page
+          </button>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="flex min-h-screen relative">
+      {/* Solid Dark Gray/Black Background */}
+      <div className="fixed inset-0 bg-neutral-900"></div>
+      
       {/* Navigation Sidebar */}
-      <NavigationSidebar 
-        user={user}
-        onSignOut={signOut}
-      />
+      <NavigationSidebar user={user} onSignOut={signOut} />
 
       {/* Main Content */}
-      <div className={`flex-1 flex flex-col transition-all duration-300 ease-in-out ${
+      <div className={`flex-1 flex flex-col transition-all duration-300 ease-in-out relative z-10 ${
         isExpanded ? 'ml-40' : 'ml-16'
       }`}>
-        <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-          <div className="px-4 py-6 sm:px-0">
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">
-                Connected Services
-              </h2>
+        <Navbar user={user} onSignOut={signOut} />
+        
+        <main className="flex-1 px-6 py-10 max-w-4xl mx-auto relative">
+          {/* Last.fm Connection Banner */}
+          <LastfmBanner
+            isVisible={showBanner && !lastfmConnected}
+            onConnect={connectLastfm}
+            onDismiss={dismissBanner}
+          />
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Spotify Connection */}
-                <div className="border rounded-lg p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center">
-                      <div className="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center mr-3">
-                        <svg className="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
-                        </svg>
-                      </div>
-                      <div>
-                        <h3 className="text-lg font-medium text-gray-900">Spotify</h3>
-                        <p className="text-sm text-gray-500">Connect your Spotify account</p>
-                      </div>
-                    </div>
-                    {profile?.spotify_id ? (
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                        Connected
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                        Not Connected
-                      </span>
-                    )}
-                  </div>
-                  {!profile?.spotify_id && <ConnectSpotifyButton />}
-                </div>
+          {/* Premium Header */}
+          <div className="mb-10 text-left">
+            <h1 className="text-4xl font-playfair font-bold mb-3 text-white tracking-tight">
+              AI Music Discovery
+            </h1>
+            <p className="text-lg text-slate-300 max-w-2xl leading-relaxed">
+              Discover your next favorite songs with our advanced machine learning algorithms
+            </p>
+          </div>
 
-                {/* Last.fm Connection */}
-                <div className="border rounded-lg p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center">
-                      <div className="w-10 h-10 bg-red-600 rounded-lg flex items-center justify-center mr-3">
-                        <svg className="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
-                        </svg>
-                      </div>
-                      <div>
-                        <h3 className="text-lg font-medium text-gray-900">Last.fm</h3>
-                        <p className="text-sm text-gray-500">Connect your Last.fm account</p>
-                      </div>
-                    </div>
-                    {profile?.lastfm_username ? (
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                        Connected
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                        Not Connected
-                      </span>
-                    )}
-                  </div>
-                  {!profile?.lastfm_username && <ConnectLastfmButton />}
-                </div>
-              </div>
+          {/* Algorithm Selector */}
+          <AlgorithmSelector
+            activeAlgorithm={activeAlgorithm}
+            onAlgorithmChange={setActiveAlgorithm}
+            onOpenFilters={() => setShowFiltersModal(true)}
+          />
 
-              {/* Recommendations Section */}
-              <div className="mt-8">
-                <h3 className="text-lg font-medium text-gray-900 mb-4">
-                  Your Recommendations
-                </h3>
-                <div className="bg-gray-50 rounded-lg p-6 text-center">
-                  <p className="text-gray-500">
-                    {profile?.spotify_id || profile?.lastfm_username 
-                      ? "Loading your personalized recommendations..."
-                      : "Connect at least one music service to get personalized recommendations"
-                    }
-                  </p>
-                </div>
-              </div>
-            </div>
+          {/* Generate Button */}
+          <div className="mb-10 text-center">
+            <Button
+              onClick={generateRecommendations}
+              disabled={isGenerating}
+              size="lg"
+              className="bg-white text-black px-8 py-3 text-lg font-semibold rounded-xl hover:bg-gray-100 transition-colors"
+            >
+              {isGenerating ? (
+                <>
+                  <RefreshCw className="h-5 w-5 mr-2 animate-spin" />
+                  Generating...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="h-5 w-5 mr-2" />
+                  Generate AI Recommendations
+                </>
+              )}
+            </Button>
           </div>
         </main>
       </div>
+
+      {/* Full Screen ML Generation */}
+      <FullScreenMLGeneration 
+        isVisible={isGenerating} 
+        onComplete={() => {}}
+        recommendations={recommendations}
+      />
+      
+      {/* Advanced Filters Modal */}
+      <AdvancedFiltersModal
+        isOpen={showFiltersModal}
+        onClose={() => setShowFiltersModal(false)}
+        filters={filters}
+        onFiltersChange={setFilters}
+      />
     </div>
   )
-} 
+}

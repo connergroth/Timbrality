@@ -16,7 +16,7 @@ import type { Track as AgentTrack } from '@/lib/agent'
 import { LandingNavbar } from "@/components/landing/LandingNavbar";
 import { Hero } from "@/components/landing/Hero";
 import { HowItWorks } from "@/components/landing/HowItWorks";
-import { WhyTimbrality } from "@/components/landing/WhyTimbrality";
+import { Features } from "@/components/landing/Features";
 import { MusicalDNA } from "@/components/landing/MusicalDNA";
 import { TastePreview } from "@/components/landing/TastePreview";
 import { LandingFooter } from "@/components/landing/LandingFooter";
@@ -214,7 +214,7 @@ export default function HomePage() {
         <LandingNavbar />
         <Hero />
         <HowItWorks />
-        <WhyTimbrality />
+        <Features />
         <MusicalDNA />
         <TastePreview />
         <LandingFooter />
@@ -223,7 +223,9 @@ export default function HomePage() {
   }
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="flex min-h-screen relative">
+      {/* Solid Dark Gray/Black Background */}
+      <div className="fixed inset-0 bg-neutral-900"></div>
       {/* Navigation Sidebar */}
       <NavigationSidebar 
         user={user}
@@ -231,7 +233,7 @@ export default function HomePage() {
       />
 
       {/* Main Content */}
-      <div className={`flex-1 flex flex-col transition-all duration-300 ease-in-out ${
+      <div className={`flex-1 flex flex-col transition-all duration-300 ease-in-out relative z-10 ${
         isExpanded ? 'ml-40' : 'ml-16'
       }`}>
         <Navbar 
@@ -242,42 +244,42 @@ export default function HomePage() {
           onLogoClick={handleLogoClick}
         />
         
-        <main className={`flex-1 ${isChatActive ? 'pb-24' : 'px-6 py-8'}`}>
-          <div className={`max-w-2xl mx-auto transition-all duration-300 ease-in-out`}>
+        <main className={`flex-1 ${isChatActive ? 'pb-24' : 'px-6 py-10'}`}>
+          <div className={`max-w-4xl mx-auto transition-all duration-300 ease-in-out`}>
             {/* Welcome Section and Track Grid - Only show when chat is not active */}
             {!isChatActive && (
               <>
                 {/* Welcome Section */}
-                <div className="mb-8">
+                <div className="mb-10">
                   {/* Sound Bar aligned with text */}
-                  <div className="mb-4 flex justify-start">
+                  <div className="mb-5 flex justify-start">
                     <SoundBar className="" barCount={9} />
                   </div>
                   
-                  <h1 className="text-3xl font-playfair font-semibold text-foreground mb-2 tracking-tight">
+                  <h1 className="text-4xl font-playfair font-semibold text-white mb-3 tracking-tight">
                     Welcome back, {getUserDisplayName()}.
                   </h1>
-                  <p className="text-base text-muted-foreground font-inter font-medium">
+                  <p className="text-base text-slate-300 font-inter font-medium">
                     Discovering your musical preferences...
                   </p>
                 </div>
 
                 {/* Track Grid */}
-                <div className="mb-8">
-                  <h2 className="text-xl font-inter font-semibold mb-6 tracking-tight">Recent Recommendations</h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="mb-10">
+                  <h2 className="text-xl font-inter font-semibold mb-7 tracking-tight text-white">Recent Recommendations</h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                     {userProfile?.recentTracks?.map((track: Track) => (
-                      <div key={track.id} className="bg-card rounded-lg p-3 border border-border/50">
-                        <div className="flex items-center space-x-3">
+                      <div key={track.id} className="bg-neutral-800/40 backdrop-blur-xl border border-neutral-700/30 rounded-2xl p-5 shadow-2xl">
+                        <div className="flex items-center space-x-4">
                           <img 
                             src={track.cover} 
                             alt={`${track.album} cover`}
-                            className="w-12 h-12 rounded-md flex-shrink-0 object-cover"
+                            className="w-14 h-14 rounded-lg flex-shrink-0 object-cover"
                           />
                           <div className="flex-1 min-w-0">
-                            <h3 className="font-inter font-semibold text-foreground truncate text-sm">{track.title}</h3>
-                            <p className="text-xs text-muted-foreground truncate font-inter">{track.artist}</p>
-                            <p className="text-xs text-muted-foreground/70 truncate font-inter">{track.album}</p>
+                            <h3 className="font-inter font-semibold text-white truncate text-sm">{track.title}</h3>
+                            <p className="text-xs text-slate-300 truncate font-inter">{track.artist}</p>
+                            <p className="text-xs text-slate-400 truncate font-inter">{track.album}</p>
                           </div>
                         </div>
                       </div>

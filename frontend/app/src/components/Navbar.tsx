@@ -24,7 +24,7 @@ export function Navbar({ user, onSignOut, onToggleAlgorithmSidebar, onOpenNaviga
   };
 
   return (
-    <nav className="bg-background/80 backdrop-blur-sm sticky top-0 z-40">
+         <nav className="bg-neutral-900 backdrop-blur-sm sticky top-0 z-40">
       <div className="w-full px-6 py-4 flex items-center justify-between">
         {/* Left: Logo */}
         <button 

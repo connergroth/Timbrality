@@ -10,6 +10,8 @@ import { RecommendationService } from '@/lib/services/recommendations';
 import { PlaylistModal } from './PlaylistModal';
 import type { Track } from '@/lib/agent';
 import type { UnifiedTrack, TrackFeedback } from '@/lib/types/track';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 interface AgentChatProps {
   userId: string;
@@ -247,8 +249,8 @@ export function AgentChat({
 
     const getColor = () => {
       if (message.toolStatus === 'complete') return 'text-green-600';
-      if (message.toolStatus === 'error') return 'text-red-600';
-      return 'text-blue-600';
+      if (message.toolStatus === 'error') return 'text-red-400';
+      return 'text-neutral-400';
     };
 
     return (
@@ -285,7 +287,7 @@ export function AgentChat({
           {isUser ? (
             <div className="flex max-w-[80%] flex-row-reverse items-start space-x-2">
               {/* Message Content for user - keep bubble */}
-              <div className="rounded-lg p-3 bg-muted text-foreground">
+                             <div className="rounded-lg p-3 bg-neutral-800/40 text-foreground">
                 <p className="text-[15px] font-inter whitespace-pre-wrap">{message.content}</p>
               </div>
             </div>
@@ -301,7 +303,20 @@ export function AgentChat({
               </div>
               {/* Message Content for agent - no bubble, just text */}
               <div className="flex-1">
-                <p className="text-[15px] font-inter whitespace-pre-wrap text-foreground">{message.content}</p>
+                <div className="text-[15px] font-inter text-foreground markdown-content">
+                  <ReactMarkdown 
+                    remarkPlugins={[remarkGfm]}
+                    components={{
+                      p: ({children}) => <p className="my-2 leading-relaxed">{children}</p>,
+                      strong: ({children}) => <strong className="font-semibold text-foreground">{children}</strong>,
+                      ul: ({children}) => <ul className="my-2 ml-4 space-y-1">{children}</ul>,
+                      li: ({children}) => <li className="list-disc">{children}</li>,
+                      h3: ({children}) => <h3 className="text-base font-semibold mt-4 mb-2 text-foreground">{children}</h3>,
+                    }}
+                  >
+                    {message.content}
+                  </ReactMarkdown>
+                </div>
               </div>
             </div>
           )}
@@ -345,7 +360,7 @@ export function AgentChat({
   };
 
   return (
-    <div className={className}>
+    <div className={`${className} bg-neutral-900`}>
       {/* Chat Messages Area - Show when chat is active or has messages */}
       {(isInline || messages.length > 0 || showChatArea) && (
         <div className={`w-full ${isInline ? 'pb-40' : 'mb-6'}`}>
@@ -365,7 +380,7 @@ export function AgentChat({
       )}
 
       {/* Main Input */}
-      <div className={isInline ? "fixed bottom-0 left-16 right-0 bg-background/95 backdrop-blur-sm p-4 shadow-lg transition-all duration-300 ease-in-out" : "mb-6"}>
+      <div className={isInline ? "fixed bottom-0 left-16 right-0 bg-neutral-900 backdrop-blur-sm p-4 shadow-lg transition-all duration-300 ease-in-out" : "mb-6"}>
           {!isInline && (
           <h2 className="text-xl font-inter font-semibold mb-4 tracking-tight">
             What are you in the mood for?
@@ -374,7 +389,7 @@ export function AgentChat({
         <div className={isInline ? "max-w-2xl mx-auto" : "max-w-2xl"}>
           <form onSubmit={handleSubmit}>
             <div 
-              className="bg-card rounded-xl px-4 pt-3 pb-2 relative cursor-text border border-border/20 border-glow-animation"
+                             className="bg-neutral-800/40 rounded-xl px-4 pt-3 pb-2 relative cursor-text border border-neutral-700/30 border-glow-animation"
               onClick={(e) => {
                 // Don't focus input if clicking on slider area
                 if (!(e.target as HTMLElement).closest('[data-slider-area]')) {
@@ -438,43 +453,43 @@ export function AgentChat({
                         <span>Tools</span>
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-56" align="start">
-                      <DropdownMenuItem onClick={() => onSelectTool?.('nmf-weights')} className="relative">
+                    <DropdownMenuContent className="w-56 bg-neutral-800 border-neutral-700" align="start">
+                      <DropdownMenuItem onClick={() => onSelectTool?.('nmf-weights')} className="relative text-white hover:bg-neutral-700 hover:text-white focus:bg-neutral-700 focus:text-white">
                         <BarChart3 className="mr-2 h-4 w-4" />
                         <span className="font-inter text-sm">NMF Weights</span>
-                        {selectedTool === 'nmf-weights' && <div className="absolute right-2 w-2 h-2 bg-primary rounded-full" />}
+                        {selectedTool === 'nmf-weights' && <div className="absolute right-2 w-2 h-2 bg-white rounded-full" />}
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => onSelectTool?.('bert-tags')} className="relative">
+                      <DropdownMenuItem onClick={() => onSelectTool?.('bert-tags')} className="relative text-white hover:bg-neutral-700 hover:text-white focus:bg-neutral-700 focus:text-white">
                         <Tag className="mr-2 h-4 w-4" />
                         <span className="font-inter text-sm">BERT Tag Similarities</span>
-                        {selectedTool === 'bert-tags' && <div className="absolute right-2 w-2 h-2 bg-primary rounded-full" />}
+                        {selectedTool === 'bert-tags' && <div className="absolute right-2 w-2 h-2 bg-white rounded-full" />}
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => onSelectTool?.('tag-influences')} className="relative">
+                      <DropdownMenuItem onClick={() => onSelectTool?.('tag-influences')} className="relative text-white hover:bg-neutral-700 hover:text-white focus:bg-neutral-700 focus:text-white">
                         <TrendingUp className="mr-2 h-4 w-4" />
                         <span className="font-inter text-sm">Tag Influences</span>
-                        {selectedTool === 'tag-influences' && <div className="absolute right-2 w-2 h-2 bg-primary rounded-full" />}
+                        {selectedTool === 'tag-influences' && <div className="absolute right-2 w-2 h-2 bg-white rounded-full" />}
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => onSelectTool?.('aoty-influences')} className="relative">
+                      <DropdownMenuItem onClick={() => onSelectTool?.('aoty-influences')} className="relative text-white hover:bg-neutral-700 hover:text-white focus:bg-neutral-700 focus:text-white">
                         <Target className="mr-2 h-4 w-4" />
                         <span className="font-inter text-sm">AOTY Influences</span>
-                        {selectedTool === 'aoty-influences' && <div className="absolute right-2 w-2 h-2 bg-primary rounded-full" />}
+                        {selectedTool === 'aoty-influences' && <div className="absolute right-2 w-2 h-2 bg-white rounded-full" />}
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => onSelectTool?.('lastfm-tags')} className="relative">
+                      <DropdownMenuItem onClick={() => onSelectTool?.('lastfm-tags')} className="relative text-white hover:bg-neutral-700 hover:text-white focus:bg-neutral-700 focus:text-white">
                         <Activity className="mr-2 h-4 w-4" />
                         <span className="font-inter text-sm">Last.fm Tags</span>
-                        {selectedTool === 'lastfm-tags' && <div className="absolute right-2 w-2 h-2 bg-primary rounded-full" />}
+                        {selectedTool === 'lastfm-tags' && <div className="absolute right-2 w-2 h-2 bg-white rounded-full" />}
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => onSelectTool?.('music-depth')} className="relative">
+                      <DropdownMenuItem onClick={() => onSelectTool?.('music-depth')} className="relative text-white hover:bg-neutral-700 hover:text-white focus:bg-neutral-700 focus:text-white">
                         <Sliders className="mr-2 h-4 w-4" />
                         <span className="font-inter text-sm">Music Depth</span>
-                        {selectedTool === 'music-depth' && <div className="absolute right-2 w-2 h-2 bg-primary rounded-full" />}
+                        {selectedTool === 'music-depth' && <div className="absolute right-2 w-2 h-2 bg-white rounded-full" />}
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => onSelectTool?.('algorithm-info')} className="relative">
+                      <DropdownMenuItem onClick={() => onSelectTool?.('algorithm-info')} className="relative text-white hover:bg-neutral-700 hover:text-white focus:bg-neutral-700 focus:text-white">
                         <Info className="mr-2 h-4 w-4" />
                         <span className="font-inter text-sm">How it works</span>
-                        {selectedTool === 'algorithm-info' && <div className="absolute right-2 w-2 h-2 bg-primary rounded-full" />}
+                        {selectedTool === 'algorithm-info' && <div className="absolute right-2 w-2 h-2 bg-white rounded-full" />}
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => onSelectTool?.(null)} className="relative">
+                      <DropdownMenuItem onClick={() => onSelectTool?.(null)} className="relative text-white hover:bg-neutral-700 hover:text-white focus:bg-neutral-700 focus:text-white">
                         <X className="mr-2 h-4 w-4" />
                         <span className="font-inter text-sm">Clear selection</span>
                       </DropdownMenuItem>
@@ -495,7 +510,9 @@ export function AgentChat({
                     className="flex items-center justify-center w-12 h-12 rounded-full transition-colors disabled:opacity-50"
                   >
                     {isLoading ? (
-                      <div className="w-6 h-6 border border-white rounded-full"></div>
+                      <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center">
+                        <div className="w-3 h-3 bg-black rounded-sm"></div>
+                      </div>
                     ) : (
                       <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center">
                         <ArrowUp className="w-4 h-4 text-black" />
@@ -510,30 +527,30 @@ export function AgentChat({
           {/* Quick Modules - Only show when chat is not active */}
           {!isInline && !hasStartedChat && (
             <div className="mt-6 flex flex-wrap gap-3 justify-center">
-              <button 
-                onClick={() => handleQuickModuleClick('continue-listening')}
-                className="bg-card hover:bg-card/80 transition-colors rounded-full px-4 py-2 text-sm font-inter font-medium text-foreground border border-border/50 flex items-center gap-2"
-              >
+                             <button 
+                 onClick={() => handleQuickModuleClick('continue-listening')}
+                 className="bg-neutral-800/40 hover:bg-neutral-800/60 transition-colors rounded-full px-4 py-2 text-sm font-inter font-medium text-foreground border border-neutral-700/30 flex items-center gap-2"
+               >
                 <Clock className="w-4 h-4" />
                 Based on Recent Listening
               </button>
               <button 
                 onClick={() => handleQuickModuleClick('because-you-played')}
-                className="bg-card hover:bg-card/80 transition-colors rounded-full px-4 py-2 text-sm font-inter font-medium text-foreground border border-border/50 flex items-center gap-2"
+                className="bg-neutral-800/40 hover:bg-neutral-800/60 transition-colors rounded-full px-4 py-2 text-sm font-medium text-foreground border border-neutral-700/30 flex items-center gap-2"
               >
                 <Star className="w-4 h-4" />
                 Highly Rated
               </button>
               <button 
                 onClick={() => handleQuickModuleClick('fresh-for-you')}
-                className="bg-card hover:bg-card/80 transition-colors rounded-full px-4 py-2 text-sm font-inter font-medium text-foreground border border-border/50 flex items-center gap-2"
+                className="bg-neutral-800/40 hover:bg-neutral-800/60 transition-colors rounded-full px-4 py-2 text-sm font-inter font-medium text-foreground border border-neutral-700/30 flex items-center gap-2"
               >
                 <Zap className="w-4 h-4" />
                 Fresh for You
               </button>
               <button 
                 onClick={() => handleQuickModuleClick('fresh-for-you')}
-                className="bg-card hover:bg-card/80 transition-colors rounded-full px-4 py-2 text-sm font-inter font-medium text-foreground border border-border/50 flex items-center gap-2"
+                className="bg-neutral-800/40 hover:bg-neutral-800/60 transition-colors rounded-full px-4 py-2 text-sm font-inter font-medium text-foreground border border-neutral-700/30 flex items-center gap-2"
               >
                 <Plus className="w-4 h-4" />
                 New Playlist
