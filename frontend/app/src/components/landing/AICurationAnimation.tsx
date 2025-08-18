@@ -31,9 +31,9 @@ export const AICurationAnimation = () => {
           content: 'Perfect for late night vibes! This track captures that dreamy, contemplative mood perfectly.',
           track: {
             id: '1',
-            name: 'Moon',
-            artist: 'Kanye West',
-            album: 'Donda',
+            name: 'MY EYES',
+            artist: 'Travis Scott',
+            album: 'UTOPIA',
             artwork_url: undefined,
             spotify_url: 'https://open.spotify.com/track/1BFXcpG4SiIIsyz7GZMIcL',
             source: 'agent',
