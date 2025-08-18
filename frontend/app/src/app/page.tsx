@@ -19,6 +19,7 @@ import { HowItWorks } from "@/components/landing/HowItWorks";
 import { Features } from "@/components/landing/Features";
 import { MusicalDNA } from "@/components/landing/MusicalDNA";
 import { TastePreview } from "@/components/landing/TastePreview";
+import { CTASection } from "@/components/landing/CTASection";
 import { LandingFooter } from "@/components/landing/LandingFooter";
 
 // Define the track type to fix TypeScript error
@@ -217,6 +218,7 @@ export default function HomePage() {
         <Features />
         <MusicalDNA />
         <TastePreview />
+        <CTASection />
         <LandingFooter />
       </div>
     )

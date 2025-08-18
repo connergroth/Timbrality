@@ -126,21 +126,21 @@ export const LandingNavbar = () => {
           <div className="flex-1 flex flex-col items-center justify-center space-y-8 mt-20">
             <a 
               href="#how-it-works" 
-              className="text-4xl font-inter font-medium text-white hover:text-neutral-300 transition-colors"
+              className="text-5xl md:text-6xl font-inter font-medium text-white hover:text-neutral-300 transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
               How it works
             </a>
             <a 
               href="#agent-demo" 
-              className="text-4xl font-inter font-medium text-white hover:text-neutral-300 transition-colors"
+              className="text-5xl md:text-6xl font-inter font-medium text-white hover:text-neutral-300 transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
               AI Curator
             </a>
             <a 
               href="#your-dna" 
-              className="text-4xl font-inter font-medium text-white hover:text-neutral-300 transition-colors"
+              className="text-5xl md:text-6xl font-inter font-medium text-white hover:text-neutral-300 transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
               Your DNA

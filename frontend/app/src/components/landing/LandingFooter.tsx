@@ -24,7 +24,7 @@ export const LandingFooter = () => {
               </div>
               <span className="font-playfair text-2xl font-bold text-white">Timbrality</span>
             </button>
-            <div className="flex space-x-3">
+            <div className="flex space-x-3 pl-1.5">
               <a 
                 href="https://github.com/connergroth/timbre" 
                 target="_blank" 
@@ -55,8 +55,8 @@ export const LandingFooter = () => {
           </div>
 
           <div className="space-y-4">
-            <h4 className="font-playfair font-semibold text-white">Product</h4>
-            <div className="space-y-2 text-sm">
+            <h4 className="font-playfair font-semibold text-white text-lg">Product</h4>
+            <div className="space-y-2 text-base">
               <div className="block">
                 <a href="#" className="text-neutral-400 hover:text-white transition-colors">
                   How it works
@@ -76,8 +76,8 @@ export const LandingFooter = () => {
           </div>
 
           <div className="space-y-4">
-            <h4 className="font-playfair font-semibold text-white">Information</h4>
-            <div className="space-y-2 text-sm">
+            <h4 className="font-playfair font-semibold text-white text-lg">Information</h4>
+            <div className="space-y-2 text-base">
               <div className="block">
                 <a href="/about" className="text-neutral-400 hover:text-white transition-colors">
                   About
@@ -92,8 +92,8 @@ export const LandingFooter = () => {
           </div>
 
           <div className="space-y-4">
-            <h4 className="font-playfair font-semibold text-white">Legal</h4>
-            <div className="space-y-2 text-sm">
+            <h4 className="font-playfair font-semibold text-white text-lg">Legal</h4>
+            <div className="space-y-2 text-base">
               <div className="block">
                 <a href="/privacy" className="text-neutral-400 hover:text-white transition-colors">
                   Privacy
@@ -109,7 +109,7 @@ export const LandingFooter = () => {
         </div>
 
         <div className="border-t border-neutral-700 mt-8 pt-6 text-center space-y-1">
-          <p className="text-neutral-400 text-sm">
+          <p className="text-neutral-400 text-base">
             © {new Date().getFullYear()} Timbrality. All rights reserved.
           </p>
         </div>

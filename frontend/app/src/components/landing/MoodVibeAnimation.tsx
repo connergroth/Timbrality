@@ -87,12 +87,8 @@ export const MoodVibeAnimation = () => {
       const t = (timestamp - startTime) / 1000
       animationTime = t
 
-      // Clear canvas with duotone gradient background
-      const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height)
-      gradient.addColorStop(0, 'rgba(99, 102, 241, 0.03)') // indigo
-      gradient.addColorStop(1, 'rgba(124, 58, 237, 0.05)') // violet
-      ctx.fillStyle = gradient
-      ctx.fillRect(0, 0, canvas.width, canvas.height)
+      // Clear canvas with transparent background
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
 
       // Draw mood energy waves
       moodWaves.forEach((wave, i) => {

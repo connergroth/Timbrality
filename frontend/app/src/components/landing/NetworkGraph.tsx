@@ -79,19 +79,19 @@ export const NetworkGraph = () => {
       },
       
       // Folk/Indie cluster (left)
-      { x: canvas.clientWidth * 0.25, y: canvas.clientHeight * 0.25, baseX: canvas.clientWidth * 0.25, baseY: canvas.clientHeight * 0.25, r: 10, phase: 0.5, color: '#60A5FA', cluster: 'folk', pulse: 0, connections: [] },
-      { x: canvas.clientWidth * 0.2, y: canvas.clientHeight * 0.3, baseX: canvas.clientWidth * 0.2, baseY: canvas.clientHeight * 0.3, r: 8, phase: 1.2, color: '#60A5FA', cluster: 'folk', pulse: 0, connections: [] },
-      { x: canvas.clientWidth * 0.3, y: canvas.clientHeight * 0.35, baseX: canvas.clientWidth * 0.3, baseY: canvas.clientHeight * 0.35, r: 9, phase: 0.8, color: '#60A5FA', cluster: 'folk', pulse: 0, connections: [] },
+      { x: canvas.clientWidth * 0.25, y: canvas.clientHeight * 0.25, baseX: canvas.clientWidth * 0.25, baseY: canvas.clientHeight * 0.25, r: 10, phase: 0.5, color: '#6366F1', cluster: 'folk', pulse: 0, connections: [] },
+      { x: canvas.clientWidth * 0.2, y: canvas.clientHeight * 0.3, baseX: canvas.clientWidth * 0.2, baseY: canvas.clientHeight * 0.3, r: 8, phase: 1.2, color: '#6366F1', cluster: 'folk', pulse: 0, connections: [] },
+      { x: canvas.clientWidth * 0.3, y: canvas.clientHeight * 0.35, baseX: canvas.clientWidth * 0.3, baseY: canvas.clientHeight * 0.35, r: 9, phase: 0.8, color: '#6366F1', cluster: 'folk', pulse: 0, connections: [] },
       
       // Rock/Metal cluster (bottom-left)
-      { x: canvas.clientWidth * 0.25, y: canvas.clientHeight * 0.75, baseX: canvas.clientWidth * 0.25, baseY: canvas.clientHeight * 0.75, r: 10, phase: 2.5, color: '#A78BFA', cluster: 'rock', pulse: 0, connections: [] },
-      { x: canvas.clientWidth * 0.2, y: canvas.clientHeight * 0.7, baseX: canvas.clientWidth * 0.2, baseY: canvas.clientHeight * 0.7, r: 8, phase: 3.1, color: '#A78BFA', cluster: 'rock', pulse: 0, connections: [] },
-      { x: canvas.clientWidth * 0.3, y: canvas.clientHeight * 0.8, baseX: canvas.clientWidth * 0.3, baseY: canvas.clientHeight * 0.8, r: 9, phase: 2.8, color: '#A78BFA', cluster: 'rock', pulse: 0, connections: [] },
+      { x: canvas.clientWidth * 0.25, y: canvas.clientHeight * 0.75, baseX: canvas.clientWidth * 0.25, baseY: canvas.clientHeight * 0.75, r: 10, phase: 2.5, color: '#7C3AED', cluster: 'rock', pulse: 0, connections: [] },
+      { x: canvas.clientWidth * 0.2, y: canvas.clientHeight * 0.7, baseX: canvas.clientWidth * 0.2, baseY: canvas.clientHeight * 0.7, r: 8, phase: 3.1, color: '#7C3AED', cluster: 'rock', pulse: 0, connections: [] },
+      { x: canvas.clientWidth * 0.3, y: canvas.clientHeight * 0.8, baseX: canvas.clientWidth * 0.3, baseY: canvas.clientHeight * 0.8, r: 9, phase: 2.8, color: '#7C3AED', cluster: 'rock', pulse: 0, connections: [] },
       
       // Electronic cluster (right)
-      { x: canvas.clientWidth * 0.75, y: canvas.clientHeight * 0.25, baseX: canvas.clientWidth * 0.75, baseY: canvas.clientHeight * 0.25, r: 10, phase: 1.5, color: '#A78BFA', cluster: 'electronic', pulse: 0, connections: [] },
-      { x: canvas.clientWidth * 0.8, y: canvas.clientHeight * 0.3, baseX: canvas.clientWidth * 0.8, baseY: canvas.clientHeight * 0.3, r: 8, phase: 2.1, color: '#A78BFA', cluster: 'electronic', pulse: 0, connections: [] },
-      { x: canvas.clientWidth * 0.7, y: canvas.clientHeight * 0.35, baseX: canvas.clientWidth * 0.7, baseY: canvas.clientHeight * 0.35, r: 9, phase: 1.8, color: '#A78BFA', cluster: 'electronic', pulse: 0, connections: [] },
+      { x: canvas.clientWidth * 0.75, y: canvas.clientHeight * 0.25, baseX: canvas.clientWidth * 0.75, baseY: canvas.clientHeight * 0.25, r: 10, phase: 1.5, color: '#7C3AED', cluster: 'electronic', pulse: 0, connections: [] },
+      { x: canvas.clientWidth * 0.8, y: canvas.clientHeight * 0.3, baseX: canvas.clientWidth * 0.8, baseY: canvas.clientHeight * 0.3, r: 8, phase: 2.1, color: '#7C3AED', cluster: 'electronic', pulse: 0, connections: [] },
+      { x: canvas.clientWidth * 0.7, y: canvas.clientHeight * 0.35, baseX: canvas.clientWidth * 0.7, baseY: canvas.clientHeight * 0.35, r: 9, phase: 1.8, color: '#7C3AED', cluster: 'electronic', pulse: 0, connections: [] },
       
       // Hip-Hop cluster (bottom-right)
       { x: canvas.clientWidth * 0.75, y: canvas.clientHeight * 0.75, baseX: canvas.clientWidth * 0.75, baseY: canvas.clientHeight * 0.75, r: 10, phase: 3.5, color: '#F472B6', cluster: 'hiphop', pulse: 0, connections: [] },
@@ -99,14 +99,14 @@ export const NetworkGraph = () => {
       { x: canvas.clientWidth * 0.7, y: canvas.clientHeight * 0.8, baseX: canvas.clientWidth * 0.7, baseY: canvas.clientHeight * 0.8, r: 9, phase: 3.8, color: '#F472B6', cluster: 'hiphop', pulse: 0, connections: [] },
       
       // Jazz/Classical cluster (bottom-center)
-      { x: canvas.clientWidth * 0.5, y: canvas.clientHeight * 0.8, baseX: canvas.clientWidth * 0.5, baseY: canvas.clientHeight * 0.8, r: 10, phase: 4.5, color: '#60A5FA', cluster: 'jazz', pulse: 0, connections: [] },
-      { x: canvas.clientWidth * 0.45, y: canvas.clientHeight * 0.85, baseX: canvas.clientWidth * 0.45, baseY: canvas.clientHeight * 0.85, r: 8, phase: 5.1, color: '#60A5FA', cluster: 'jazz', pulse: 0, connections: [] },
-      { x: canvas.clientWidth * 0.55, y: canvas.clientHeight * 0.85, baseX: canvas.clientWidth * 0.55, baseY: canvas.clientHeight * 0.85, r: 9, phase: 4.8, color: '#60A5FA', cluster: 'jazz', pulse: 0, connections: [] },
+      { x: canvas.clientWidth * 0.5, y: canvas.clientHeight * 0.8, baseX: canvas.clientWidth * 0.5, baseY: canvas.clientHeight * 0.8, r: 10, phase: 4.5, color: '#6366F1', cluster: 'jazz', pulse: 0, connections: [] },
+      { x: canvas.clientWidth * 0.45, y: canvas.clientHeight * 0.85, baseX: canvas.clientWidth * 0.45, baseY: canvas.clientHeight * 0.85, r: 8, phase: 5.1, color: '#6366F1', cluster: 'jazz', pulse: 0, connections: [] },
+      { x: canvas.clientWidth * 0.55, y: canvas.clientHeight * 0.85, baseX: canvas.clientWidth * 0.55, baseY: canvas.clientHeight * 0.85, r: 9, phase: 4.8, color: '#6366F1', cluster: 'jazz', pulse: 0, connections: [] },
       
       // Pop cluster (top-center)
-      { x: canvas.clientWidth * 0.5, y: canvas.clientHeight * 0.2, baseX: canvas.clientWidth * 0.5, baseY: canvas.clientHeight * 0.2, r: 10, phase: 5.5, color: '#60A5FA', cluster: 'pop', pulse: 0, connections: [] },
-      { x: canvas.clientWidth * 0.45, y: canvas.clientHeight * 0.15, baseX: canvas.clientWidth * 0.45, baseY: canvas.clientHeight * 0.15, r: 8, phase: 6.1, color: '#60A5FA', cluster: 'pop', pulse: 0, connections: [] },
-      { x: canvas.clientWidth * 0.55, y: canvas.clientHeight * 0.15, baseX: canvas.clientWidth * 0.55, baseY: canvas.clientHeight * 0.15, r: 9, phase: 5.8, color: '#60A5FA', cluster: 'pop', pulse: 0, connections: [] }
+      { x: canvas.clientWidth * 0.5, y: canvas.clientHeight * 0.2, baseX: canvas.clientWidth * 0.5, baseY: canvas.clientHeight * 0.2, r: 10, phase: 5.5, color: '#6366F1', cluster: 'pop', pulse: 0, connections: [] },
+      { x: canvas.clientWidth * 0.45, y: canvas.clientHeight * 0.15, baseX: canvas.clientWidth * 0.45, baseY: canvas.clientHeight * 0.15, r: 8, phase: 6.1, color: '#6366F1', cluster: 'pop', pulse: 0, connections: [] },
+      { x: canvas.clientWidth * 0.55, y: canvas.clientHeight * 0.15, baseX: canvas.clientWidth * 0.55, baseY: canvas.clientHeight * 0.15, r: 9, phase: 5.8, color: '#6366F1', cluster: 'pop', pulse: 0, connections: [] }
     ]
 
     // Create connections from center node to cluster representatives
@@ -188,12 +188,8 @@ export const NetworkGraph = () => {
       }
       lastFrameTime = timestamp
       
-      // Clear canvas with subtle gradient background
-      const gradient = ctx.createRadialGradient(canvas.width/2, canvas.height/2, 0, canvas.width/2, canvas.height/2, canvas.width/2)
-      gradient.addColorStop(0, 'rgba(38, 38, 38, 0.1)')
-      gradient.addColorStop(1, 'rgba(38, 38, 38, 0.05)')
-      ctx.fillStyle = gradient
-      ctx.fillRect(0, 0, canvas.width, canvas.height)
+      // Clear canvas with transparent background
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
       
       animationTime += 0.016
 

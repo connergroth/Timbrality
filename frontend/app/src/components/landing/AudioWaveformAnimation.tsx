@@ -52,9 +52,8 @@ export const AudioWaveformAnimation = () => {
       const t = (timestamp - startTime) / 1000
       animationTime = t
 
-      // Clear canvas with dark background
-      ctx.fillStyle = 'rgba(38, 38, 38, 0.4)' // neutral-800/40
-      ctx.fillRect(0, 0, canvas.width, canvas.height)
+      // Clear canvas with transparent background
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
 
       // Draw audio waveforms (full width)
       ctx.save()
@@ -103,7 +102,7 @@ export const AudioWaveformAnimation = () => {
   return (
     <canvas 
       ref={canvasRef}
-      className="w-full h-48 rounded-2xl bg-neutral-800/20 border border-neutral-700/20"
+      className="w-full h-48 rounded-2xl"
       style={{ width: '100%', height: '192px' }}
     />
   )

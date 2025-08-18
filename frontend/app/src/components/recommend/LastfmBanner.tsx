@@ -1,4 +1,3 @@
-import { Button } from '@/components/ui/button'
 import { X } from 'lucide-react'
 
 interface LastfmBannerProps {
@@ -11,7 +10,7 @@ export function LastfmBanner({ isVisible, onConnect, onDismiss }: LastfmBannerPr
   if (!isVisible) return null
 
   return (
-    <div className="mb-6 bg-neutral-800/40 backdrop-blur-xl border border-neutral-700/30 rounded-2xl p-4 shadow-2xl">
+    <div className="mb-6 bg-neutral-800 rounded-3xl p-6 shadow-xl">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <img 
@@ -21,28 +20,24 @@ export function LastfmBanner({ isVisible, onConnect, onDismiss }: LastfmBannerPr
           />
           <div>
             <h3 className="font-semibold text-white mb-1">Connect Your Last.fm</h3>
-            <p className="text-sm text-slate-300">
+            <p className="text-sm text-neutral-300">
               Import your listening history for personalized music recommendations
             </p>
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <Button 
-            variant="default" 
-            size="sm"
+          <button 
             onClick={onConnect}
-            className="bg-neutral-700/40 hover:bg-neutral-700/60 text-white border border-neutral-600/40"
+            className="bg-neutral-700 hover:bg-neutral-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200"
           >
             Connect
-          </Button>
-          <Button 
-            variant="ghost" 
-            size="sm"
+          </button>
+          <button 
             onClick={onDismiss}
-            className="text-slate-400 hover:text-white hover:bg-neutral-700/40"
+            className="text-neutral-400 hover:text-white hover:bg-neutral-700 p-2 rounded-lg transition-colors duration-200"
           >
             <X className="h-4 w-4" />
-          </Button>
+          </button>
         </div>
       </div>
     </div>

@@ -100,13 +100,8 @@ export const MLGraphAnimation = () => {
       const t = (timestamp - startTime) / 1000
       animationTime = t
 
-      // Clear canvas with gradient background
-      const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height)
-      gradient.addColorStop(0, 'rgba(99, 102, 241, 0.05)') // indigo
-      gradient.addColorStop(0.5, 'rgba(91, 33, 182, 0.08)') // purple
-      gradient.addColorStop(1, 'rgba(139, 92, 246, 0.05)') // violet
-      ctx.fillStyle = gradient
-      ctx.fillRect(0, 0, canvas.width, canvas.height)
+      // Clear canvas with transparent background
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
 
       // Update and draw nodes
       nodes.forEach((node, i) => {

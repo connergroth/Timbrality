@@ -13,10 +13,14 @@ const playfair = Playfair_Display({
 
 export const metadata: Metadata = {
   title: 'Timbrality',
-  description: 'Connect your music profiles to discover your unique musical DNA',
+  description: 'Your personal AI music agent',
   icons: {
-    icon: '/soundwhite.png',
-    shortcut: '/soundwhite.png',
+    icon: [
+      { url: '/favicon.ico', sizes: '32x32' },
+      { url: '/soundwhite.png', sizes: '32x32', type: 'image/png' },
+      { url: '/soundwhite.png', sizes: '16x16', type: 'image/png' },
+    ],
+    shortcut: '/favicon.ico',
     apple: '/soundwhite.png',
   },
 }

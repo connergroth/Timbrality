@@ -32,6 +32,8 @@ SPOTIFY_CLIENT_ID=your_spotify_client_id_here
 SPOTIFY_CLIENT_SECRET=your_spotify_client_secret_here
 SPOTIFY_REDIRECT_URI=http://localhost:3000/api/auth/spotify/callback
 
+# Note: The same Spotify credentials are used for both OAuth and API search functionality
+
 # Last.fm API Configuration
 LASTFM_API_KEY=your_lastfm_api_key_here
 LASTFM_SHARED_SECRET=your_lastfm_shared_secret_here
@@ -88,6 +90,13 @@ The app will be available at `http://localhost:3000`.
 - `GET /api/auth/spotify/callback` - Handles Spotify OAuth callback
 - `GET /api/auth/lastfm` - Initiates Last.fm OAuth flow
 - `GET /api/auth/lastfm/callback` - Handles Last.fm OAuth callback
+
+### Spotify API Routes
+
+- `GET /api/spotify/search-track?q={query}` - Search for tracks using Spotify API
+- `GET /api/spotify/search-artist?q={query}` - Search for artists using Spotify API
+
+These routes use Spotify's client credentials flow and don't require user authentication. They provide album artwork, artist images, and track metadata for the landing page components.
 
 ### Pages
 

@@ -5,7 +5,7 @@ export const HowItWorks = () => {
     <section id="how-it-works" className="py-24 bg-neutral-900">
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
-          <h2 className="font-playfair text-4xl md:text-5xl font-bold text-white mb-6">
+          <h2 className="font-playfair text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6">
             How It Works
           </h2>
           <p className="text-lg text-neutral-300 font-inter max-w-3xl mx-auto">
@@ -19,7 +19,7 @@ export const HowItWorks = () => {
             <div className="w-16 h-16 bg-neutral-700/40 rounded-full flex items-center justify-center mx-auto mb-6">
               <Music className="w-8 h-8 text-white" />
             </div>
-            <h3 className="text-2xl font-playfair font-bold text-white mb-4">
+            <h3 className="text-2xl md:text-3xl font-playfair font-bold text-white mb-4">
               Connect Your Music
             </h3>
             <p className="text-neutral-300 font-inter leading-relaxed">
@@ -32,7 +32,7 @@ export const HowItWorks = () => {
             <div className="w-16 h-16 bg-neutral-700/40 rounded-full flex items-center justify-center mx-auto mb-6">
               <Brain className="w-8 h-8 text-white" />
             </div>
-            <h3 className="text-2xl font-playfair font-bold text-white mb-4">
+            <h3 className="text-2xl md:text-3xl font-playfair font-bold text-white mb-4">
               AI Analysis
             </h3>
             <p className="text-neutral-300 font-inter leading-relaxed">
@@ -45,7 +45,7 @@ export const HowItWorks = () => {
             <div className="w-16 h-16 bg-neutral-700/40 rounded-full flex items-center justify-center mx-auto mb-6">
               <Sparkles className="w-8 h-8 text-white" />
             </div>
-            <h3 className="text-2xl font-playfair font-bold text-white mb-4">
+            <h3 className="text-2xl md:text-3xl font-playfair font-bold text-white mb-4">
               Discover New Music
             </h3>
             <p className="text-neutral-300 font-inter leading-relaxed">

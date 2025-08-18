@@ -1,4 +1,3 @@
-import { Button } from '@/components/ui/button'
 import { TrendingUp, Music, Zap, Filter } from 'lucide-react'
 
 interface AlgorithmSelectorProps {
@@ -32,7 +31,7 @@ export function AlgorithmSelector({ activeAlgorithm, onAlgorithmChange, onOpenFi
   return (
     <div className="mb-12">
       {/* Dark Gray Card Container */}
-      <div className="bg-neutral-800/40 backdrop-blur-xl border border-neutral-700/30 rounded-3xl p-6 shadow-2xl">
+      <div className="bg-neutral-800 rounded-3xl p-6 shadow-xl">
         {/* Header */}
         <div className="flex items-start justify-between mb-6">
           <div>
@@ -40,19 +39,17 @@ export function AlgorithmSelector({ activeAlgorithm, onAlgorithmChange, onOpenFi
               <TrendingUp className="h-6 w-6" />
               AI Recommendation Engine
             </h2>
-            <p className="text-slate-300 text-lg leading-relaxed">
+            <p className="text-neutral-300 text-lg leading-relaxed">
               Choose your recommendation algorithm. Hybrid mode combines collaborative filtering with content analysis for optimal results.
             </p>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
+          <button
             onClick={onOpenFilters}
-            className="flex items-center gap-2 bg-neutral-700/40 border-neutral-600/40 text-white hover:bg-neutral-700/60 hover:border-neutral-600/60 backdrop-blur-sm"
+            className="flex items-center gap-2 bg-neutral-700 hover:bg-neutral-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200"
           >
             <Filter className="h-4 w-4" />
             Advanced Filters
-          </Button>
+          </button>
         </div>
 
         {/* Algorithm Buttons */}
@@ -61,10 +58,10 @@ export function AlgorithmSelector({ activeAlgorithm, onAlgorithmChange, onOpenFi
             <button
               key={algo.id}
               onClick={() => onAlgorithmChange(algo.id)}
-              className={`flex items-center gap-3 px-4 py-3 rounded-2xl font-semibold transition-colors ${
+              className={`flex items-center gap-3 px-4 py-3 rounded-xl font-semibold transition-colors duration-200 ${
                 activeAlgorithm === algo.id
                   ? 'bg-white text-neutral-900'
-                  : 'border border-neutral-600/40 text-neutral-300 hover:bg-neutral-700/40 hover:border-neutral-600/60 hover:text-white backdrop-blur-sm'
+                  : 'bg-neutral-700 text-neutral-300 hover:bg-neutral-600 hover:text-white'
               }`}
             >
               <algo.icon className="h-4 w-4" />
@@ -75,7 +72,7 @@ export function AlgorithmSelector({ activeAlgorithm, onAlgorithmChange, onOpenFi
 
         {/* Selected Algorithm Description */}
         {activeAlgorithm && (
-          <div className="p-4 bg-neutral-700/30 backdrop-blur-sm rounded-2xl border border-neutral-600/30">
+          <div className="p-4 bg-neutral-700 rounded-xl">
             <h4 className="flex items-center gap-3 font-semibold mb-3 text-white text-lg">
               {(() => {
                 const algo = algorithms.find(a => a.id === activeAlgorithm)
@@ -84,7 +81,7 @@ export function AlgorithmSelector({ activeAlgorithm, onAlgorithmChange, onOpenFi
               })()}
               {algorithms.find(a => a.id === activeAlgorithm)?.name}
             </h4>
-            <p className="text-slate-300 leading-relaxed">
+            <p className="text-neutral-300 leading-relaxed">
               {algorithms.find(a => a.id === activeAlgorithm)?.description}
             </p>
           </div>

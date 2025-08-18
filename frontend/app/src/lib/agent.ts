@@ -24,7 +24,9 @@ interface Track {
   id: string;
   name: string;
   artist: string;
+  artists?: string[];
   album?: string;
+  album_id?: string;
   artwork_url?: string;
   spotify_url?: string;
   preview_url?: string;
@@ -32,6 +34,21 @@ interface Track {
   similarity?: number;
   genres?: string[];
   audio_features?: Record<string, number>;
+  
+  // Spotify metadata
+  duration_ms?: number;
+  popularity?: number;
+  release_date?: string;
+  explicit?: boolean;
+  spotify_id?: string;
+  
+  // Database ratings
+  aoty_score?: number;
+  rating?: number;
+  
+  // Artist data
+  artist_id?: string;
+  artist_image_url?: string;
 }
 
 interface FeedbackRequest {

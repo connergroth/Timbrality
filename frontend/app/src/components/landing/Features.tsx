@@ -1,15 +1,14 @@
-import { Brain, Network, BarChart3, Palette } from "lucide-react";
 import { NetworkGraph } from "./NetworkGraph";
 import { AudioWaveformAnimation } from "./AudioWaveformAnimation";
 import { MLGraphAnimation } from "./MLGraphAnimation";
-import { MoodVibeAnimation } from "./MoodVibeAnimation";
+import { PlaylistAnimation } from "./PlaylistAnimation";
 
 export const Features = () => {
   return (
     <section id="features" className="py-32 bg-neutral-900">
       <div className="container mx-auto px-8">
         <div className="text-center mb-20">
-          <h2 className="font-playfair text-4xl md:text-6xl font-bold text-white mb-8">
+          <h2 className="font-playfair text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-8">
             Features
           </h2>
           <p className="text-xl text-neutral-300 font-inter max-w-4xl mx-auto leading-relaxed">
@@ -24,29 +23,19 @@ export const Features = () => {
             className="bg-neutral-800/40 backdrop-blur-xl border border-neutral-700/30 rounded-2xl p-6 text-center shadow-2xl transition-all duration-300 hover:bg-neutral-800/60 hover:border-neutral-700/50 animate-card-enter"
             style={{ '--delay': 0 } as React.CSSProperties}
           >
-            <div className="mb-6">
-              <div className="inline-flex items-center justify-center w-14 h-14 bg-neutral-700/40 rounded-xl mb-4">
-                <Brain className="h-7 w-7 text-neutral-300" />
-              </div>
-              <h3 className="text-xl font-playfair font-bold text-white mb-4">
+            <div className="mb-8">
+              <h3 className="text-2xl md:text-3xl lg:text-4xl font-playfair font-bold text-white mb-6">
                 AI-Powered
               </h3>
-              <p className="text-xs text-neutral-300 font-inter leading-relaxed mb-6">
+              <p className="text-sm md:text-base text-neutral-400 font-inter font-medium leading-relaxed mb-8">
                 Advanced machine learning algorithms that continuously learn and improve your recommendations. Our AI analyzes thousands of musical features to understand your unique taste profile.
               </p>
             </div>
             
             {/* AI Processing Visualization */}
-            <div className="mt-6">
-              <div className="relative">
+            <div className="mt-8">
+              <div className="relative transform scale-125">
                 <MLGraphAnimation />
-              </div>
-              
-              {/* ML Algorithm Details */}
-              <div className="mt-6">
-                <p className="text-xs text-neutral-300 font-inter leading-relaxed">
-                  We use collaborative filtering, content-based filtering, neural networks, and embedding models to learn your music taste.
-                </p>
               </div>
             </div>
           </div>
@@ -56,29 +45,19 @@ export const Features = () => {
             className="bg-neutral-800/40 backdrop-blur-xl border border-neutral-700/30 rounded-2xl p-6 text-center shadow-2xl transition-all duration-300 hover:bg-neutral-800/60 hover:border-neutral-700/50 animate-card-enter"
             style={{ '--delay': 1 } as React.CSSProperties}
           >
-            <div className="mb-6">
-              <div className="inline-flex items-center justify-center w-14 h-14 bg-neutral-700/40 rounded-xl mb-4">
-                <Network className="h-7 w-7 text-neutral-300" />
-              </div>
-              <h3 className="text-xl font-playfair font-bold text-white mb-4">
+            <div className="mb-8">
+              <h3 className="text-2xl md:text-3xl lg:text-4xl font-playfair font-bold text-white mb-6">
                 Community-Driven Discovery
               </h3>
-              <p className="text-xs text-neutral-300 font-inter leading-relaxed mb-6">
+              <p className="text-sm md:text-base text-neutral-400 font-inter font-medium leading-relaxed mb-8">
                 Join a vibrant network of music enthusiasts, share recommendations, and explore trending tracks within your musical community. Our collaborative approach helps surface hidden gems.
               </p>
             </div>
             
             {/* Network Graph */}
-            <div className="mt-6">
-              <div className="relative">
+            <div className="mt-8">
+              <div className="relative transform scale-125">
                 <NetworkGraph />
-              </div>
-              
-              {/* Community Features Details */}
-              <div className="mt-6">
-                <p className="text-xs text-neutral-300 font-inter leading-relaxed">
-                  Connect with music lovers who share your taste and discover trending tracks through collaborative recommendations.
-                </p>
               </div>
             </div>
           </div>
@@ -91,44 +70,19 @@ export const Features = () => {
             className="bg-neutral-800/40 backdrop-blur-xl border border-neutral-700/30 rounded-2xl p-6 text-center shadow-2xl transition-all duration-300 hover:bg-neutral-800/60 hover:border-neutral-700/50 animate-card-enter"
             style={{ '--delay': 2 } as React.CSSProperties}
           >
-            <div className="mb-6">
-              <div className="inline-flex items-center justify-center w-14 h-14 bg-neutral-700/40 rounded-xl mb-4">
-                <BarChart3 className="h-7 w-7 text-neutral-300" />
-              </div>
-              <h3 className="text-xl font-playfair font-bold text-white mb-4">
-                Listening Trends
+            <div className="mb-8">
+              <h3 className="text-2xl md:text-3xl lg:text-4xl font-playfair font-bold text-white mb-6">
+                Audio Analysis
               </h3>
-              <p className="text-xs text-neutral-300 font-inter leading-relaxed mb-6">
-                Visualize your musical journey through real-time audio waveform analysis. See how your listening patterns evolve and discover the unique rhythms that define your taste.
+              <p className="text-sm md:text-base text-neutral-400 font-inter font-medium leading-relaxed mb-8">
+                Deep dive into the sonic DNA of tracks with advanced audio feature analysis including tempo, energy, valence, and acousticness.
               </p>
             </div>
             
             {/* Audio Waveform Animation */}
-            <div className="mt-6">
+            <div className="mt-8">
               <div className="relative">
                 <AudioWaveformAnimation />
-              </div>
-              
-              {/* Listening Trends Details */}
-              <div className="mt-4">
-                <div className="flex flex-wrap justify-center gap-4 text-xs font-inter">
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full" style={{backgroundColor: '#6366F1', opacity: 0.8}}></div>
-                    <span className="text-neutral-400">Morning (40%)</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full" style={{backgroundColor: '#7C3AED', opacity: 0.8}}></div>
-                    <span className="text-neutral-400">Afternoon (60%)</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full" style={{backgroundColor: '#6366F1', opacity: 0.8}}></div>
-                    <span className="text-neutral-400">Evening (80%)</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full" style={{backgroundColor: '#7C3AED', opacity: 0.8}}></div>
-                    <span className="text-neutral-400">Night (30%)</span>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
@@ -138,46 +92,19 @@ export const Features = () => {
             className="bg-neutral-800/40 backdrop-blur-xl border border-neutral-700/30 rounded-2xl p-6 text-center shadow-2xl transition-all duration-300 hover:bg-neutral-800/60 hover:border-neutral-700/50 animate-card-enter"
             style={{ '--delay': 3 } as React.CSSProperties}
           >
-            <div className="mb-6">
-              <div className="inline-flex items-center justify-center w-14 h-14 bg-neutral-700/40 rounded-xl mb-4">
-                <Palette className="h-7 w-7 text-neutral-300" />
-              </div>
-              <h3 className="text-xl font-playfair font-bold text-white mb-4">
-                Mood & Vibe Detection
+            <div className="mb-8">
+              <h3 className="text-2xl md:text-3xl lg:text-4xl font-playfair font-bold text-white mb-6">
+                Smart Playlist Creation
               </h3>
-              <p className="text-xs text-neutral-300 font-inter leading-relaxed mb-6">
-                Explore music tailored to your energy, vibe, or moment — from late-night ambient to high-energy hip-hop.
+              <p className="text-sm md:text-base text-neutral-400 font-inter font-medium leading-relaxed mb-8">
+                Automatically generate curated playlists based on your preferences, listening patterns, and discovered music. Export directly to Spotify with one click.
               </p>
             </div>
             
-            {/* Mood Detection Visualization */}
-            <div className="mt-6">
+            {/* Playlist Creation Visualization */}
+            <div className="mt-8">
               <div className="relative">
-                <MoodVibeAnimation />
-                
-                {/* Mood and Energy Level Indicators */}
-                <div className="mt-4 flex flex-wrap justify-center gap-4 text-xs font-inter">
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full" style={{backgroundColor: '#6366F1', opacity: 0.7}}></div>
-                    <span className="text-neutral-400">Ambient (30%)</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full" style={{backgroundColor: '#7C3AED', opacity: 0.7}}></div>
-                    <span className="text-neutral-400">Chill (50%)</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full" style={{backgroundColor: '#F472B6', opacity: 0.7}}></div>
-                    <span className="text-neutral-400">Groovy (70%)</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full" style={{backgroundColor: '#F472B6', opacity: 0.7}}></div>
-                    <span className="text-neutral-400">Energetic (80%)</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full" style={{backgroundColor: '#F472B6', opacity: 0.7}}></div>
-                    <span className="text-neutral-400">Intense (100%)</span>
-                  </div>
-                </div>
+                <PlaylistAnimation />
               </div>
             </div>
           </div>

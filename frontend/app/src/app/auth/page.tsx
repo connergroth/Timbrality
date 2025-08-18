@@ -134,7 +134,7 @@ const Auth = () => {
               placeholder="frank.ocean@example.com"
               value={formData.email}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange('email', e.target.value)}
-              className="bg-neutral-700/40 backdrop-blur-xl border-neutral-600/30 text-white placeholder:text-neutral-400 rounded-2xl p-4 text-lg focus:border-neutral-500/50 focus:ring-neutral-500/50 transition-all duration-300 font-inter"
+              className="bg-neutral-700/40 backdrop-blur-xl border-neutral-600/30 text-white placeholder:text-neutral-400 rounded-2xl p-2 h-[60px] text-lg focus:border-neutral-500/50 focus:ring-neutral-500/50 transition-all duration-300 font-inter"
             />
 
             {/* Continue Button */}

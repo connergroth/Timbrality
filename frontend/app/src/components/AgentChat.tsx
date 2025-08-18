@@ -287,7 +287,7 @@ export function AgentChat({
           {isUser ? (
             <div className="flex max-w-[80%] flex-row-reverse items-start space-x-2">
               {/* Message Content for user - keep bubble */}
-                             <div className="rounded-lg p-3 bg-neutral-800/40 text-foreground">
+                             <div className="rounded-xl p-3 bg-neutral-800 text-white">
                 <p className="text-[15px] font-inter whitespace-pre-wrap">{message.content}</p>
               </div>
             </div>
@@ -389,7 +389,7 @@ export function AgentChat({
         <div className={isInline ? "max-w-2xl mx-auto" : "max-w-2xl"}>
           <form onSubmit={handleSubmit}>
             <div 
-                             className="bg-neutral-800/40 rounded-xl px-4 pt-3 pb-2 relative cursor-text border border-neutral-700/30 border-glow-animation"
+                             className="bg-neutral-800 rounded-3xl px-4 pt-3 pb-2 relative cursor-text border border-neutral-700/30 border-glow-animation shadow-xl"
               onClick={(e) => {
                 // Don't focus input if clicking on slider area
                 if (!(e.target as HTMLElement).closest('[data-slider-area]')) {
@@ -529,28 +529,28 @@ export function AgentChat({
             <div className="mt-6 flex flex-wrap gap-3 justify-center">
                              <button 
                  onClick={() => handleQuickModuleClick('continue-listening')}
-                 className="bg-neutral-800/40 hover:bg-neutral-800/60 transition-colors rounded-full px-4 py-2 text-sm font-inter font-medium text-foreground border border-neutral-700/30 flex items-center gap-2"
+                 className="bg-neutral-800 hover:bg-neutral-700 transition-colors rounded-full px-4 py-2 text-sm font-inter font-medium text-white border border-neutral-700 flex items-center gap-2"
                >
                 <Clock className="w-4 h-4" />
                 Based on Recent Listening
               </button>
               <button 
                 onClick={() => handleQuickModuleClick('because-you-played')}
-                className="bg-neutral-800/40 hover:bg-neutral-800/60 transition-colors rounded-full px-4 py-2 text-sm font-medium text-foreground border border-neutral-700/30 flex items-center gap-2"
+                className="bg-neutral-800 hover:bg-neutral-700 transition-colors rounded-full px-4 py-2 text-sm font-medium text-white border border-neutral-700 flex items-center gap-2"
               >
                 <Star className="w-4 h-4" />
                 Highly Rated
               </button>
               <button 
                 onClick={() => handleQuickModuleClick('fresh-for-you')}
-                className="bg-neutral-800/40 hover:bg-neutral-800/60 transition-colors rounded-full px-4 py-2 text-sm font-inter font-medium text-foreground border border-neutral-700/30 flex items-center gap-2"
+                className="bg-neutral-800 hover:bg-neutral-700 transition-colors rounded-full px-4 py-2 text-sm font-inter font-medium text-white border border-neutral-700 flex items-center gap-2"
               >
                 <Zap className="w-4 h-4" />
                 Fresh for You
               </button>
               <button 
                 onClick={() => handleQuickModuleClick('fresh-for-you')}
-                className="bg-neutral-800/40 hover:bg-neutral-800/60 transition-colors rounded-full px-4 py-2 text-sm font-inter font-medium text-foreground border border-neutral-700/30 flex items-center gap-2"
+                className="bg-neutral-800 hover:bg-neutral-700 transition-colors rounded-full px-4 py-2 text-sm font-inter font-medium text-white border border-neutral-700 flex items-center gap-2"
               >
                 <Plus className="w-4 h-4" />
                 New Playlist

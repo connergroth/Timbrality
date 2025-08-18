@@ -1,129 +1,217 @@
 import { useState, useRef, useEffect } from 'react';
-import { Heart, Music, ChevronLeft, ChevronRight, Play, Pause, BarChart3, TrendingUp, Sparkles } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { Globe, Clock, Calendar, User, Star, Plus, Info, X } from 'lucide-react';
+
+interface SpotifyTrackData {
+  id: string;
+  name: string;
+  artist: string;
+  artists: string[];
+  album: string;
+  album_id: string;
+  artwork_url: string | null;
+  preview_url: string | null;
+  external_urls: {
+    spotify: string;
+  };
+  duration_ms: number;
+  popularity: number;
+  release_date: string;
+}
+
+interface EnrichedTrack {
+  id: number;
+  name: string;
+  artist: string;
+  album: string;
+  cover_color: string;
+  duration: string;
+  release_date: string;
+  popularity: number;
+  rank: number;
+  rating: number;
+  avatar: string;
+  artwork_url?: string | null;
+  artist_image_url?: string | null;
+  spotify_url?: string;
+}
 
 export const TastePreview = () => {
-  const [isPaused, setIsPaused] = useState(false);
   const carouselRef = useRef<HTMLDivElement>(null);
 
-  // Sample track data for demo with enhanced metadata
-  const tracks = [
+  // Initial track data - will be enriched with Spotify data
+  const initialTracks: EnrichedTrack[] = [
     {
       id: 1,
-      name: "Midnight City",
-      artist: "M83",
-      album: "Hurry Up, We're Dreaming",
-      cover_art: null,
-      explanation: "Atmospheric synth-pop with dreamy vocals that matches your love for ambient electronic music",
-      tags: ["Electronic", "Ambient", "Synth-pop"],
-      confidence: 96,
-      reason: "Based on your Spotify listening history",
-      year: "2011",
-      duration: "4:04",
-      popularity: 85
+      name: "Pyramids",
+      artist: "Frank Ocean",
+      album: "channel ORANGE",
+      cover_color: "#FF7A38",
+      duration: "03:20",
+      release_date: "07-2012",
+      popularity: 85,
+      rank: 3,
+      rating: 97,
+      avatar: "👤"
     },
     {
       id: 2,
-      name: "Re: Stacks",
-      artist: "Bon Iver",
-      album: "For Emma, Forever Ago",
-      cover_art: null,
-      explanation: "Intimate folk with raw emotion, perfect for your contemplative listening moments",
-      tags: ["Folk", "Indie", "Acoustic"],
-      confidence: 92,
-      reason: "Similar to your saved tracks",
-      year: "2007",
-      duration: "6:41",
-      popularity: 78
+      name: "Ensalada",
+      artist: "Freddie Gibbs",
+      album: "channel ORANGE",
+      cover_color: "#FF7A38",
+      duration: "09:53",
+      release_date: "07-2012",
+      popularity: 78,
+      rank: 1,
+      rating: 94,
+      avatar: "👤"  
     },
     {
       id: 3,
-      name: "Teardrop",
-      artist: "Massive Attack",
-      album: "Mezzanine",
-      cover_art: null,
-      explanation: "Trip-hop masterpiece that aligns with your taste for atmospheric, moody music",
-      tags: ["Trip-hop", "Electronic", "Atmospheric"],
-      confidence: 89,
-      reason: "Matches your evening listening patterns",
-      year: "1998",
-      duration: "5:29",
-      popularity: 82
+      name: "VCRs",
+      artist: "JID",
+      album: "God Does Like Ugly",
+      cover_color: "#FF7A38",
+      duration: "05:04",
+      release_date: "07-2012",
+      popularity: 82,
+      rank: 2,
+      rating: 88,
+      avatar: "👤"
     },
     {
       id: 4,
-      name: "Everything in Its Right Place",
-      artist: "Radiohead",
-      album: "Kid A",
-      cover_art: null,
-      explanation: "Experimental electronic rock that matches your appreciation for innovative soundscapes",
-      tags: ["Experimental", "Electronic", "Rock"],
-      confidence: 94,
-      reason: "Algorithm detected similar audio features",
-      year: "2000",
-      duration: "4:11",
-      popularity: 88
+      name: "Toronto 2014",
+      artist: "Daniel Caesar",
+      album: "NEVER ENOUGH",
+      cover_color: "#FF7A38",
+      duration: "04:23",
+      release_date: "07-2012",
+      popularity: 75,
+      rank: 4,
+      rating: 83,
+      avatar: "👤"
     },
     {
       id: 5,
-      name: "Holocene",
-      artist: "Bon Iver",
-      album: "Bon Iver",
-      cover_art: null,
-      explanation: "Ethereal folk with rich textures, perfect for your atmospheric music preferences",
-      tags: ["Folk", "Indie", "Ethereal"],
-      confidence: 91,
-      reason: "High compatibility with your taste profile",
-      year: "2011",
-      duration: "5:36",
-      popularity: 76
-    },
-    {
-      id: 6,
-      name: "Strobe",
-      artist: "Deadmau5",
-      album: "For Lack of a Better Name",
-      cover_art: null,
-      explanation: "Progressive house epic that builds beautifully, matching your taste for electronic journeys",
-      tags: ["Progressive House", "Electronic", "Ambient"],
-      confidence: 87,
-      reason: "Based on your late-night listening habits",
-      year: "2009",
-      duration: "10:32",
-      popularity: 79
+      name: "Aria Math",
+      artist: "C418",
+      album: "Minecraft: Volume Beta",
+      cover_color: "#FF7A38",
+      duration: "03:55",
+      release_date: "07-2012",
+      popularity: 88,
+      rank: 5,
+      rating: 98,
+      avatar: "👤"
     }
   ];
 
+  const [tracks, setTracks] = useState<EnrichedTrack[]>(initialTracks);
+
   const [loading, setLoading] = useState(true);
-  const [hoveredTrack, setHoveredTrack] = useState<number | null>(null);
-  const [playingTrack, setPlayingTrack] = useState<number | null>(null);
+  const [showPlaylistModal, setShowPlaylistModal] = useState<number | null>(null);
+  const [showInfoModal, setShowInfoModal] = useState<number | null>(null);
 
-  useEffect(() => {
-    // Simulate loading with realistic timing
-    const timer = setTimeout(() => setLoading(false), 1500);
-    return () => clearTimeout(timer);
-  }, []);
-
-  const handlePlayPause = (trackId: number) => {
-    if (playingTrack === trackId) {
-      setPlayingTrack(null);
-    } else {
-      setPlayingTrack(trackId);
+  // Function to fetch Spotify track data
+  const fetchSpotifyTrackData = async (trackName: string, artistName: string): Promise<SpotifyTrackData | null> => {
+    try {
+      const query = `${trackName} ${artistName}`;
+      const response = await fetch(`/api/spotify/search-track?q=${encodeURIComponent(query)}`);
+      
+      if (!response.ok) {
+        console.warn(`Failed to fetch Spotify data for ${trackName} by ${artistName}`);
+        return null;
+      }
+      
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error(`Error fetching Spotify data for ${trackName}:`, error);
+      return null;
     }
   };
+
+  // Function to fetch artist image
+  const fetchArtistImage = async (artistName: string): Promise<string | null> => {
+    try {
+      const response = await fetch(`/api/spotify/search-artist?q=${encodeURIComponent(artistName)}`);
+      
+      if (!response.ok) {
+        return null;
+      }
+      
+      const data = await response.json();
+      return data.profile_picture || null;
+    } catch (error) {
+      console.error(`Error fetching artist image for ${artistName}:`, error);
+      return null;
+    }
+  };
+
+  // Function to enrich tracks with Spotify data
+  const enrichTracksWithSpotifyData = async () => {
+    const enrichedTracks = await Promise.all(
+      initialTracks.map(async (track) => {
+        const [spotifyData, artistImage] = await Promise.all([
+          fetchSpotifyTrackData(track.name, track.artist),
+          fetchArtistImage(track.artist)
+        ]);
+        
+        if (spotifyData) {
+          // Convert duration from ms to MM:SS format
+          const minutes = Math.floor(spotifyData.duration_ms / 60000);
+          const seconds = Math.floor((spotifyData.duration_ms % 60000) / 1000);
+          const formattedDuration = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+          
+          // Format release date to MM-YYYY
+          const formatReleaseDate = (releaseDate: string) => {
+            if (!releaseDate) return '12-2023';
+            const date = new Date(releaseDate);
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const year = date.getFullYear();
+            return `${month}-${year}`;
+          };
+          
+          return {
+            ...track,
+            artwork_url: spotifyData.artwork_url,
+            artist_image_url: artistImage,
+            spotify_url: spotifyData.external_urls.spotify,
+            duration: formattedDuration,
+            popularity: spotifyData.popularity,
+            release_date: formatReleaseDate(spotifyData.release_date),
+          };
+        }
+        
+        return track;
+      })
+    );
+    
+    setTracks(enrichedTracks);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    // Start with a delay to show loading animation
+    const timer = setTimeout(() => {
+      enrichTracksWithSpotifyData();
+    }, 1000);
+    
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <section id="taste-preview" className="py-24 bg-neutral-900">
       <div className="container mx-auto px-6">
         {/* Header */}
         <div className="text-center mb-16">
-          <h2 className="font-playfair text-4xl md:text-5xl font-bold text-white mb-4">
-            Taste Preview
+          <h2 className="font-playfair text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-4">
+            Discovery Engine
           </h2>
           <p className="text-xl text-neutral-300 font-inter leading-relaxed max-w-3xl mx-auto mb-6">
-            See how our AI understands your unique taste and discovers music that resonates with your soul
+          Continuously finds new tracks tailored to your musical profile
           </p>
-              
         </div>
 
         {/* Carousel Container */}
@@ -132,197 +220,287 @@ export const TastePreview = () => {
           <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-neutral-900 to-transparent z-10 pointer-events-none"></div>
           <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-neutral-900 to-transparent z-10 pointer-events-none"></div>
           
-          {/* Speed control indicator */}
-          <div className="absolute top-4 right-6 z-20">
-            <div className="bg-neutral-800/80 backdrop-blur-md border border-neutral-700/50 rounded-full px-3 py-1.5 text-xs text-neutral-300 font-inter">
-              {isPaused ? 'Paused' : 'Auto-scroll'}
-            </div>
-          </div>
-          
           <div
             ref={carouselRef}
-            className={`flex gap-6 ${
-              isPaused ? '' : 'animate-scroll-left-smooth'
-            } hover:pause-animation`}
-            onMouseEnter={() => setIsPaused(true)}
-            onMouseLeave={() => setIsPaused(false)}
+            className="flex gap-6 animate-scroll-left-smooth"
             style={{
-              width: `${tracks.length * 280 * 2}px`, // Adjusted for smaller cards
+              width: `${tracks.length * 480 * 2}px`,
             }}
           >
             {/* First set of tracks */}
             {tracks.length > 0 && !loading && tracks.map((track, index) => (
-              <div
-                key={`first-${track.id}-${index}`}
-                className="flex-shrink-0 w-[260px] bg-gradient-to-br from-neutral-800/50 to-neutral-900/60 backdrop-blur-xl border border-neutral-700/30 rounded-2xl p-4 space-y-3 shadow-xl transition-all duration-300 hover:scale-[1.02] hover:bg-neutral-800/70 hover:border-neutral-600/50 cursor-pointer group relative overflow-hidden"
-                style={{ '--delay': index } as React.CSSProperties}
-                onMouseEnter={() => setHoveredTrack(track.id)}
-                onMouseLeave={() => setHoveredTrack(null)}
-              >
-                {/* Animated background gradient */}
-                <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/3 via-transparent to-violet-500/3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-                
-                {/* Confidence indicator */}
-                <div className="absolute top-0 left-0 right-0 h-1 bg-neutral-700/30 rounded-t-2xl overflow-hidden">
-                  <div 
-                    className="h-full bg-gradient-to-r from-indigo-400 to-violet-400 rounded-t-2xl transition-all duration-700 ease-out"
-                    style={{ width: `${track.confidence}%` }}
-                  ></div>
-                </div>
+              <div key={`first-${track.id}-${index}`} className="flex-shrink-0">
+                <div
+                  className="w-[460px] h-[320px] bg-neutral-800/40 backdrop-blur-xl border border-neutral-700/30 rounded-3xl p-6 shadow-xl transition-all duration-300 hover:scale-[1.02] cursor-pointer group relative"
+                  style={{ '--delay': index } as React.CSSProperties}
+                >
+                  {/* Top section with artist and action buttons */}
+                  <div className="flex items-center justify-between mb-1">
+                    {/* Artist pill - smaller */}
+                    <div className="bg-neutral-700/60 backdrop-blur-sm border border-neutral-600/30 rounded-full px-3 py-1 flex items-center gap-1.5">
+                      <div className="w-4 h-4 rounded-full overflow-hidden flex-shrink-0">
+                        {track.artist_image_url ? (
+                          <img 
+                            src={track.artist_image_url} 
+                            alt={track.artist}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-neutral-600/60 backdrop-blur-sm rounded-full flex items-center justify-center">
+                            <User className="w-2.5 h-2.5 text-white" />
+                          </div>
+                        )}
+                      </div>
+                      <span className="text-white font-medium text-xs">{track.artist}</span>
+                    </div>
 
-                <div className="flex items-start space-x-3">
-                  {/* Album Cover with Play Button */}
-                  <div className="relative w-14 h-14 rounded-xl overflow-hidden bg-gradient-to-br from-neutral-700/50 to-neutral-800/50 flex items-center justify-center flex-shrink-0 border border-neutral-600/30 group-hover:border-neutral-500/50 transition-all duration-300">
-                    {track.cover_art ? (
-                      <img
-                        src={track.cover_art}
-                        alt={`${track.album} cover`}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                        onError={(e) => {
-                          const target = e.currentTarget as HTMLImageElement;
-                          target.style.display = 'none';
-                          const sibling = target.nextElementSibling as HTMLElement;
-                          if (sibling) {
-                            sibling.style.display = 'flex';
-                          }
-                        }}
-                      />
-                    ) : null}
-                    <span 
-                      className="text-xl font-playfair font-bold text-white"
-                      style={{ display: track.cover_art ? 'none' : 'flex' }}
-                    >
-                      <Music className="h-7 w-7" />
-                    </span>
-                    
-                    {/* Play button overlay */}
-                    {hoveredTrack === track.id && (
-                      <div 
-                        className="absolute inset-0 bg-gradient-to-br from-black/70 to-black/50 flex items-center justify-center transition-all duration-300 backdrop-blur-sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handlePlayPause(track.id);
-                        }}
+                    {/* Action buttons */}
+                    <div className="flex items-center gap-2">
+                      {/* Info button */}
+                      <button
+                        onClick={() => setShowInfoModal(track.id)}
+                        className="w-6 h-6 flex items-center justify-center text-white hover:bg-neutral-700/60 backdrop-blur-sm rounded-full transition-colors duration-200"
                       >
-                        <div className="bg-white/20 backdrop-blur-md rounded-full p-2 border border-white/30 transition-all duration-300 hover:scale-110">
-                          {playingTrack === track.id ? (
-                            <Pause className="h-4 w-4 text-white" />
-                          ) : (
-                            <Play className="h-4 w-4 text-white ml-0.5" />
-                          )}
+                        <Info className="w-3.5 h-3.5" />
+                      </button>
+
+                      {/* Add to playlist button */}
+                      <button
+                        onClick={() => setShowPlaylistModal(track.id)}
+                        className="w-6 h-6 flex items-center justify-center text-white hover:bg-neutral-700/60 backdrop-blur-sm rounded-full transition-colors duration-200"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Song title - bigger */}
+                  <h3 className="font-playfair text-4xl font-bold text-white mb-2 leading-tight">
+                    {track.name}
+                  </h3>
+
+                  {/* Content section with album cover and stats */}
+                  <div className="flex gap-4 mb-3">
+                    {/* Album cover */}
+                    <div className="w-32 h-32 rounded-xl flex items-center justify-center relative flex-shrink-0 overflow-hidden">
+                      {track.artwork_url ? (
+                        <img 
+                          src={track.artwork_url} 
+                          alt={`${track.album} cover`}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div 
+                          className="w-full h-full flex items-center justify-center"
+                          style={{ backgroundColor: track.cover_color }}
+                        >
+                          <div className="text-white font-bold text-sm text-center px-2">{track.album}</div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Stats section */}
+                    <div className="flex-1 space-y-3">
+                      {/* Popularity */}
+                      <div>
+                        <div className="flex items-center gap-1 mb-1">
+                          <Globe className="w-3 h-3 text-white" />
+                          <span className="text-white font-medium text-sm">Popularity</span>
+                        </div>
+                        <div className="w-full bg-neutral-700/60 backdrop-blur-sm border border-neutral-600/30 rounded-full h-6">
+                          <div 
+                            className="bg-purple-500 h-6 rounded-full transition-all duration-700 ease-out"
+                            style={{ width: `${track.popularity}%` }}
+                          ></div>
                         </div>
                       </div>
-                    )}
-                  </div>
 
-                  {/* Track Info */}
-                  <div className="flex-1 space-y-2 min-w-0">
-                    <h3 className="font-playfair text-base font-bold text-white leading-tight group-hover:text-neutral-100 transition-colors truncate">
-                      {track.name}
-                    </h3>
-                    <p className="font-inter text-sm text-neutral-300 leading-tight">
-                      {track.artist}
-                    </p>
-                    <p className="text-neutral-400 text-xs leading-relaxed line-clamp-2 font-inter">
-                      "{track.explanation}"
-                    </p>
-                  </div>
-                </div>
+                      {/* Duration, Release Date, and Rating */}
+                      <div className="flex gap-3">
+                        {/* Duration */}
+                        <div>
+                          <div className="bg-neutral-700/60 backdrop-blur-sm border border-neutral-600/30 rounded-xl px-3 py-2 inline-block">
+                            <div className="text-white text-lg font-bold">{track.duration}</div>
+                          </div>
+                          <div className="flex items-center gap-1 mt-0.5">
+                            <Clock className="w-2.5 h-2.5 text-white" />
+                            <span className="text-white text-xs">Length</span>
+                          </div>
+                        </div>
 
-                {/* AI Reasoning */}
-                <div className="bg-gradient-to-br from-neutral-700/20 to-neutral-800/20 rounded-xl p-3 border border-neutral-600/20">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-xs font-semibold text-indigo-400 font-inter">{track.confidence}% Match</span>
-                    <span className="text-xs text-neutral-400 font-inter">• {track.reason}</span>
-                  </div>
-                  
-                  {/* Tags */}
-                  <div className="flex flex-wrap gap-1">
-                    {track.tags.slice(0, 2).map((tag) => (
-                      <Badge 
-                        key={tag} 
-                        variant="secondary" 
-                        className="font-inter text-xs px-2 py-1 bg-gradient-to-r from-neutral-700/40 to-neutral-800/40 border-neutral-600/30 text-neutral-300 transition-all duration-200"
-                      >
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
+                        {/* Release Date */}
+                        <div>
+                          <div className="bg-neutral-700/60 backdrop-blur-sm border border-neutral-600/30 rounded-xl px-3 py-2 inline-block">
+                            <div className="text-white text-lg font-bold">{track.release_date}</div>
+                          </div>
+                          <div className="flex items-center gap-1 mt-0.5">
+                            <Calendar className="w-2.5 h-2.5 text-white" />
+                            <span className="text-white text-xs whitespace-nowrap">Release date</span>
+                          </div>
+                        </div>
 
-                {/* Bottom info */}
-                <div className="flex items-center justify-between text-xs text-neutral-400">
-                  <span className="font-inter">{track.year} • {track.duration}</span>
-                  {playingTrack === track.id && (
-                    <div className="flex items-center gap-1">
-                      <div className="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-pulse"></div>
-                      <span className="text-indigo-400 font-inter font-medium">Playing</span>
+                        {/* Rating */}
+                        <div>
+                          <div className="bg-neutral-700/60 backdrop-blur-sm border border-neutral-600/30 rounded-xl px-3 py-2 inline-block">
+                            <div className="text-white text-lg font-bold">{track.rating}</div>
+                          </div>
+                          <div className="flex items-center gap-1 mt-0.5">
+                            <Star className="w-2.5 h-2.5 text-white" />
+                            <span className="text-white text-xs">Rating</span>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                  )}
+                  </div>
+
+                  {/* Spotify button */}
+                  <button 
+                    onClick={() => track.spotify_url && window.open(track.spotify_url, '_blank')}
+                    className="w-full bg-neutral-700/60 backdrop-blur-sm border border-neutral-600/30 hover:bg-neutral-600/60 rounded-xl py-3 flex items-center justify-center gap-3 transition-colors duration-200"
+                  >
+                    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" style={{ minWidth: '20px' }}>
+                      <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.42 1.56-.299.421-1.02.599-1.559.3z" />
+                    </svg>
+                    <span className="text-white font-medium">Open in Spotify</span>
+                  </button>
                 </div>
               </div>
             ))}
             
             {/* Duplicate set for seamless loop */}
             {tracks.length > 0 && !loading && tracks.map((track, index) => (
-              <div
-                key={`second-${track.id}-${index}`}
-                className="flex-shrink-0 w-[260px] bg-gradient-to-br from-neutral-800/50 to-neutral-900/60 backdrop-blur-xl border border-neutral-700/30 rounded-2xl p-4 space-y-3 shadow-xl transition-all duration-300 hover:scale-[1.02] hover:bg-neutral-800/70 hover:border-neutral-600/50 cursor-pointer group relative overflow-hidden"
-              >
-                {/* Animated background gradient */}
-                <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/3 via-transparent to-violet-500/3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-                
-                <div className="flex items-start space-x-3">
-                  {/* Album Cover */}
-                  <div className="w-14 h-14 rounded-xl overflow-hidden bg-gradient-to-br from-neutral-700/50 to-neutral-800/50 flex items-center justify-center flex-shrink-0 border border-neutral-600/30 group-hover:border-neutral-500/50 transition-all duration-300">
-                    {track.cover_art ? (
-                      <img
-                        src={track.cover_art}
-                        alt={`${track.album} cover`}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                        onError={(e) => {
-                          const target = e.currentTarget as HTMLImageElement;
-                          target.style.display = 'none';
-                          const sibling = target.nextElementSibling as HTMLElement;
-                          if (sibling) {
-                            sibling.style.display = 'flex';
-                          }
-                        }}
-                      />
-                    ) : null}
-                    <span 
-                      className="text-xl font-playfair font-bold text-white"
-                      style={{ display: track.cover_art ? 'none' : 'flex' }}
-                    >
-                      <Music className="h-7 w-7" />
-                    </span>
+              <div key={`second-${track.id}-${index}`} className="flex-shrink-0">
+                <div className="w-[460px] h-[320px] bg-neutral-800/40 backdrop-blur-xl border border-neutral-700/30 rounded-3xl p-6 shadow-xl transition-all duration-300 hover:scale-[1.02] cursor-pointer group relative">
+                  {/* Top section with artist and action buttons */}
+                  <div className="flex items-center justify-between mb-1">
+                    {/* Artist pill - smaller */}
+                    <div className="bg-neutral-700/60 backdrop-blur-sm border border-neutral-600/30 rounded-full px-3 py-1 flex items-center gap-1.5">
+                      <div className="w-4 h-4 rounded-full overflow-hidden flex-shrink-0">
+                        {track.artist_image_url ? (
+                          <img 
+                            src={track.artist_image_url} 
+                            alt={track.artist}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-neutral-600/60 backdrop-blur-sm rounded-full flex items-center justify-center">
+                            <User className="w-2.5 h-2.5 text-white" />
+                          </div>
+                        )}
+                      </div>
+                      <span className="text-white font-medium text-xs">{track.artist}</span>
+                    </div>
+
+                    {/* Action buttons */}
+                    <div className="flex items-center gap-2">
+                      {/* Info button */}
+                      <button
+                        onClick={() => setShowInfoModal(track.id)}
+                        className="w-6 h-6 flex items-center justify-center text-white hover:bg-neutral-700/60 backdrop-blur-sm rounded-full transition-colors duration-200"
+                      >
+                        <Info className="w-3.5 h-3.5" />
+                      </button>
+
+                      {/* Add to playlist button */}
+                      <button
+                        onClick={() => setShowPlaylistModal(track.id)}
+                        className="w-6 h-6 flex items-center justify-center text-white hover:bg-neutral-700/60 backdrop-blur-sm rounded-full transition-colors duration-200"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
                   </div>
 
-                  {/* Track Info */}
-                  <div className="flex-1 space-y-2 min-w-0">
-                    <h3 className="font-playfair text-base font-bold text-white leading-tight group-hover:text-neutral-100 transition-colors">
-                      {track.name}
-                    </h3>
-                    <p className="font-inter text-sm text-neutral-300 leading-tight">
-                      {track.artist}
-                    </p>
-                    <p className="text-neutral-400 text-xs leading-relaxed line-clamp-2">
-                      "{track.explanation}"
-                    </p>
-                  </div>
-                </div>
+                  {/* Song title - bigger */}
+                  <h3 className="font-playfair text-4xl font-bold text-white mb-2 leading-tight">
+                    {track.name}
+                  </h3>
 
-                {/* Tags */}
-                <div className="flex flex-wrap gap-1">
-                  {track.tags.slice(0, 2).map((tag) => (
-                    <Badge 
-                      key={tag} 
-                      variant="secondary" 
-                      className="font-inter text-xs px-2 py-1 bg-gradient-to-r from-neutral-700/40 to-neutral-800/40 border-neutral-600/30 text-neutral-300 transition-all duration-200"
-                    >
-                      {tag}
-                    </Badge>
-                  ))}
+                  {/* Content section with album cover and stats */}
+                  <div className="flex gap-4 mb-3">
+                    {/* Album cover */}
+                    <div className="w-32 h-32 rounded-xl flex items-center justify-center relative flex-shrink-0 overflow-hidden">
+                      {track.artwork_url ? (
+                        <img 
+                          src={track.artwork_url} 
+                          alt={`${track.album} cover`}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div 
+                          className="w-full h-full flex items-center justify-center"
+                          style={{ backgroundColor: track.cover_color }}
+                        >
+                          <div className="text-white font-bold text-sm text-center px-2">{track.album}</div>
+                        </div>
+                      )}
+
+                    </div>
+
+                    {/* Stats section */}
+                    <div className="flex-1 space-y-3">
+                      {/* Popularity */}
+                      <div>
+                        <div className="flex items-center gap-1 mb-1">
+                          <Globe className="w-3 h-3 text-white" />
+                          <span className="text-white font-medium text-sm">Popularity</span>
+                        </div>
+                        <div className="w-full bg-neutral-700/60 backdrop-blur-sm border border-neutral-600/30 rounded-full h-6">
+                          <div 
+                            className="bg-purple-500 h-6 rounded-full transition-all duration-700 ease-out"
+                            style={{ width: `${track.popularity}%` }}
+                          ></div>
+                        </div>
+                      </div>
+
+                      {/* Duration, Release Date, and Rating */}
+                      <div className="flex gap-3">
+                        {/* Duration */}
+                        <div>
+                          <div className="bg-neutral-700/60 backdrop-blur-sm border border-neutral-600/30 rounded-xl px-3 py-2 inline-block">
+                            <div className="text-white text-lg font-bold">{track.duration}</div>
+                          </div>
+                          <div className="flex items-center gap-1 mt-0.5">
+                            <Clock className="w-2.5 h-2.5 text-white" />
+                            <span className="text-white text-xs">Length</span>
+                          </div>
+                        </div>
+
+                        {/* Release Date */}
+                        <div>
+                          <div className="bg-neutral-700/60 backdrop-blur-sm border border-neutral-600/30 rounded-xl px-3 py-2 inline-block">
+                            <div className="text-white text-lg font-bold">{track.release_date}</div>
+                          </div>
+                          <div className="flex items-center gap-1 mt-0.5">
+                            <Calendar className="w-2.5 h-2.5 text-white" />
+                            <span className="text-white text-xs whitespace-nowrap">Release date</span>
+                          </div>
+                        </div>
+
+                        {/* Rating */}
+                        <div>
+                          <div className="bg-neutral-700/60 backdrop-blur-sm border border-neutral-600/30 rounded-xl px-3 py-2 inline-block">
+                            <div className="text-white text-lg font-bold">{track.rating}</div>
+                          </div>
+                          <div className="flex items-center gap-1 mt-0.5">
+                            <Star className="w-2.5 h-2.5 text-white" />
+                            <span className="text-white text-xs">Rating</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Spotify button */}
+                  <button 
+                    onClick={() => track.spotify_url && window.open(track.spotify_url, '_blank')}
+                    className="w-full bg-neutral-700/60 backdrop-blur-sm border border-neutral-600/30 hover:bg-neutral-600/60 rounded-xl py-3 flex items-center justify-center gap-3 transition-colors duration-200"
+                  >
+                    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" style={{ minWidth: '20px' }}>
+                      <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.42 1.56-.299.421-1.02.599-1.559.3z" />
+                    </svg>
+                    <span className="text-white font-medium">Open in Spotify</span>
+                  </button>
                 </div>
               </div>
             ))}
@@ -330,22 +508,43 @@ export const TastePreview = () => {
             {/* Loading state */}
             {loading && (
               <>
-                {[...Array(5)].map((_, index) => (
-                  <div
-                    key={`loading-${index}`}
-                    className="flex-shrink-0 w-[260px] bg-gradient-to-br from-neutral-800/50 to-neutral-900/60 backdrop-blur-xl border border-neutral-700/30 rounded-2xl p-4 space-y-3 shadow-xl animate-pulse"
-                  >
-                    <div className="flex items-start space-x-3">
-                      <div className="w-14 h-14 rounded-xl bg-neutral-700/40 flex-shrink-0"></div>
-                      <div className="flex-1 space-y-2">
-                        <div className="h-4 bg-neutral-700/40 rounded w-3/4"></div>
-                        <div className="h-3 bg-neutral-700/40 rounded w-1/2"></div>
-                        <div className="h-8 bg-neutral-700/40 rounded w-full"></div>
+                {[...Array(3)].map((_, index) => (
+                  <div key={`loading-${index}`} className="flex-shrink-0">
+                    <div className="w-[460px] h-[320px] bg-neutral-800/40 backdrop-blur-xl border border-neutral-700/30 rounded-3xl p-6 shadow-xl animate-pulse">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="w-32 h-6 bg-neutral-700 rounded-full"></div>
                       </div>
-                    </div>
-                    <div className="flex gap-1">
-                      <div className="h-6 bg-neutral-700/40 rounded w-16"></div>
-                      <div className="h-6 bg-neutral-700/40 rounded w-20"></div>
+                      <div className="w-3/4 h-10 bg-neutral-700 rounded mb-4"></div>
+                      <div className="flex gap-4 mb-4">
+                        <div className="w-32 h-32 bg-neutral-700 rounded-xl"></div>
+                        <div className="flex-1 space-y-3">
+                          <div className="w-3/4 h-4 bg-neutral-700 rounded"></div>
+                          <div className="flex gap-3">
+                            <div>
+                              <div className="h-10 bg-neutral-700 rounded-xl w-16"></div>
+                              <div className="flex items-center gap-1 mt-0.5">
+                                <div className="w-2.5 h-2.5 bg-neutral-700 rounded"></div>
+                                <div className="w-10 h-2.5 bg-neutral-700 rounded"></div>
+                              </div>
+                            </div>
+                            <div>
+                              <div className="h-10 bg-neutral-700 rounded-xl w-20"></div>
+                              <div className="flex items-center gap-1 mt-0.5">
+                                <div className="w-2.5 h-2.5 bg-neutral-700 rounded"></div>
+                                <div className="w-16 h-2.5 bg-neutral-700 rounded"></div>
+                              </div>
+                            </div>
+                            <div>
+                              <div className="h-10 bg-neutral-700 rounded-xl w-12"></div>
+                              <div className="flex items-center gap-1 mt-0.5">
+                                <div className="w-2.5 h-2.5 bg-neutral-700 rounded"></div>
+                                <div className="w-12 h-2.5 bg-neutral-700 rounded"></div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="w-full h-10 bg-neutral-700 rounded-xl"></div>
                     </div>
                   </div>
                 ))}
@@ -354,40 +553,74 @@ export const TastePreview = () => {
           </div>
         </div>
 
-        {/* Bottom CTA */}
-        <div className="text-center mt-16">
-          <div className="bg-gradient-to-br from-neutral-800/60 to-neutral-900/80 backdrop-blur-xl border border-white/20 rounded-2xl p-8 shadow-2xl border-glow-animation inline-block relative overflow-hidden max-w-3xl">
-            {/* Gradient overlay */}
-            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-transparent to-blue-500/10 pointer-events-none rounded-2xl"></div>
-            
-            <div className="relative z-10">
-              <h3 className="text-2xl font-playfair font-bold text-white mb-3">
-                Ready to discover your musical DNA?
-              </h3>
-              <p className="text-neutral-300 font-inter mb-6 leading-relaxed">
-                Join thousands of music lovers who've already found their perfect sound. Connect your Spotify and let our AI curate your next favorite song.
-              </p>
-              
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <a
-                  href="/auth"
-                  className="inline-flex items-center gap-2 bg-white text-neutral-900 px-8 py-3 rounded-lg font-inter font-semibold hover:bg-neutral-100 transition-all duration-300 hover:scale-105"
-                >
-                  <Sparkles className="w-5 h-5" />
-                  Start Your Journey
-                  <ChevronRight className="w-4 h-4" />
-                </a>
-                <a
-                  href="/pricing"
-                  className="inline-flex items-center gap-2 border border-white text-white px-8 py-3 rounded-lg font-inter font-semibold hover:bg-white hover:text-neutral-900 transition-all duration-300 hover:scale-105"
-                >
-                  View Pricing
-                </a>
-              </div>
+      </div>
+
+
+      {/* Modals */}
+      {showPlaylistModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div 
+            className="absolute inset-0 bg-black/50" 
+            onClick={() => setShowPlaylistModal(null)}
+          />
+          <div className="relative bg-neutral-800 rounded-xl p-4 w-72 border border-neutral-700 shadow-xl">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-white font-semibold text-sm">Add to Playlist</h3>
+              <button 
+                onClick={() => setShowPlaylistModal(null)}
+                className="text-neutral-400 hover:text-white"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <div className="space-y-2">
+              <button className="w-full text-left px-3 py-2 bg-neutral-700/60 backdrop-blur-sm border border-neutral-600/30 hover:bg-neutral-600/60 rounded-lg text-white text-sm transition-colors">
+                My Favorites
+              </button>
+              <button className="w-full text-left px-3 py-2 bg-neutral-700/60 backdrop-blur-sm border border-neutral-600/30 hover:bg-neutral-600/60 rounded-lg text-white text-sm transition-colors">
+                Chill Vibes
+              </button>
+              <button className="w-full text-left px-3 py-2 bg-neutral-700/60 backdrop-blur-sm border border-neutral-600/30 hover:bg-neutral-600/60 rounded-lg text-white text-sm transition-colors">
+                Discover Weekly
+              </button>
+              <button className="w-full text-left px-3 py-2 border-2 border-dashed border-neutral-600 hover:border-neutral-500 rounded-lg text-neutral-300 text-sm transition-colors">
+                + Create New Playlist
+              </button>
             </div>
           </div>
         </div>
-      </div>
+      )}
+
+      {showInfoModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div 
+            className="absolute inset-0 bg-black/50" 
+            onClick={() => setShowInfoModal(null)}
+          />
+          <div className="relative bg-neutral-800 rounded-xl p-4 w-80 border border-neutral-700 shadow-xl">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-white font-semibold text-sm">Why This Track?</h3>
+              <button 
+                onClick={() => setShowInfoModal(null)}
+                className="text-neutral-400 hover:text-white"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <div className="text-neutral-300 text-sm leading-relaxed">
+              <p className="mb-2">
+                <strong className="text-white">Recommended because:</strong>
+              </p>
+              <ul className="space-y-1 text-xs">
+                <li>• Similar to your recently played R&B tracks</li>
+                <li>• Matches your preference for soulful vocals</li>
+                <li>• Popular among users with similar taste profiles</li>
+                <li>• High audio feature compatibility (89% match)</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
-};
+};    
