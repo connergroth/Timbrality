@@ -35,7 +35,7 @@ export const AICurationAnimation = () => {
             artist: 'Travis Scott',
             album: 'UTOPIA',
             artwork_url: undefined,
-            spotify_url: 'https://open.spotify.com/track/1BFXcpG4SiIIsyz7GZMIcL',
+            spotify_url: 'https://open.spotify.com/track/4kjI1gwQZRKNDkw1nI475M',
             source: 'agent',
             duration_ms: 175000,
             popularity: 85,
@@ -109,7 +109,11 @@ export const AICurationAnimation = () => {
   const fetchSpotifyTrackData = async (trackName: string, artistName: string) => {
     try {
       const query = `${trackName} ${artistName}`;
-      const response = await fetch(`/api/spotify/search-track?q=${encodeURIComponent(query)}`);
+      // Add cache busting for fresh data
+      const cacheBuster = Date.now();
+      const response = await fetch(`/api/spotify/search-track?q=${encodeURIComponent(query)}&_t=${cacheBuster}`, {
+        cache: 'no-store'
+      });
       
       if (!response.ok) {
         console.warn(`Failed to fetch Spotify data for ${trackName} by ${artistName}`);
@@ -127,7 +131,11 @@ export const AICurationAnimation = () => {
   // Function to fetch artist image
   const fetchArtistImage = async (artistName: string) => {
     try {
-      const response = await fetch(`/api/spotify/search-artist?q=${encodeURIComponent(artistName)}`);
+      // Add cache busting for fresh data
+      const cacheBuster = Date.now();
+      const response = await fetch(`/api/spotify/search-artist?q=${encodeURIComponent(artistName)}&_t=${cacheBuster}`, {
+        cache: 'no-store'
+      });
       
       if (!response.ok) {
         return null;
